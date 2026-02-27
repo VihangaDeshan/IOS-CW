@@ -27,7 +27,7 @@ struct ClinicTextField: View {
         HStack(spacing: AppSpacing.md) {
             Image(systemName: icon)
                 .font(.system(size: AppSize.iconField, weight: .medium))
-                .foregroundStyle(isFocused ? .clinicPrimary : .secondary)
+                .foregroundStyle(isFocused ? Color.clinicPrimary : Color.secondary)
                 .frame(width: AppSize.iconField)
                 .animation(.easeInOut(duration: 0.2), value: isFocused)
 
@@ -40,11 +40,11 @@ struct ClinicTextField: View {
         }
         .padding(.horizontal, AppSpacing.md)
         .frame(height: AppSize.fieldHeight)
-        .background(.clinicFieldBg, in: RoundedRectangle(cornerRadius: AppRadius.lg))
+        .background(Color.clinicFieldBg, in: RoundedRectangle(cornerRadius: AppRadius.lg))
         .overlay(
             RoundedRectangle(cornerRadius: AppRadius.lg)
                 .strokeBorder(
-                    isFocused ? .clinicPrimary : .clinicSeparator,
+                    isFocused ? Color.clinicPrimary : Color.clinicSeparator,
                     lineWidth: isFocused ? 1.5 : 1
                 )
         )
@@ -67,7 +67,7 @@ struct ClinicSecureField: View {
             // Leading lock icon
             Image(systemName: icon)
                 .font(.system(size: AppSize.iconField, weight: .medium))
-                .foregroundStyle(isFocused ? .clinicPrimary : .secondary)
+                .foregroundStyle(isFocused ? Color.clinicPrimary : Color.secondary)
                 .frame(width: AppSize.iconField)
                 .animation(.easeInOut(duration: 0.2), value: isFocused)
 
@@ -99,11 +99,11 @@ struct ClinicSecureField: View {
         }
         .padding(.horizontal, AppSpacing.md)
         .frame(height: AppSize.fieldHeight)
-        .background(.clinicFieldBg, in: RoundedRectangle(cornerRadius: AppRadius.lg))
+        .background(Color.clinicFieldBg, in: RoundedRectangle(cornerRadius: AppRadius.lg))
         .overlay(
             RoundedRectangle(cornerRadius: AppRadius.lg)
                 .strokeBorder(
-                    isFocused ? .clinicPrimary : .clinicSeparator,
+                    isFocused ? Color.clinicPrimary : Color.clinicSeparator,
                     lineWidth: isFocused ? 1.5 : 1
                 )
         )

@@ -79,7 +79,7 @@ struct OnboardingContainerView: View {
                                   : "arrow.right.circle.fill")
                             .font(.subheadline.weight(.semibold))
                         }
-                        .foregroundStyle(.clinicPrimary)
+                        .foregroundStyle(Color.clinicPrimary)
                         .padding(.horizontal, AppSpacing.lg)
                         .frame(height: 46)
                         .background(.white, in: Capsule())

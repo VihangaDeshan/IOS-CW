@@ -32,11 +32,11 @@ struct PrimaryButton: View {
     }
 
     var body: some View {
-        Button(action: {
+        Button {
             let impact = UIImpactFeedbackGenerator(style: .medium)
             impact.impactOccurred()
             action()
-        }) {
+        } label: {
             HStack(spacing: AppSpacing.xs) {
                 if isLoading {
                     ProgressView()
@@ -55,8 +55,8 @@ struct PrimaryButton: View {
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
             .frame(height: AppSize.buttonPrimary)
-            .background(.clinicPrimary, in: Capsule())
-            .shadow(color: .clinicPrimary.opacity(0.35), radius: 10, y: 5)
+            .background(Color.clinicPrimary, in: Capsule())
+            .shadow(color: Color.clinicPrimary.opacity(0.35), radius: 10, y: 5)
         }
         .buttonStyle(.plain)
         .disabled(isLoading)
@@ -81,7 +81,9 @@ struct OutlineButton: View {
     }
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             HStack(spacing: AppSpacing.xs) {
                 if let icon {
                     Image(systemName: icon)
@@ -90,12 +92,12 @@ struct OutlineButton: View {
                 Text(title)
                     .font(.body.weight(.medium))
             }
-            .foregroundStyle(.clinicPrimary)
+            .foregroundStyle(Color.clinicPrimary)
             .frame(maxWidth: .infinity)
             .frame(height: AppSize.buttonSecond)
             .overlay(
                 Capsule()
-                    .strokeBorder(.clinicPrimary, lineWidth: 1.5)
+                    .strokeBorder(Color.clinicPrimary, lineWidth: 1.5)
             )
         }
         .buttonStyle(.plain)
@@ -110,7 +112,9 @@ struct TextLinkButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             Text(title)
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(color)

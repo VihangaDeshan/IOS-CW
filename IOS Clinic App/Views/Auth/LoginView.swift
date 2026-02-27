@@ -46,7 +46,7 @@ struct LoginView: View {
             }
         }
         .scrollBounceBehavior(.basedOnSize)
-        .background(.clinicSurface)
+        .background(Color.clinicSurface)
         .ignoresSafeArea(edges: .top)
         .onAppear {
             withAnimation(.easeOut(duration: 0.45).delay(0.05)) {
@@ -163,11 +163,11 @@ struct LoginView: View {
 
             // ── Divider with OR ──────────────────────────────────────
             HStack(spacing: AppSpacing.md) {
-                Rectangle().fill(.clinicSeparator).frame(height: 1)
+                Rectangle().fill(Color.clinicSeparator).frame(height: 1)
                 Text("OR")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.secondary)
-                Rectangle().fill(.clinicSeparator).frame(height: 1)
+                Rectangle().fill(Color.clinicSeparator).frame(height: 1)
             }
 
             // ── Social placeholder buttons ────────────────────────────
@@ -180,7 +180,7 @@ struct LoginView: View {
         .padding(.horizontal, AppSpacing.lg)
         .background(
             RoundedRectangle(cornerRadius: AppRadius.xxl)
-                .fill(.clinicSurface)
+                .fill(Color.clinicSurface)
                 .shadow(color: .black.opacity(0.10), radius: 20, y: 8)
         )
     }
@@ -220,7 +220,9 @@ private struct SocialButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             HStack(spacing: AppSpacing.xs) {
                 Image(systemName: icon)
                     .font(.body.weight(.medium))
@@ -230,10 +232,10 @@ private struct SocialButton: View {
             .foregroundStyle(.primary)
             .frame(maxWidth: .infinity)
             .frame(height: AppSize.buttonSecond)
-            .background(.clinicFieldBg, in: RoundedRectangle(cornerRadius: AppRadius.lg))
+            .background(Color.clinicFieldBg, in: RoundedRectangle(cornerRadius: AppRadius.lg))
             .overlay(
                 RoundedRectangle(cornerRadius: AppRadius.lg)
-                    .strokeBorder(.clinicSeparator, lineWidth: 1)
+                    .strokeBorder(Color.clinicSeparator, lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

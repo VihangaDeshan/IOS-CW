@@ -67,7 +67,7 @@ struct ComingSoonView: View {
                 Image(systemName: icon)
                     .font(.system(size: 72))
                     .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(.clinicPrimary)
+                    .foregroundStyle(Color.clinicPrimary)
 
                 VStack(spacing: AppSpacing.xs) {
                     Text(title)
