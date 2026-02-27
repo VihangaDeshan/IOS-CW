@@ -53,8 +53,7 @@ struct ContentView: View {
                     ))
 
             case .main:
-                // Dashboard — next phase
-                ComingSoonView(title: "Dashboard", icon: "house.circle.fill")
+                MainTabView()
                     .transition(.scale(scale: 0.96).combined(with: .opacity))
             }
         }
