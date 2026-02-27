@@ -7,12 +7,14 @@
 //
 
 import SwiftUI
+import Combine
 
 // MARK: - Home View
 
 struct HomeView: View {
 
     @State private var searchText = ""
+    @FocusState private var isSearchFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -26,9 +28,8 @@ struct HomeView: View {
                         .padding(.bottom, AppSpacing.lg)
 
                     // ── Hero banner ───────────────────────────────────────
-                    heroBanner
+                    HeroCarouselView()
                         .padding(.horizontal, AppSpacing.lg)
-
                     // ── Search bar ────────────────────────────────────────
                     searchBar
                         .padding(.horizontal, AppSpacing.lg)
@@ -64,7 +65,13 @@ struct HomeView: View {
                 }
             }
             .background(Color.clinicSurface.ignoresSafeArea())
+            .onTapGesture {
+                    isSearchFocused = false
+                }
+                // ────────────────────────────────────────────────────────
+               
             .navigationBarHidden(true)
+            .frame(maxWidth: .infinity)
         }
     }
 
@@ -90,50 +97,66 @@ struct HomeView: View {
 
     // MARK: - Hero Banner
 
-    private var heroBanner: some View {
-        ZStack(alignment: .leading) {
-            // Gradient background
-            RoundedRectangle(cornerRadius: AppRadius.lg)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 0.62, green: 0.88, blue: 0.95),
-                            Color(red: 0.78, green: 0.93, blue: 0.98)
-                        ],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .frame(height: 150)
+    struct HeroCarouselView: View {
+        @State private var currentIndex = 0
+        private let timer = Timer.publish(every: 4, on: .main, in: .common).autoconnect()
+        
+        // Define your 3 banners here
+        let banners = [
+            (title: "Book Your\nAppointment\nToday !", color1: Color(red: 0.62, green: 0.88, blue: 0.95), color2: Color(red: 0.78, green: 0.93, blue: 0.98)),
+            (title: "Check Your\nHealth Report\nOnline", color1: Color(red: 0.95, green: 0.80, blue: 0.80), color2: Color(red: 0.98, green: 0.88, blue: 0.88)),
+            (title: "Consult with\nTop Specialists\nNow", color1: Color(red: 0.80, green: 0.95, blue: 0.85), color2: Color(red: 0.88, green: 0.98, blue: 0.92))
+        ]
 
-            // Doctor silhouette on the right
-            HStack {
-                Spacer()
-                Image(systemName: "stethoscope")
-                    .font(.system(size: 72, weight: .light))
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(Color(red: 0.07, green: 0.45, blue: 0.90).opacity(0.25))
-                    .padding(.trailing, AppSpacing.lg)
-            }
-
-            // Text + button
-            VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                Text("Book Your\nAppointment\nToday !")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundStyle(Color(red: 0.07, green: 0.25, blue: 0.45))
-                    .lineSpacing(2)
-
-                Button { } label: {
-                    Text("Book Now")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, AppSpacing.lg)
-                        .padding(.vertical, AppSpacing.xs)
-                        .background(Color.clinicPrimary, in: Capsule())
+        var body: some View {
+            TabView(selection: $currentIndex) {
+                ForEach(0..<banners.count, id: \.self) { index in
+                    heroBannerContent(title: banners[index].title, c1: banners[index].color1, c2: banners[index].color2)
+                        .tag(index)
                 }
-                .buttonStyle(.plain)
             }
-            .padding(.leading, AppSpacing.lg)
+            .frame(height: 160) // Slightly taller to accommodate pagination dots
+            .tabViewStyle(.page(indexDisplayMode: .always))
+            .onReceive(timer) { _ in
+                withAnimation(.linear(duration: 2.0)) {
+                    currentIndex = (currentIndex + 1) % banners.count
+                }
+            }
+        }
+
+        // This is your original banner UI, now modular
+        private func heroBannerContent(title: String, c1: Color, c2: Color) -> some View {
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: AppRadius.lg)
+                    .fill(LinearGradient(colors: [c1, c2], startPoint: .leading, endPoint: .trailing))
+                    .frame(height: 150)
+
+                HStack {
+                    Spacer()
+                    Image(systemName: "stethoscope")
+                        .font(.system(size: 72, weight: .light))
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundStyle(Color.blue.opacity(0.15))
+                        .padding(.trailing, AppSpacing.lg)
+                }
+
+                VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                    Text(title)
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundStyle(Color(red: 0.07, green: 0.25, blue: 0.45))
+                        .lineSpacing(2)
+
+                    Button { } label: {
+                        Text("Action")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, AppSpacing.lg)
+                            .padding(.vertical, AppSpacing.xs)
+                            .background(Color.blue, in: Capsule())
+                    }
+                }
+                .padding(.leading, AppSpacing.lg)
+            }
         }
     }
 
@@ -148,10 +171,25 @@ struct HomeView: View {
             TextField("Find the right doctor for you", text: $searchText)
                 .font(.system(size: 15))
                 .foregroundStyle(.primary)
+                .focused($isSearchFocused) // Track focus here
+
+            // Conditional Navigatable Icon
+            if isSearchFocused {
+                Button {
+                    // Action for the arrow (e.g., submit search)
+                    isSearchFocused = false
+                } label: {
+                    Image(systemName: "arrow.right.circle.fill")
+                        .font(.system(size: 22))
+                        .foregroundStyle(Color.clinicPrimary) // Replace with your color
+                        .transition(.move(edge: .trailing).combined(with: .opacity))
+                }
+            }
         }
         .padding(.horizontal, AppSpacing.md)
         .frame(height: 44)
         .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: AppRadius.xl))
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSearchFocused)
     }
 
     // MARK: - Section Header
@@ -179,12 +217,12 @@ struct HomeView: View {
         HStack(spacing: AppSpacing.md) {
             // Doctor avatar
             ZStack {
-                Circle()
-                    .fill(Color(.systemGray5))
+                Image("dr_jayantha") // Your asset name
+                    .resizable()
+                    .scaledToFill()
                     .frame(width: 56, height: 56)
-                Image(systemName: "person.fill")
-                    .font(.system(size: 28))
-                    .foregroundStyle(Color(.systemGray2))
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(Color(.systemGray5), lineWidth: 1)) // Optional border
             }
 
             // Info
@@ -224,23 +262,27 @@ struct HomeView: View {
         ("flask.fill",         "Laboratory",    Color(red: 0.29, green: 0.56, blue: 0.89)),
         ("pills.fill",         "Prescriptions", Color(red: 0.55, green: 0.35, blue: 0.96)),
         ("person.3.fill",      "Queue",         Color(red: 0.22, green: 0.71, blue: 0.64)),
-        ("heart.text.clipboard.fill", "Records", Color(red: 0.93, green: 0.42, blue: 0.36)),
-        ("video.fill",         "Telemedicine",  Color(red: 0.25, green: 0.74, blue: 0.48)),
-        ("creditcard.fill",    "Payments",      Color(red: 0.96, green: 0.62, blue: 0.19)),
+        
     ]
+    
+    
 
     private var servicesGrid: some View {
-        LazyVGrid(
-            columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-                GridItem(.flexible())
-            ],
-            spacing: AppSpacing.md
-        ) {
-            ForEach(services, id: \.label) { service in
-                ServiceCell(icon: service.icon, label: service.label, color: service.color)
+        // 1. Wrap in a horizontal ScrollView
+        ScrollView(.horizontal, showsIndicators: false) {
+            // 2. Change to LazyHGrid
+            LazyHGrid(
+                // 3. Columns become 'rows' in an HGrid. Use one flexible row for a single line.
+                rows: [GridItem(.flexible())],
+                spacing: AppSpacing.md
+            ) {
+                ForEach(services, id: \.label) { service in
+                    ServiceCell(icon: service.icon, label: service.label, color: service.color)
+                        // 4. Give cells a specific width so they don't squash
+                        .frame(width: 100)
+                }
             }
+            .padding(.horizontal, AppSpacing.xs) // Match your app's side padding
         }
     }
 
@@ -255,9 +297,14 @@ struct HomeView: View {
                     Circle()
                         .fill(Color(.systemGray5))
                         .frame(width: 50, height: 50)
-                    Image(systemName: "person.fill")
-                        .font(.system(size: 24))
-                        .foregroundStyle(Color(.systemGray2))
+                    ZStack {
+                        Image("dr_namal") // Your asset name
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 56, height: 56)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(Color(.systemGray5), lineWidth: 1)) // Optional border
+                    }
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Dr. Namal Balahewa")
