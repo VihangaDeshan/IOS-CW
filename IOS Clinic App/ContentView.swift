@@ -37,6 +37,13 @@ struct ContentView: View {
                         removal:   .move(edge: .leading) .combined(with: .opacity)
                     ))
 
+            case .verifyOTP:
+                VerifyOTPView()
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .trailing).combined(with: .opacity),
+                        removal:   .move(edge: .leading) .combined(with: .opacity)
+                    ))
+
             case .register:
                 // Register screen — next phase
                 ComingSoonView(title: "Create Account", icon: "person.badge.plus.fill")

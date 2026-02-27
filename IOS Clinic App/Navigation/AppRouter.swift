@@ -16,6 +16,7 @@ enum AppRoute: Hashable {
     case onboarding
     case welcome
     case login
+    case verifyOTP
     case register
     case main
 }

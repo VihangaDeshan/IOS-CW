@@ -1,19 +1,19 @@
 //
-//  LoginView.swift
+//  VerifyOTPView.swift
 //  IOS Clinic App
 //
-//  Login screen matching Figma design:
-//  Custom nav bar (“<” back + “Login” title), app icon, phone
-//  number field, “Get Code” CTA, Google + Apple social icons.
+//  OTP verification screen — shown after "Get Code" on LoginView.
+//  Layout: custom nav bar, app icon, OTP field, "Login" CTA,
+//  Google + Apple social icons (matching Figma design).
 //
 
 import SwiftUI
 
-struct LoginView: View {
+struct VerifyOTPView: View {
 
     @Environment(AppRouter.self) private var router
-    @State private var mobileNumber = ""
-    @State private var appeared     = false
+    @State private var otpCode  = ""
+    @State private var appeared = false
 
     var body: some View {
         ZStack {
@@ -26,35 +26,32 @@ struct LoginView: View {
 
                 Spacer()
 
-                // ── App icon ────────────────────────────────────────────────
+                // ── App icon ─────────────────────────────────────────────
                 ClinicFlowIcon(size: AppSize.logoWelcome)
                     .opacity(appeared ? 1 : 0)
                     .scaleEffect(appeared ? 1 : 0.85)
 
                 Spacer().frame(height: AppSpacing.xxl + AppSpacing.lg)
 
-                // ── Phone number field ─────────────────────────────────────
+                // ── OTP field ─────────────────────────────────────────────
                 ClinicTextField(
-                    label: "Enter your Mobile Number",
-                    icon: "phone",
-                    keyboardType: .phonePad,
+                    label: "Enter OTP",
+                    icon: "lock",
+                    keyboardType: .numberPad,
                     autocap: .never,
-                    text: $mobileNumber
+                    text: $otpCode
                 )
-                .background(Color.white)
-                .cornerRadius(20)
-                .padding(.vertical, 21)
                 .padding(.horizontal, AppSpacing.xl)
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 16)
 
                 Spacer().frame(height: AppSpacing.lg)
 
-                // ── Get Code button ──────────────────────────────────────────
+                // ── Login button ──────────────────────────────────────────
                 Button {
-                    router.navigate(to: .verifyOTP)
+                    router.navigate(to: .main)
                 } label: {
-                    Text("Get Code")
+                    Text("Login")
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -68,15 +65,15 @@ struct LoginView: View {
 
                 Spacer()
 
-                // ── Social sign-in row ────────────────────────────────────────
+                // ── Social sign-in row ────────────────────────────────────
                 HStack(spacing: AppSpacing.xl) {
-                    // Google “G” icon button
-                    SocialIconButton(
+                    // Google "G"
+                    OTPSocialIconButton(
                         label: "G",
                         labelColor: Color(red: 0.90, green: 0.27, blue: 0.21)
                     ) { }
 
-                    // Apple logo button
+                    // Apple logo
                     Button { } label: {
                         Image(systemName: "apple.logo")
                             .font(.system(size: 26, weight: .medium))
@@ -101,13 +98,13 @@ struct LoginView: View {
     private var navBar: some View {
         ZStack {
             Text("Login")
-                .font(Font.navTitleSize)
+                .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity)
 
             HStack {
                 Button {
-                    router.navigate(to: .welcome)
+                    router.navigate(to: .login)
                 } label: {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 17, weight: .semibold))
@@ -126,9 +123,9 @@ struct LoginView: View {
     }
 }
 
-// MARK: - Social Icon Button
+// MARK: - Social Icon Button (local)
 
-private struct SocialIconButton: View {
+private struct OTPSocialIconButton: View {
     let label:      String
     let labelColor: Color
     let action:     () -> Void
@@ -148,6 +145,6 @@ private struct SocialIconButton: View {
 }
 
 #Preview {
-    LoginView()
+    VerifyOTPView()
         .environment(AppRouter())
 }
