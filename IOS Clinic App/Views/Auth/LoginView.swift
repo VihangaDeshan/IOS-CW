@@ -41,6 +41,9 @@ struct LoginView: View {
                     autocap: .never,
                     text: $mobileNumber
                 )
+                .background(Color.white)
+                .cornerRadius(20)
+                .padding(.vertical, 21)
                 .padding(.horizontal, AppSpacing.xl)
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 16)
@@ -98,7 +101,7 @@ struct LoginView: View {
     private var navBar: some View {
         ZStack {
             Text("Login")
-                .font(.system(size: 17, weight: .semibold))
+                .font(Font.navTitleSize)
                 .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity)
 

@@ -32,11 +32,7 @@ struct ClinicFlowIcon: View {
                 RoundedRectangle(cornerRadius: shieldSize * 0.28)
                     .fill(LinearGradient.clinicIcon)
                     .frame(width: shieldSize, height: shieldSize)
-                    .clipShape(
-                        Image(systemName: "shield.fill")
-                            .resizable()
-                            .scaledToFit()
-                    )
+                    
 
                 Image(systemName: "shield.fill")
                     .resizable()

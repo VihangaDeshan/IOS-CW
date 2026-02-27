@@ -24,6 +24,11 @@ extension Color {
     static let clinicFieldBg       = Color(.systemGray6)
     static let clinicSeparator     = Color(.separator)
     static let clinicSubtitle      = Color(.secondaryLabel)
+    
+}
+
+extension Font {
+    static let navTitleSize: Font = .system(size: 34, weight: .semibold)
 }
 
 // MARK: - Icon Gradient
