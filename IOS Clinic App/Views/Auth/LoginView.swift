@@ -2,9 +2,9 @@
 //  LoginView.swift
 //  IOS Clinic App
 //
-//  Authentication screen.
-//  Layout: hero header → glass-tinted form card → action buttons.
-//  No backend required — prototype navigation only.
+//  Login screen matching Figma design:
+//  Custom nav bar (“<” back + “Login” title), app icon, phone
+//  number field, “Get Code” CTA, Google + Apple social icons.
 //
 
 import SwiftUI
@@ -12,237 +12,137 @@ import SwiftUI
 struct LoginView: View {
 
     @Environment(AppRouter.self) private var router
-
-    @State private var email    = ""
-    @State private var password = ""
-    @State private var isSigningIn = false
-    @State private var headerVisible = false
-    @State private var formVisible   = false
-
-    // Validation (lightweight: non-empty)
-    private var canSubmit: Bool {
-        !email.trimmingCharacters(in: .whitespaces).isEmpty &&
-        !password.isEmpty
-    }
+    @State private var mobileNumber = ""
+    @State private var appeared     = false
 
     var body: some View {
-        ScrollView {
+        ZStack {
+            Color.clinicSurface.ignoresSafeArea()
+
             VStack(spacing: 0) {
 
-                // ── Hero header ──────────────────────────────────────
-                heroHeader
+                // ── Custom navigation bar ────────────────────────────────
+                navBar
 
-                // ── Form card ────────────────────────────────────────
-                formCard
-                    .padding(.horizontal, AppSpacing.lg)
-                    .offset(y: -AppSpacing.xxl)        // Overlaps header slightly
-                    .opacity(formVisible ? 1 : 0)
-                    .offset(y: formVisible ? 0 : 24)
+                Spacer()
 
-                // ── Register link ────────────────────────────────────
-                registerLink
-                    .padding(.top, AppSpacing.md)
-                    .opacity(formVisible ? 1 : 0)
-            }
-        }
-        .scrollBounceBehavior(.basedOnSize)
-        .background(Color.clinicSurface)
-        .ignoresSafeArea(edges: .top)
-        .onAppear {
-            withAnimation(.easeOut(duration: 0.45).delay(0.05)) {
-                headerVisible = true
-            }
-            withAnimation(.spring(response: 0.55, dampingFraction: 0.80).delay(0.28)) {
-                formVisible = true
-            }
-        }
-    }
+                // ── App icon ────────────────────────────────────────────────
+                ClinicFlowIcon(size: AppSize.logoWelcome)
+                    .opacity(appeared ? 1 : 0)
+                    .scaleEffect(appeared ? 1 : 0.85)
 
-    // MARK: - Hero Header
+                Spacer().frame(height: AppSpacing.xxl + AppSpacing.lg)
 
-    private var heroHeader: some View {
-        ZStack(alignment: .bottom) {
-            // Gradient background
-            LinearGradient.clinicHero
-                .frame(height: 290)
-
-            // Decorative circle
-            Circle()
-                .fill(.white.opacity(0.06))
-                .frame(width: 260, height: 260)
-                .offset(x: 120, y: -60)
-
-            Circle()
-                .fill(.white.opacity(0.05))
-                .frame(width: 180, height: 180)
-                .offset(x: -110, y: 20)
-
-            // Branding stack
-            VStack(spacing: AppSpacing.xs) {
-                // App icon
-                ZStack {
-                    Circle()
-                        .fill(.white.opacity(0.18))
-                        .frame(width: 88, height: 88)
-
-                    Image(systemName: "cross.case.fill")
-                        .font(.system(size: AppSize.logoAuth, weight: .medium))
-                        .symbolRenderingMode(.hierarchical)
-                        .foregroundStyle(.white)
-                }
-
-                Text("MediCare")
-                    .font(.system(size: 26, weight: .bold, design: .rounded))
-                    .foregroundStyle(.white)
-            }
-            .padding(.bottom, AppSpacing.xxl + AppSpacing.lg)
-            .opacity(headerVisible ? 1 : 0)
-            .scaleEffect(headerVisible ? 1 : 0.85)
-        }
-        .frame(height: 290)
-    }
-
-    // MARK: - Form Card
-
-    private var formCard: some View {
-        VStack(spacing: AppSpacing.lg) {
-
-            // Card heading
-            VStack(spacing: AppSpacing.xxs + 2) {
-                Text("Welcome Back")
-                    .font(.title2.bold())
-                    .foregroundStyle(.primary)
-
-                Text("Sign in to your account to continue")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.top, AppSpacing.lg)
-
-            Divider()
-
-            // ── Fields ───────────────────────────────────────────────
-            VStack(spacing: AppSpacing.md) {
+                // ── Phone number field ─────────────────────────────────────
                 ClinicTextField(
-                    label: "Email address",
-                    icon: "envelope",
-                    keyboardType: .emailAddress,
+                    label: "Enter your Mobile Number",
+                    icon: "phone",
+                    keyboardType: .phonePad,
                     autocap: .never,
-                    text: $email
+                    text: $mobileNumber
                 )
+                .padding(.horizontal, AppSpacing.xl)
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 16)
 
-                ClinicSecureField(
-                    label: "Password",
-                    icon: "lock",
-                    text: $password
-                )
+                Spacer().frame(height: AppSpacing.lg)
 
-                // Forgot password
-                HStack {
-                    Spacer()
-                    TextLinkButton(title: "Forgot Password?") {
-                        // Navigate to forgot password flow (future)
-                    }
+                // ── Get Code button ──────────────────────────────────────────
+                Button {
+                    router.navigate(to: .main)
+                } label: {
+                    Text("Get Code")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: AppSize.buttonPrimary)
+                        .background(Color.clinicPrimary, in: Capsule())
                 }
-                .padding(.top, -AppSpacing.xxs)
-            }
+                .buttonStyle(.plain)
+                .padding(.horizontal, AppSpacing.xl)
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 16)
 
-            // ── Sign In CTA ──────────────────────────────────────────
-            PrimaryButton(
-                "Sign In",
-                icon: "arrow.right",
-                isLoading: isSigningIn
-            ) {
-                signIn()
-            }
-            .disabled(!canSubmit)
-            .opacity(canSubmit ? 1 : 0.55)
-            .animation(.easeInOut(duration: 0.2), value: canSubmit)
+                Spacer()
 
-            // ── Divider with OR ──────────────────────────────────────
-            HStack(spacing: AppSpacing.md) {
-                Rectangle().fill(Color.clinicSeparator).frame(height: 1)
-                Text("OR")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                Rectangle().fill(Color.clinicSeparator).frame(height: 1)
-            }
+                // ── Social sign-in row ────────────────────────────────────────
+                HStack(spacing: AppSpacing.xl) {
+                    // Google “G” icon button
+                    SocialIconButton(
+                        label: "G",
+                        labelColor: Color(red: 0.90, green: 0.27, blue: 0.21)
+                    ) { }
 
-            // ── Social placeholder buttons ────────────────────────────
-            HStack(spacing: AppSpacing.md) {
-                SocialButton(icon: "apple.logo",   label: "Apple")  { }
-                SocialButton(icon: "globe",         label: "Google") { }
+                    // Apple logo button
+                    Button { } label: {
+                        Image(systemName: "apple.logo")
+                            .font(.system(size: 26, weight: .medium))
+                            .foregroundStyle(.primary)
+                            .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .opacity(appeared ? 1 : 0)
+                .padding(.bottom, AppSpacing.xxxl)
             }
-            .padding(.bottom, AppSpacing.lg)
         }
-        .padding(.horizontal, AppSpacing.lg)
-        .background(
-            RoundedRectangle(cornerRadius: AppRadius.xxl)
-                .fill(Color.clinicSurface)
-                .shadow(color: .black.opacity(0.10), radius: 20, y: 8)
-        )
+        .onAppear {
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.82).delay(0.1)) {
+                appeared = true
+            }
+        }
     }
 
-    // MARK: - Register Link
+    // MARK: - Custom nav bar
 
-    private var registerLink: some View {
-        HStack(spacing: AppSpacing.xxs + 2) {
-            Text("Don't have an account?")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+    private var navBar: some View {
+        ZStack {
+            Text("Login")
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity)
 
-            TextLinkButton(title: "Register") {
-                router.navigate(to: .register)
+            HStack {
+                Button {
+                    router.navigate(to: .welcome)
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(.primary)
+                        .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                Spacer()
             }
+            .padding(.leading, AppSpacing.xs)
         }
-        .padding(.bottom, AppSpacing.xxxl)
-    }
-
-    // MARK: - Actions
-
-    private func signIn() {
-        isSigningIn = true
-        // Prototype delay — replace with real auth
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-            isSigningIn = false
-            router.navigate(to: .main)
-        }
+        .frame(height: AppSize.minTapTarget)
+        .padding(.horizontal, AppSpacing.md)
+        .padding(.top, AppSpacing.xs)
     }
 }
 
-// MARK: - Social Button
+// MARK: - Social Icon Button
 
-private struct SocialButton: View {
-    let icon:   String
-    let label:  String
-    let action: () -> Void
+private struct SocialIconButton: View {
+    let label:      String
+    let labelColor: Color
+    let action:     () -> Void
 
     var body: some View {
         Button {
             action()
         } label: {
-            HStack(spacing: AppSpacing.xs) {
-                Image(systemName: icon)
-                    .font(.body.weight(.medium))
-                Text(label)
-                    .font(.subheadline.weight(.medium))
-            }
-            .foregroundStyle(.primary)
-            .frame(maxWidth: .infinity)
-            .frame(height: AppSize.buttonSecond)
-            .background(Color.clinicFieldBg, in: RoundedRectangle(cornerRadius: AppRadius.lg))
-            .overlay(
-                RoundedRectangle(cornerRadius: AppRadius.lg)
-                    .strokeBorder(Color.clinicSeparator, lineWidth: 1)
-            )
+            Text(label)
+                .font(.system(size: 22, weight: .bold))
+                .foregroundStyle(labelColor)
+                .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
 }
-
-// MARK: - Previews
 
 #Preview("Login") {
     LoginView()

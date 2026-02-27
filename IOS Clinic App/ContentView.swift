@@ -23,6 +23,13 @@ struct ContentView: View {
                         removal: .move(edge: .leading).combined(with: .opacity)
                     ))
 
+            case .welcome:
+                WelcomeView()
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .trailing).combined(with: .opacity),
+                        removal:   .move(edge: .leading) .combined(with: .opacity)
+                    ))
+
             case .login:
                 LoginView()
                     .transition(.asymmetric(

@@ -14,6 +14,7 @@ import Observation
 
 enum AppRoute: Hashable {
     case onboarding
+    case welcome
     case login
     case register
     case main
