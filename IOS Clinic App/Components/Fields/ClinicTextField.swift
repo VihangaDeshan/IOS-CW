@@ -114,7 +114,7 @@ struct ClinicSecureField: View {
 
 // MARK: - Previews
 
-#Preview("Input Fields") {
+#Preview {
     @Previewable @State var email    = ""
     @Previewable @State var password = ""
 

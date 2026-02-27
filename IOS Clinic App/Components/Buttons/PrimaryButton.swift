@@ -126,7 +126,7 @@ struct TextLinkButton: View {
 
 // MARK: - Previews
 
-#Preview("Buttons") {
+#Preview {
     VStack(spacing: AppSpacing.lg) {
         PrimaryButton("Sign In", icon: "arrow.right") { }
         PrimaryButton("Loading…", isLoading: true) { }
