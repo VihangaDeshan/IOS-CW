@@ -9,13 +9,17 @@
 
 import SwiftUI
 
-struct LoginView: View {
+struct RegisterView: View {
 
     @Environment(AppRouter.self) private var router
     @State private var mobileNumber = ""
     @State private var appeared     = false
+    @State private var name = ""
+    
+    var iconColor: Color = .gray
 
     var body: some View {
+        
         ZStack {
             Color.clinicSurface.ignoresSafeArea()
 
@@ -35,7 +39,27 @@ struct LoginView: View {
 
                 Spacer().frame(height: AppSpacing.xxxl + AppSpacing.lg)
                 Spacer().frame(height: AppSpacing.xxxl + AppSpacing.lg)
-                Spacer().frame(height: AppSpacing.xxxl + AppSpacing.lg)
+                
+                // -- Name field
+                ClinicTextField(
+                    label: "Enter your Name",
+                    icon: "person",
+                    keyboardType: .default,
+                    autocap: .words,
+                    text: $name
+                )
+                .foregroundStyle(Color.clinicPrimary)
+                .frame(maxWidth: .infinity) // Ensure it stretches wide
+                .frame(height: 60)
+                .background(Color.white.opacity(0.1))
+                .cornerRadius(30)
+                
+                .padding(.horizontal, AppSpacing.xl)
+                .opacity(appeared ? 1 : 0)
+                .offset(y: appeared ? 0 : 16)
+                
+                Spacer().frame(height: AppSpacing.xs)
+                
                 // ── Phone number field ─────────────────────────────────────
                 ClinicTextField(
                     label: "Enter your Mobile Number",
@@ -167,6 +191,6 @@ private struct SocialIconButton: View {
 }
 
 #Preview {
-    LoginView()
+    RegisterView()
         .environment(AppRouter())
 }

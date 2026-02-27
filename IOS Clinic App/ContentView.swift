@@ -46,8 +46,11 @@ struct ContentView: View {
 
             case .register:
                 // Register screen — next phase
-                ComingSoonView(title: "Create Account", icon: "person.badge.plus.fill")
-                    .transition(.move(edge: .trailing).combined(with: .opacity))
+                RegisterView()
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .trailing).combined(with: .opacity),
+                        removal:   .move(edge: .leading) .combined(with: .opacity)
+                    ))
 
             case .main:
                 // Dashboard — next phase

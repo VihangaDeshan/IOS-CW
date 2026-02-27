@@ -29,6 +29,7 @@ extension Color {
 
 extension Font {
     static let navTitleSize: Font = .system(size: 34, weight: .semibold)
+    static let btnTitleSize: Font = .system(size: 17, weight: .semibold)
 }
 
 // MARK: - Icon Gradient
@@ -51,7 +52,7 @@ enum AppSpacing {
     static let xs:   CGFloat =  8
     static let sm:   CGFloat = 12
     static let md:   CGFloat = 16
-    static let lg:   CGFloat = 24
+    static let lg:   CGFloat = 27
     static let xl:   CGFloat = 32
     static let xxl:  CGFloat = 48
     static let xxxl: CGFloat = 64
@@ -72,11 +73,11 @@ enum AppRadius {
 
 enum AppSize {
     static let minTapTarget:   CGFloat = 44
-    static let buttonPrimary:  CGFloat = 54
+    static let buttonPrimary:  CGFloat = 64
     static let buttonSecond:   CGFloat = 50
     static let fieldHeight:    CGFloat = 54
     static let iconField:      CGFloat = 20
-    static let logoOnboarding: CGFloat = 88
-    static let logoAuth:       CGFloat = 72
-    static let logoWelcome:    CGFloat = 80
+    static let logoOnboarding: CGFloat = 140
+    static let logoAuth:       CGFloat = 140
+    static let logoWelcome:    CGFloat = 140
 }

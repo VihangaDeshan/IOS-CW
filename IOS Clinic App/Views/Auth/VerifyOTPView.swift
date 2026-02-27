@@ -25,14 +25,17 @@ struct VerifyOTPView: View {
                 navBar
 
                 Spacer()
-
+                Spacer().frame(height: AppSpacing.xxxl + AppSpacing.lg)
+              
                 // ── App icon ─────────────────────────────────────────────
                 ClinicFlowIcon(size: AppSize.logoWelcome)
                     .opacity(appeared ? 1 : 0)
                     .scaleEffect(appeared ? 1 : 0.85)
 
                 Spacer().frame(height: AppSpacing.xxl + AppSpacing.lg)
-
+                Spacer().frame(height: AppSpacing.xxxl + AppSpacing.lg)
+                Spacer().frame(height: AppSpacing.xxxl + AppSpacing.lg)
+                
                 // ── OTP field ─────────────────────────────────────────────
                 ClinicTextField(
                     label: "Enter OTP",
@@ -41,9 +44,27 @@ struct VerifyOTPView: View {
                     autocap: .never,
                     text: $otpCode
                 )
+                .frame(maxWidth: .infinity) // Ensure it stretches wide
+                .frame(height: 60)          // Set your desired height here
+                .background(Color.white.opacity(0.1)) // Added background so you can see the height
+                .cornerRadius(30)
+                
                 .padding(.horizontal, AppSpacing.xl)
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 16)
+                
+                
+                .onChange(of: otpCode) { oldValue, newValue in
+                    // Filter out everything except numbers
+                    let filtered = newValue.filter { "0123456789".contains($0) }
+                    
+                    // Limit to 6 characters (standard OTP length)
+                    if filtered.count > 6 {
+                        otpCode = String(filtered.prefix(6))
+                    } else {
+                        otpCode = filtered
+                    }
+                }
 
                 Spacer().frame(height: AppSpacing.lg)
 
@@ -52,7 +73,7 @@ struct VerifyOTPView: View {
                     router.navigate(to: .main)
                 } label: {
                     Text("Login")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(Font.btnTitleSize)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: AppSize.buttonPrimary)
@@ -98,7 +119,8 @@ struct VerifyOTPView: View {
     private var navBar: some View {
         ZStack {
             Text("Login")
-                .font(.system(size: 17, weight: .semibold))
+            
+                .font(Font.navTitleSize)
                 .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity)
 

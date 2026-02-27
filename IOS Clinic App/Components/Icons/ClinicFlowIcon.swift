@@ -1,70 +1,53 @@
-//
-//  ClinicFlowIcon.swift
-//  IOS Clinic App
-//
-//  Reusable app icon tile matching the Figma design:
-//  light-gray rounded-square tile containing a teal→blue
-//  gradient shield with a white ECG line + white plus badge.
-//
-
 import SwiftUI
 
 struct ClinicFlowIcon: View {
-
     /// Overall tile side length.
     var size: CGFloat = 88
 
+    // Proportions based on Figma design standards
     private var tileRadius: CGFloat { size * 0.22 }
-    private var shieldSize: CGFloat { size * 0.62 }
-    private var ecgSize:    CGFloat { size * 0.38 }
-    private var plusSize:   CGFloat { size * 0.18 }
+    private var contentSize: CGFloat { size * 0.65 }
 
     var body: some View {
         ZStack {
-            // ── Tile background ────────────────────────────────────────
+            // ── Tile background (Light Gray Rounded Square) ────────────────
             RoundedRectangle(cornerRadius: tileRadius)
                 .fill(Color(.systemGray6))
-                .frame(width: size, height: size)
+                .frame(width: 40, height: 40)
+                // Subtle shadow to give the tile some "lift"
+                .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 3)
 
-            // ── Shield with gradient ───────────────────────────────────
-            ZStack {
-                // Gradient fill behind the shield shape
-                RoundedRectangle(cornerRadius: shieldSize * 0.28)
-                    .fill(LinearGradient.clinicIcon)
-                    .frame(width: shieldSize, height: shieldSize)
-                    
-
-                Image(systemName: "shield.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(LinearGradient.clinicIcon)
-                    .frame(width: shieldSize, height: shieldSize)
-
-                // ECG / heartbeat line
-                Image(systemName: "waveform.path.ecg")
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(.white)
-                    .frame(width: ecgSize, height: ecgSize * 0.5)
-                    .offset(y: size * 0.04)
-
-                // Plus badge (top-right area of shield)
-                Image(systemName: "plus")
-                    .font(.system(size: plusSize, weight: .bold))
-                    .foregroundStyle(.white)
-                    .offset(x: shieldSize * 0.22, y: -shieldSize * 0.22)
-            }
+            // ── The Logo ───────────────────────────────────────────────────
+            // We use an Optional Image check to prevent empty space
+            Image("ClinicLogo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: contentSize, height: contentSize)
+                // Fallback: if "ClinicLogo" is missing, show a SF Symbol
+                .cornerRadius(15)
+                .background {
+                    Image(systemName: "cross.case.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: contentSize * 0.8)
+                        .foregroundStyle(.gray.opacity(0.2))
+                }
         }
     }
 }
 
-// MARK: - Previews
+// MARK: - Preview
 
-#Preview("Icon sizes") {
-    HStack(spacing: 24) {
-        ClinicFlowIcon(size: 60)
-        ClinicFlowIcon(size: 88)
-        ClinicFlowIcon(size: 110)
+#Preview {
+    ZStack {
+        Color.clinicSurface.ignoresSafeArea()
+        
+        VStack(spacing: 30) {
+            ClinicFlowIcon(size: 141)
+            
+            Text("Logo Preview")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
     }
-    .padding(32)
 }
