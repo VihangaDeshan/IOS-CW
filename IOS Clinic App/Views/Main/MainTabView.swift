@@ -33,7 +33,7 @@ struct MainTabView: View {
                 }
                 .tag(2)
 
-            UserView()
+            AccountView()
                 .tabItem {
                     Label("User",    systemImage: selectedTab == 3 ? "person.fill"          : "person")
                 }

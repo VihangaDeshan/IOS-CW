@@ -19,9 +19,11 @@ enum AppRoute: Hashable {
     case verifyOTP
     case register
     case main
+   
 }
 
 // MARK: - Router
+
 
 @Observable
 final class AppRouter {
@@ -33,5 +35,12 @@ final class AppRouter {
         withAnimation(.easeInOut(duration: 0.38)) {
             currentRoute = route
         }
+    }
+    
+    var isAuthorized: Bool = true // Track if user is logged in
+    
+    func logout() {
+        isAuthorized = false
+        // Clear any paths if you use a NavigationPath
     }
 }
