@@ -25,18 +25,12 @@ struct ContentView: View {
 
             case .welcome:
                 WelcomeView()
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .trailing).combined(with: .opacity),
-                        removal:   .move(edge: .leading) .combined(with: .opacity)
-                    ))
+                    .transition(.move(edge: .trailing))
 
             case .login:
                 LoginView()
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .trailing).combined(with: .opacity),
-                        removal:   .move(edge: .leading) .combined(with: .opacity)
-                    ))
-
+                    .transition(.move(edge: .trailing))
+                
             case .verifyOTP:
                 VerifyOTPView()
                     .transition(.asymmetric(

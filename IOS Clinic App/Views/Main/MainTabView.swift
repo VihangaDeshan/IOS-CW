@@ -52,7 +52,11 @@ struct MainTabView: View {
 // MARK: - Placeholder tabs
 
 struct BookView: View {
-    var body: some View { PlaceholderTabView(title: "Book Appointment", icon: "calendar.badge.plus") }
+    var body: some View {
+        NavigationStack {
+            SpecializationView()
+        }
+    }
 }
 struct MapView: View {
     var body: some View { PlaceholderTabView(title: "Map", icon: "map.fill") }

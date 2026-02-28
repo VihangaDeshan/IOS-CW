@@ -59,7 +59,7 @@ struct LoginView: View {
                     let filtered = newValue.filter { "0123456789".contains($0) }
                     
                     // Limit to 6 characters (standard OTP length)
-                    if filtered.count > 6 {
+                    if filtered.count > 10 {
                         mobileNumber = String(filtered.prefix(6))
                     } else {
                         mobileNumber = filtered

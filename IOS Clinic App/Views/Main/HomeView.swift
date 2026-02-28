@@ -147,7 +147,7 @@ struct HomeView: View {
                         .lineSpacing(2)
 
                     Button { } label: {
-                        Text("Action")
+                        Text("Book")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, AppSpacing.lg)
