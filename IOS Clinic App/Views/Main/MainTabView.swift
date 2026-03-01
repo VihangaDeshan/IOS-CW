@@ -21,7 +21,7 @@ struct MainTabView: View {
                 }
                 .tag(0)
 
-            BookView()
+            BookView(selectedTab: $selectedTab)
                 .tabItem {
                     Label("Book",    systemImage: selectedTab == 1 ? "calendar.badge.plus"  : "calendar")
                 }
@@ -46,15 +46,26 @@ struct MainTabView: View {
                 .tag(4)
         }
         .tint(Color.clinicPrimary)
+        .onReceive(NotificationCenter.default.publisher(for: .bookingSuccess)) { _ in
+            // switch to home tab when booking succeeds
+            selectedTab = 0
+        }
     }
 }
 
 // MARK: - Placeholder tabs
 
 struct BookView: View {
+    @Binding var selectedTab: Int
+    @State private var path = NavigationPath()
+
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             SpecializationView()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .bookingSuccess)) { _ in
+            // clear navigation stack when coming back
+            path = NavigationPath()
         }
     }
 }

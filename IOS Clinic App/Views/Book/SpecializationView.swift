@@ -519,6 +519,8 @@ struct AppointmentView: View {
     let timeString: String
     @State private var selectedMemberIndex: Int = 0
     @State private var nic: String = ""
+    @State private var navigateToPayment = false
+    @State private var billItems: [BillItem] = []
 
     // sample members
     // replace these asset names with your actual images added to Assets.xcassets
@@ -606,10 +608,15 @@ struct AppointmentView: View {
                 .cornerRadius(12)
         }
         .padding(.top, 12)
+       
     }
+    
+    
 
     private var memberSelector: some View {
         VStack(alignment: .leading) {
+            Spacer().frame(height: AppSpacing.xl)
+            
             Text("Select Member")
                 .font(.headline)
                 .padding(.horizontal, AppSpacing.lg)
@@ -668,20 +675,35 @@ struct AppointmentView: View {
     }
 
     private var confirmButton: some View {
-        Button {
-            // confirm action
-        } label: {
-            Text("Confirm")
-                .font(Font.btnTitleSize)
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: AppSize.buttonPrimary)
-                .background(nic.isEmpty ? Color.clinicPrimary.opacity(0.5) : Color.clinicPrimary, in: Capsule())
+        ZStack {
+            // hidden navigation link to push to payment
+            NavigationLink(isActive: $navigateToPayment) {
+                let total = billItems.reduce(0) { $0 + $1.amount }
+                PaymentView(total: total, billItems: billItems)
+            } label: { EmptyView() }
+            .hidden()
+
+            Button {
+                // when user taps confirm, prepare items and navigate
+                billItems = [
+                    BillItem(title: "Consultation Fee", subtitle: doctor.name, amount: 3000),
+                    BillItem(title: "Hospital Fee", subtitle: "Asiri Hospital", amount: 2000),
+                    BillItem(title: "Service Charge", subtitle: "10%", amount: 500)
+                ]
+                navigateToPayment = true
+            } label: {
+                Text("Confirm")
+                    .font(Font.btnTitleSize)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: AppSize.buttonPrimary)
+                    .background(nic.isEmpty ? Color.clinicPrimary.opacity(0.5) : Color.clinicPrimary, in: Capsule())
+            }
+            .buttonStyle(.plain)
+            .disabled(nic.isEmpty)
         }
-        .buttonStyle(.plain)
         .padding(.horizontal)
         .padding(.bottom, 16)
-        .disabled(nic.isEmpty)
     }
 }
 
