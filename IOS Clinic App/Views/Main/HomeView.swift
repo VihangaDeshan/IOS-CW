@@ -300,6 +300,14 @@ struct HomeView: View {
                                 .frame(width: 100)
                         }
                         .buttonStyle(.plain)
+                    } else if service.label == "Queue" {
+                        NavigationLink {
+                            QueueStatusView()
+                        } label: {
+                            ServiceCell(icon: service.icon, label: service.label, color: service.color)
+                                .frame(width: 100)
+                        }
+                        .buttonStyle(.plain)
                     } else {
                         ServiceCell(icon: service.icon, label: service.label, color: service.color)
                             .frame(width: 100)
