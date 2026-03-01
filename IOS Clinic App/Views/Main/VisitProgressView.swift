@@ -29,6 +29,7 @@ private struct VisitStep: Identifiable {
 struct VisitProgressView: View {
 
     @Environment(\.dismiss) private var dismiss
+    @State private var showQueueStatus = false
 
     private let steps: [VisitStep] = [
         VisitStep(
@@ -88,6 +89,9 @@ struct VisitProgressView: View {
             }
         }
         .navigationBarHidden(true)
+        .navigationDestination(isPresented: $showQueueStatus) {
+            QueueStatusView()
+        }
     }
 
     // MARK: - Nav Bar
@@ -154,9 +158,10 @@ struct VisitProgressView: View {
         VStack(spacing: 0) {
             ForEach(Array(steps.enumerated()), id: \.element.id) { index, step in
                 StepRowView(
-                    step:        step,
-                    stepNumber:  index + 1,
-                    isLast:      index == steps.count - 1
+                    step:       step,
+                    stepNumber: index + 1,
+                    isLast:     index == steps.count - 1,
+                    onTap:      step.status == .inProgress ? { showQueueStatus = true } : nil
                 )
             }
         }
@@ -170,6 +175,7 @@ private struct StepRowView: View {
     let step:       VisitStep
     let stepNumber: Int
     let isLast:     Bool
+    var onTap:      (() -> Void)? = nil
 
     // Estimated connector-line height based on content height
     private var lineHeight: CGFloat {
@@ -200,6 +206,8 @@ private struct StepRowView: View {
             // ── Right column: card ────────────────────────────────────
             stepCard
                 .padding(.bottom, isLast ? 0 : AppSpacing.xs)
+                .contentShape(Rectangle())
+                .onTapGesture { onTap?() }
         }
     }
 
@@ -260,9 +268,16 @@ private struct StepRowView: View {
             // Next action box — only for in-progress step
             if isActive, let action = step.nextAction {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Next Action:")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(.primary)
+                    HStack {
+                        Text("Next Action:")
+                            .font(.system(size: 13, weight: .medium))
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        // Chevron hint — signals this card is tappable
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(Color(.tertiaryLabel))
+                    }
                     Text(action)
                         .font(.system(size: 13))
                         .foregroundStyle(.primary)
