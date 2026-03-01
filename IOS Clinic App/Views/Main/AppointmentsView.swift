@@ -27,16 +27,7 @@ enum AppointmentStatus: String, CaseIterable {
         }
     }
 
-    // Abbreviated label for the pill (mirrors Figma truncation)
-    var shortLabel: String {
-        switch self {
-        case .all:       return "All"
-        case .ongoing:   return "Ongoing"
-        case .upcoming:  return "Upcom..."
-        case .completed: return "Compl..."
-        case .cancelled: return "Cancel..."
-        }
-    }
+    var shortLabel: String { rawValue }
 }
 
 struct Appointment: Identifiable {
