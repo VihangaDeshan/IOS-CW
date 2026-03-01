@@ -96,21 +96,6 @@ struct ManageMembersView: View {
                 .buttonStyle(.plain)
 
                 Spacer()
-
-                // Add new member
-                Button { showNewMember = true } label: {
-                    ZStack {
-                        Circle()
-                            .fill(Color(.systemGray6))
-                            .frame(width: 34, height: 34)
-                        Image(systemName: "plus")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(Color.clinicPrimary)
-                    }
-                    .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
             }
             .padding(.horizontal, AppSpacing.xs)
         }
@@ -140,6 +125,24 @@ struct ManageMembersView: View {
                             }
                         }
                     }
+
+                    // Add new member chip — appears after existing members
+                    Button { showNewMember = true } label: {
+                        VStack(spacing: 6) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color(.systemGray6))
+                                    .frame(width: 64, height: 64)
+                                Image(systemName: "plus")
+                                    .font(.system(size: 26, weight: .medium))
+                                    .foregroundStyle(Color.clinicPrimary)
+                            }
+                            Text("Add")
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding(.vertical, AppSpacing.xs)
             }
