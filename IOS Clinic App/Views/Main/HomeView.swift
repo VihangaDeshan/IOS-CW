@@ -13,7 +13,9 @@ import Combine
 
 struct HomeView: View {
 
-    @State private var searchText = ""
+    @State private var searchText        = ""
+    @State private var showVisitProgress  = false
+    @State private var showAppointments   = false
     @FocusState private var isSearchFocused: Bool
 
     var body: some View {
@@ -72,6 +74,12 @@ struct HomeView: View {
                
             .navigationBarHidden(true)
             .frame(maxWidth: .infinity)
+            .navigationDestination(isPresented: $showVisitProgress) {
+                VisitProgressView()
+            }
+            .navigationDestination(isPresented: $showAppointments) {
+                AppointmentsView()
+            }
         }
     }
 
@@ -201,7 +209,9 @@ struct HomeView: View {
                 .foregroundStyle(.primary)
             Spacer()
             if let action {
-                Button { } label: {
+                Button {
+                    if action == "See All" { showAppointments = true }
+                } label: {
                     Text(action)
                         .font(.system(size: 14, weight: .medium))
                         .foregroundStyle(Color.clinicPrimary)
@@ -239,10 +249,15 @@ struct HomeView: View {
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(Color.clinicPrimary)
 
-                    Button { } label: {
+                    Button {
+                        showVisitProgress = true
+                    } label: {
                         Text("Check in")
                             .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(Color.clinicPrimary)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, AppSpacing.md)
+                            .padding(.vertical, 5)
+                            .background(Color.clinicPrimary, in: Capsule())
                     }
                     .buttonStyle(.plain)
                 }
@@ -280,6 +295,14 @@ struct HomeView: View {
                     if service.label == "Laboratory" {
                         NavigationLink {
                             LabReportsView()
+                        } label: {
+                            ServiceCell(icon: service.icon, label: service.label, color: service.color)
+                                .frame(width: 100)
+                        }
+                        .buttonStyle(.plain)
+                    } else if service.label == "Queue" {
+                        NavigationLink {
+                            QueueStatusView()
                         } label: {
                             ServiceCell(icon: service.icon, label: service.label, color: service.color)
                                 .frame(width: 100)
