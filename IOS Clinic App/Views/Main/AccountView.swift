@@ -3,6 +3,7 @@ import SwiftUI
 struct AccountView: View {
     // 1. Fixed: Added the router environment to fix the 'scope' error
     @Environment(AppRouter.self) private var router
+    @State private var showManageMembers = false
     
     var body: some View {
         NavigationStack {
@@ -28,7 +29,7 @@ struct AccountView: View {
                             title: "Manage Members",
                             subtitle: "Manage your health members"
                         ) {
-                            // TODO: router.navigate(to: .manageMembers)
+                            showManageMembers = true
                         }
 
                         AccountRow(
@@ -75,6 +76,9 @@ struct AccountView: View {
             }
             .background(Color.clinicSurface.ignoresSafeArea())
             .navigationBarHidden(true)
+            .navigationDestination(isPresented: $showManageMembers) {
+                ManageMembersView()
+            }
         }
     }
     
