@@ -49,7 +49,11 @@ struct Onboarding2View: View {
                 Spacer()
                 // ── Get Start button ────────────────────────────────────────────
                 Button {
-                    router.navigate(to: .welcome)
+                    if router.isAuthorized {
+                        router.navigate(to: .main)
+                    } else {
+                        router.navigate(to: .welcome)
+                    }
                 } label: {
                     Text("Get Start")
                         .font(.system(size: 17, weight: .semibold)) // Body semibold

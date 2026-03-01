@@ -64,16 +64,7 @@ struct SettingsView: View {
                 .font(Font.navTitleSize)
                 .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity)
-            HStack {
-                Button { dismiss() } label: {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundColor(.primary)
-                        .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
-                }
-                Spacer()
-            }
-            .padding(.leading, AppSpacing.xs)
+            
         }
         .frame(height: AppSize.minTapTarget)
         .padding(.horizontal, AppSpacing.md)

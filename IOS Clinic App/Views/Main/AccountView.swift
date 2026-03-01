@@ -56,6 +56,7 @@ struct AccountView: View {
                 // Logout button
                 // In AccountView.swift
                 Button {
+                    router.logout()
                     withAnimation(.easeInOut(duration: 0.38)) {
                         router.navigate(to: .login)
                     }
