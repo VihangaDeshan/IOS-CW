@@ -13,7 +13,8 @@ import Combine
 
 struct HomeView: View {
 
-    @State private var searchText = ""
+    @State private var searchText        = ""
+    @State private var showVisitProgress  = false
     @FocusState private var isSearchFocused: Bool
 
     var body: some View {
@@ -72,6 +73,9 @@ struct HomeView: View {
                
             .navigationBarHidden(true)
             .frame(maxWidth: .infinity)
+            .navigationDestination(isPresented: $showVisitProgress) {
+                VisitProgressView()
+            }
         }
     }
 
@@ -239,10 +243,15 @@ struct HomeView: View {
                         .font(.system(size: 13, weight: .medium))
                         .foregroundStyle(Color.clinicPrimary)
 
-                    Button { } label: {
+                    Button {
+                        showVisitProgress = true
+                    } label: {
                         Text("Check in")
                             .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(Color.clinicPrimary)
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, AppSpacing.md)
+                            .padding(.vertical, 5)
+                            .background(Color.clinicPrimary, in: Capsule())
                     }
                     .buttonStyle(.plain)
                 }
