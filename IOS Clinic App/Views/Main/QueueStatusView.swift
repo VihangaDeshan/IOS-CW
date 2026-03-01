@@ -11,6 +11,7 @@ import SwiftUI
 struct QueueStatusView: View {
 
     @Environment(\.dismiss) private var dismiss
+    @State private var showMap = false
 
     // Queue data (would come from a real-time source in production)
     private let queueNumber  = "A-042"
@@ -55,6 +56,7 @@ struct QueueStatusView: View {
             }
         }
         .navigationBarHidden(true)
+        .navigationDestination(isPresented: $showMap) { ClinicMapView() }
     }
 
     // MARK: - Nav Bar
@@ -208,7 +210,7 @@ struct QueueStatusView: View {
     // MARK: - Map Button
 
     private var mapButton: some View {
-        Button { } label: {
+        Button { showMap = true } label: {
             Text("View Clinic Map")
                 .font(.system(size: 17, weight: .semibold))
                 .foregroundStyle(.white)
