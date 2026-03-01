@@ -62,7 +62,7 @@ struct QueueStatusView: View {
     private var navBar: some View {
         ZStack {
             Text("Queue Status")
-                .font(.system(size: 17, weight: .bold))
+                .font(Font.navTitleSize)
                 .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity)
 

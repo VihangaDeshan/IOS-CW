@@ -99,7 +99,7 @@ struct VisitProgressView: View {
     private var navBar: some View {
         ZStack {
             Text("Visit Progress")
-                .font(.system(size: 17, weight: .bold))
+                .font(Font.navTitleSize)
                 .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity)
 
