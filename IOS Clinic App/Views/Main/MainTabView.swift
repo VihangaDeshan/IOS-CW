@@ -8,6 +8,9 @@
 
 import SwiftUI
 
+// import new settings screen
+import Foundation
+
 struct MainTabView: View {
 
     @State private var selectedTab = 0
@@ -39,11 +42,13 @@ struct MainTabView: View {
                 }
                 .tag(3)
 
-            SettingView()
-                .tabItem {
-                    Label("Setting", systemImage: selectedTab == 4 ? "gearshape.fill"       : "gearshape")
-                }
-                .tag(4)
+            NavigationStack {
+                SettingsView()
+            }
+            .tabItem {
+                Label("Setting", systemImage: selectedTab == 4 ? "gearshape.fill"       : "gearshape")
+            }
+            .tag(4)
         }
         .tint(Color.clinicPrimary)
         .onReceive(NotificationCenter.default.publisher(for: .bookingSuccess)) { _ in
@@ -74,9 +79,6 @@ struct MapView: View {
 }
 struct UserView: View {
     var body: some View { PlaceholderTabView(title: "User Profile", icon: "person.circle.fill") }
-}
-struct SettingView: View {
-    var body: some View { PlaceholderTabView(title: "Settings", icon: "gearshape.2.fill") }
 }
 
 private struct PlaceholderTabView: View {

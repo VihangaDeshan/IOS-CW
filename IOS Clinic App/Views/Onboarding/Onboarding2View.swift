@@ -20,13 +20,14 @@ struct Onboarding2View: View {
 
             VStack(spacing: 0) {
 
+              
                 Spacer()
-
                 // ── App icon ────────────────────────────────────────────────
                 ClinicFlowIcon(size: AppSize.logoOnboarding)
                     .opacity(appeared ? 1 : 0)
                     .scaleEffect(appeared ? 1 : 0.82)
 
+              
                 Spacer().frame(height: AppSpacing.xxl)
 
                 // ── Wordmark ────────────────────────────────────────────────
@@ -44,8 +45,8 @@ struct Onboarding2View: View {
                 .opacity(appeared ? 1 : 0)
                 .offset(y: appeared ? 0 : 16)
 
-                Spacer().frame(height: AppSpacing.xxl + AppSpacing.lg)
-
+                
+                Spacer()
                 // ── Get Start button ────────────────────────────────────────────
                 Button {
                     router.navigate(to: .welcome)

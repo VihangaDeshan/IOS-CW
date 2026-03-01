@@ -18,8 +18,9 @@ enum AppRoute: Hashable {
     case login
     case verifyOTP
     case register
+    case checkIn
+    case scanQR
     case main
-   
 }
 
 // MARK: - Router

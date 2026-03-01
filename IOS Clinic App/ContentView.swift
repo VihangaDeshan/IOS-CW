@@ -46,6 +46,14 @@ struct ContentView: View {
                         removal:   .move(edge: .leading) .combined(with: .opacity)
                     ))
 
+            case .checkIn:
+                CheckInView()
+                    .transition(.move(edge: .trailing))
+
+            case .scanQR:
+                ScanQRView()
+                    .transition(.move(edge: .trailing))
+
             case .main:
                 MainTabView()
                     .transition(.scale(scale: 0.96).combined(with: .opacity))

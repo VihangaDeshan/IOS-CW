@@ -277,9 +277,18 @@ struct HomeView: View {
                 spacing: AppSpacing.md
             ) {
                 ForEach(services, id: \.label) { service in
-                    ServiceCell(icon: service.icon, label: service.label, color: service.color)
-                        // 4. Give cells a specific width so they don't squash
-                        .frame(width: 100)
+                    if service.label == "Laboratory" {
+                        NavigationLink {
+                            LabReportsView()
+                        } label: {
+                            ServiceCell(icon: service.icon, label: service.label, color: service.color)
+                                .frame(width: 100)
+                        }
+                        .buttonStyle(.plain)
+                    } else {
+                        ServiceCell(icon: service.icon, label: service.label, color: service.color)
+                            .frame(width: 100)
+                    }
                 }
             }
             .padding(.horizontal, AppSpacing.xs) // Match your app's side padding
