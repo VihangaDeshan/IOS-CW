@@ -30,7 +30,7 @@ struct ManageMembersView: View {
 
     // Sample members — in production this would come from a store/model
     @State private var members: [FamilyMember] = [
-        FamilyMember(name: "Sarath Perera",  shortLabel: "Me",     phone: "075 679 8576", age: "75", notes: "",                   imageName: "member_me"),
+        FamilyMember(name: "Sarath Perera",  shortLabel: "Me",     phone: "075 679 8576", age: "75", notes: "",                   imageName: "mr_kasun"),
         FamilyMember(name: "Kamal Perera",   shortLabel: "Father", phone: "071 234 5678", age: "70", notes: "Diabetic patient",   imageName: "member_father"),
         FamilyMember(name: "Sitha Perera",   shortLabel: "Child",  phone: "077 987 6543", age: "12", notes: "Asthma follow-up",   imageName: "member_child"),
     ]
