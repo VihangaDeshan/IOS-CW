@@ -15,6 +15,7 @@ struct HomeView: View {
 
     @State private var searchText        = ""
     @State private var showVisitProgress  = false
+    @State private var showAppointments   = false
     @FocusState private var isSearchFocused: Bool
 
     var body: some View {
@@ -75,6 +76,9 @@ struct HomeView: View {
             .frame(maxWidth: .infinity)
             .navigationDestination(isPresented: $showVisitProgress) {
                 VisitProgressView()
+            }
+            .navigationDestination(isPresented: $showAppointments) {
+                AppointmentsView()
             }
         }
     }
@@ -205,7 +209,9 @@ struct HomeView: View {
                 .foregroundStyle(.primary)
             Spacer()
             if let action {
-                Button { } label: {
+                Button {
+                    if action == "See All" { showAppointments = true }
+                } label: {
                     Text(action)
                         .font(.system(size: 14, weight: .medium))
                         .foregroundStyle(Color.clinicPrimary)
