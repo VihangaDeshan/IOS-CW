@@ -1,0 +1,197 @@
+//
+//  AlertsView.swift
+//  IOS Clinic App
+//
+//  Notification / alerts feed — matches "Alerts" Figma screen.
+//  Unread items show a filled blue dot; tapping any row marks it as read.
+//
+
+import SwiftUI
+
+// MARK: - Model
+
+struct AlertItem: Identifiable {
+    let id         = UUID()
+    let title:     String
+    let body:      String
+    let time:      String
+    var isUnread:  Bool
+}
+
+// MARK: - View
+
+struct AlertsView: View {
+
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var alerts: [AlertItem] = [
+        AlertItem(title: "Lab reports released",
+                  body:  "Your recent test results are now available. Tap to view your lab report summary.",
+                  time:  "9:36 AM",
+                  isUnread: true),
+        AlertItem(title: "Appointment booked",
+                  body:  "Your appointment has been confirmed. Please arrive 10 minutes early.",
+                  time:  "9:00 AM",
+                  isUnread: false),
+        AlertItem(title: "Your appointment time is",
+                  body:  "Reminder: your appointment is scheduled for today at 10:30 AM in Room 3B.",
+                  time:  "9:00 AM",
+                  isUnread: false),
+        AlertItem(title: "Lab reports released",
+                  body:  "That's what I'm talking about!",
+                  time:  "8:58 AM",
+                  isUnread: false),
+        AlertItem(title: "Queue update",
+                  body:  "You are now 2nd in the queue. Please proceed to the waiting area.",
+                  time:  "8:45 AM",
+                  isUnread: false),
+    ]
+
+    var body: some View {
+        ZStack(alignment: .top) {
+            Color.clinicSurface.ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                navBar
+                alertList
+            }
+        }
+        .navigationBarHidden(true)
+    }
+
+    // MARK: - Nav Bar
+
+    private var navBar: some View {
+        ZStack {
+            Text("Alerts")
+                .font(Font.navTitleSize)
+                .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity)
+
+            HStack {
+                Button { dismiss() } label: {
+                    ZStack {
+                        Circle()
+                            .fill(Color(.systemGray6))
+                            .frame(width: 34, height: 34)
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.primary)
+                    }
+                    .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+
+                Spacer()
+
+                // Mark all read button
+                if alerts.contains(where: { $0.isUnread }) {
+                    Button {
+                        withAnimation {
+                            for i in alerts.indices { alerts[i].isUnread = false }
+                        }
+                    } label: {
+                        Text("Mark all read")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(Color.clinicPrimary)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.trailing, AppSpacing.xs)
+                }
+            }
+            .padding(.horizontal, AppSpacing.md)
+        }
+        .frame(height: AppSize.minTapTarget)
+        .padding(.top, AppSpacing.xs)
+        .background(Color.clinicSurface)
+    }
+
+    // MARK: - Alert List
+
+    private var alertList: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 0) {
+                ForEach(alerts.indices, id: \.self) { i in
+                    AlertRow(item: alerts[i]) {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            alerts[i].isUnread = false
+                        }
+                    }
+
+                    if i < alerts.count - 1 {
+                        Divider()
+                            .padding(.horizontal, AppSpacing.lg)
+                    }
+                }
+            }
+            .padding(.top, AppSpacing.xs)
+            .padding(.bottom, AppSpacing.xxxl)
+        }
+    }
+}
+
+// MARK: - Alert Row
+
+private struct AlertRow: View {
+    let item:     AlertItem
+    let onTap:    () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(alignment: .top, spacing: AppSpacing.md) {
+
+                // Unread dot (keeps width reserved so text aligns regardless)
+                Circle()
+                    .fill(item.isUnread ? Color.clinicPrimary : Color.clear)
+                    .frame(width: 8, height: 8)
+                    .padding(.top, 6)
+
+                // Text block
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(item.title)
+                            .font(.system(size: 15, weight: item.isUnread ? .bold : .semibold))
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+
+                        Spacer()
+
+                        Text(item.time)
+                            .font(.system(size: 13))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Text(item.body)
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                }
+
+                // Chevron
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color(.systemGray3))
+                    .padding(.top, 4)
+            }
+            .padding(.horizontal, AppSpacing.lg)
+            .padding(.vertical, AppSpacing.md)
+            .background(
+                item.isUnread
+                    ? Color.clinicPrimary.opacity(0.04)
+                    : Color.clear
+            )
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Preview
+
+#Preview {
+    NavigationStack {
+        AlertsView()
+    }
+}

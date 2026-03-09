@@ -75,7 +75,7 @@ struct BookView: View {
     }
 }
 struct MapView: View {
-    var body: some View { PlaceholderTabView(title: "Map", icon: "map.fill") }
+    var body: some View { ClinicMapView() }
 }
 struct UserView: View {
     var body: some View { PlaceholderTabView(title: "User Profile", icon: "person.circle.fill") }

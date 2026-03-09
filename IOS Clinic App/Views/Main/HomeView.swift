@@ -16,6 +16,7 @@ struct HomeView: View {
     @State private var searchText        = ""
     @State private var showVisitProgress  = false
     @State private var showAppointments   = false
+    @State private var showAlerts         = false
     @FocusState private var isSearchFocused: Bool
 
     var body: some View {
@@ -80,6 +81,9 @@ struct HomeView: View {
             .navigationDestination(isPresented: $showAppointments) {
                 AppointmentsView()
             }
+            .navigationDestination(isPresented: $showAlerts) {
+                AlertsView()
+            }
         }
     }
 
@@ -93,7 +97,7 @@ struct HomeView: View {
                     .foregroundStyle(.primary)
             }
             Spacer()
-            Button { } label: {
+            Button { showAlerts = true } label: {
                 Image(systemName: "bell")
                     .font(.system(size: 20, weight: .medium))
                     .foregroundStyle(.primary)
