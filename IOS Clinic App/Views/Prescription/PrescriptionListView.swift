@@ -85,10 +85,14 @@ struct PrescriptionListView: View {
 
     @Environment(\.dismiss) private var dismiss
 
-    @State private var selectedFilter: PrescriptionFilter = .appointment
+    @State private var selectedFilterIndex: Int = 0
     @State private var searchText = ""
     @State private var selectedRecord: PrescriptionRecord? = nil
     @State private var navigateToDetail = false
+
+    private var selectedFilter: PrescriptionFilter {
+        PrescriptionFilter.allCases[selectedFilterIndex]
+    }
 
     private var filtered: [PrescriptionRecord] {
         let q = searchText.trimmingCharacters(in: .whitespaces).lowercased()
@@ -110,7 +114,7 @@ struct PrescriptionListView: View {
 
             VStack(spacing: 0) {
                 navBar
-                filterTabs
+                    filterTabs
                 searchBar
                 prescriptionList
             }
@@ -158,37 +162,16 @@ struct PrescriptionListView: View {
     // MARK: - Filter Tabs
 
     private var filterTabs: some View {
-        HStack(spacing: AppSpacing.xs) {
-            ForEach(PrescriptionFilter.allCases, id: \.self) { filter in
-                Button {
-                    withAnimation(.easeInOut(duration: 0.18)) { selectedFilter = filter }
-                } label: {
-                    Text(filter.rawValue)
-                        .font(.system(size: 14, weight: selectedFilter == filter ? .semibold : .regular))
-                        .foregroundStyle(selectedFilter == filter ? .primary : Color(.secondaryLabel))
-                        .padding(.horizontal, AppSpacing.md)
-                        .padding(.vertical, AppSpacing.xs)
-                        .background(
-                            selectedFilter == filter
-                                ? Color(.systemBackground)
-                                : Color.clear,
-                            in: Capsule()
-                        )
-                        .overlay(
-                            Capsule()
-                                .strokeBorder(
-                                    selectedFilter == filter ? Color(.systemGray4) : Color.clear,
-                                    lineWidth: 1
-                                )
-                        )
+            Picker(selection: $selectedFilterIndex, label: EmptyView()) {
+                ForEach(0..<PrescriptionFilter.allCases.count, id: \.self) { index in
+                    Text(PrescriptionFilter.allCases[index].rawValue).tag(index)
                 }
-                .buttonStyle(.plain)
             }
-            Spacer()
-        }
-        .padding(.horizontal, AppSpacing.lg)
-        .padding(.vertical, AppSpacing.sm)
-        .background(Color.clinicSurface)
+            .pickerStyle(.segmented)
+            .scaleEffect(y: 1.2)
+            .padding(.horizontal, AppSpacing.lg)
+            .padding(.vertical, AppSpacing.sm)
+            .background(Color.clinicSurface)
     }
 
     // MARK: - Search Bar
