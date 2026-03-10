@@ -627,18 +627,29 @@ struct AppointmentView: View {
                         Button {
                             selectedMemberIndex = idx
                         } label: {
-                            VStack {
-                                Image(memberImages[idx % memberImages.count])
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 64, height: 64)
-                                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                            VStack(spacing: 6) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color(.systemGray5))
+                                        .frame(width: 64, height: 64)
+
+                                    Image(memberImages[idx % memberImages.count])
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 64, height: 64)
+                                        .clipShape(Circle())
+
+                                    if selectedMemberIndex == idx {
+                                        Circle()
+                                            .strokeBorder(Color.clinicPrimary, lineWidth: 3)
+                                            .frame(width: 64, height: 64)
+                                    }
+                                }
+
                                 Text(name)
-                                    .font(.caption)
+                                    .font(.system(size: 12, weight: selectedMemberIndex == idx ? .semibold : .regular))
+                                    .foregroundStyle(selectedMemberIndex == idx ? Color.clinicPrimary : .secondary)
                             }
-                            .padding(8)
-                            .background(selectedMemberIndex == idx ? Color.clinicPrimary.opacity(0.2) : Color(.systemGray6))
-                            .cornerRadius(16)
                         }
                         .buttonStyle(.plain)
                     }
