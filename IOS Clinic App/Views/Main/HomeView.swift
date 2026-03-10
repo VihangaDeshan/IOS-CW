@@ -312,6 +312,14 @@ struct HomeView: View {
                                 .frame(width: 100)
                         }
                         .buttonStyle(.plain)
+                    } else if service.label == "Prescriptions" {
+                        NavigationLink {
+                            PrescriptionListView()
+                        } label: {
+                            ServiceCell(icon: service.icon, label: service.label, color: service.color)
+                                .frame(width: 100)
+                        }
+                        .buttonStyle(.plain)
                     } else {
                         ServiceCell(icon: service.icon, label: service.label, color: service.color)
                             .frame(width: 100)

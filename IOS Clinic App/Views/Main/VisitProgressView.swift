@@ -29,7 +29,8 @@ private struct VisitStep: Identifiable {
 struct VisitProgressView: View {
 
     @Environment(\.dismiss) private var dismiss
-    @State private var showQueueStatus = false
+    @State private var showQueueStatus    = false
+    @State private var showPrescriptions  = false
 
     private let steps: [VisitStep] = [
         VisitStep(
@@ -91,6 +92,9 @@ struct VisitProgressView: View {
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $showQueueStatus) {
             QueueStatusView()
+        }
+        .navigationDestination(isPresented: $showPrescriptions) {
+            PrescriptionListView()
         }
     }
 
@@ -161,7 +165,9 @@ struct VisitProgressView: View {
                     step:       step,
                     stepNumber: index + 1,
                     isLast:     index == steps.count - 1,
-                    onTap:      step.status == .inProgress ? { showQueueStatus = true } : nil
+                    onTap:      step.status == .inProgress ? { showQueueStatus = true }
+                                  : step.title == "Pharmacy"   ? { showPrescriptions = true }
+                                  : nil
                 )
             }
         }
