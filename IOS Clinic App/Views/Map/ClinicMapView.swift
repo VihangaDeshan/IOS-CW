@@ -3,7 +3,7 @@
 //  IOS Clinic App
 //
 //  Clinic indoor navigation — Select Destination screen.
-//  Map (MapKit) · Current Location picker · Destination search · Find Route
+//  Map markers + indoor wayfinding steps (no exact route lines)
 //
 
 import SwiftUI
@@ -16,6 +16,9 @@ struct ClinicLocation: Identifiable, Equatable {
     let name:       String
     let coordinate: CLLocationCoordinate2D
     let icon:       String
+    let floor:      Int
+    let wing:       String
+    let landmark:   String
 
     static func == (lhs: ClinicLocation, rhs: ClinicLocation) -> Bool { lhs.id == rhs.id }
 }
@@ -24,15 +27,17 @@ struct ClinicLocation: Identifiable, Equatable {
 
 struct ClinicMapView: View {
 
+    @Environment(\.dismiss) private var dismiss
+
     // Sample clinic locations
     private let locations: [ClinicLocation] = [
-        ClinicLocation(name: "Office",      coordinate: CLLocationCoordinate2D(latitude: 6.9271, longitude: 79.8612), icon: "building.2"),
-        ClinicLocation(name: "Laboratory",  coordinate: CLLocationCoordinate2D(latitude: 6.9275, longitude: 79.8618), icon: "flask"),
-        ClinicLocation(name: "Room 18",     coordinate: CLLocationCoordinate2D(latitude: 6.9268, longitude: 79.8622), icon: "door.left.hand.closed"),
-        ClinicLocation(name: "Room 38",     coordinate: CLLocationCoordinate2D(latitude: 6.9265, longitude: 79.8608), icon: "door.left.hand.closed"),
-        ClinicLocation(name: "Counter",     coordinate: CLLocationCoordinate2D(latitude: 6.9278, longitude: 79.8605), icon: "list.clipboard"),
-        ClinicLocation(name: "Pharmacy",    coordinate: CLLocationCoordinate2D(latitude: 6.9262, longitude: 79.8615), icon: "pills"),
-        ClinicLocation(name: "Waiting Area",coordinate: CLLocationCoordinate2D(latitude: 6.9273, longitude: 79.8600), icon: "chair"),
+        ClinicLocation(name: "Office",       coordinate: CLLocationCoordinate2D(latitude: 6.9271, longitude: 79.8612), icon: "building.2", floor: 1, wing: "Central Wing", landmark: "Reception desk"),
+        ClinicLocation(name: "Laboratory",   coordinate: CLLocationCoordinate2D(latitude: 6.9275, longitude: 79.8618), icon: "flask", floor: 1, wing: "East Wing", landmark: "Red LAB sign"),
+        ClinicLocation(name: "Room 18",      coordinate: CLLocationCoordinate2D(latitude: 6.9268, longitude: 79.8622), icon: "door.left.hand.closed", floor: 1, wing: "East Wing", landmark: "Door number 18"),
+        ClinicLocation(name: "Room 38",      coordinate: CLLocationCoordinate2D(latitude: 6.9265, longitude: 79.8608), icon: "door.left.hand.closed", floor: 2, wing: "West Wing", landmark: "Door number 38"),
+        ClinicLocation(name: "Counter",      coordinate: CLLocationCoordinate2D(latitude: 6.9278, longitude: 79.8605), icon: "list.clipboard", floor: 1, wing: "Central Wing", landmark: "Queue counter display"),
+        ClinicLocation(name: "Pharmacy",     coordinate: CLLocationCoordinate2D(latitude: 6.9262, longitude: 79.8615), icon: "pills", floor: 1, wing: "West Wing", landmark: "Green cross signage"),
+        ClinicLocation(name: "Waiting Area", coordinate: CLLocationCoordinate2D(latitude: 6.9273, longitude: 79.8600), icon: "chair", floor: 1, wing: "Central Wing", landmark: "Blue seating bay"),
     ]
 
     @State private var region = MKCoordinateRegion(
@@ -46,11 +51,10 @@ struct ClinicMapView: View {
     @State private var showCurrentPicker = false
     @State private var showDestPicker    = false
     @State private var destSearchText    = ""
-    @State private var isFindingRoute    = false
-    @State private var routeSummary: String? = nil
-    @State private var routePolyline: MKPolyline? = nil
-    @State private var routeErrorMessage = "Unable to find a route for the selected locations."
-    @State private var showRouteError    = false
+    @State private var isBuildingGuide   = false
+    @State private var guideSummary: String = ""
+    @State private var guidanceSteps: [String] = []
+    @State private var showGuidanceScreen = false
 
     private var filteredLocations: [ClinicLocation] {
         let query = destSearchText.trimmingCharacters(in: .whitespaces).lowercased()
@@ -74,17 +78,28 @@ struct ClinicMapView: View {
         }
         .navigationBarHidden(true)
         .onChange(of: currentLocation?.id) { _ in
-            routeSummary = nil
-            routePolyline = nil
+            guideSummary = ""
+            guidanceSteps = []
         }
         .onChange(of: destination?.id) { _ in
-            routeSummary = nil
-            routePolyline = nil
+            guideSummary = ""
+            guidanceSteps = []
         }
-        .alert("Route Error", isPresented: $showRouteError) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text(routeErrorMessage)
+        .sheet(isPresented: $showGuidanceScreen) {
+            if let currentLocation, let destination {
+                IndoorGuidanceView(
+                    initialRegion: region,
+                    locations: annotationItems,
+                    currentLocation: currentLocation,
+                    destination: destination,
+                    summary: guideSummary,
+                    steps: guidanceSteps
+                )
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+            } else {
+                EmptyView()
+            }
         }
         // Current location picker sheet
         .sheet(isPresented: $showCurrentPicker) {
@@ -108,7 +123,7 @@ struct ClinicMapView: View {
                 .frame(maxWidth: .infinity)
 
             HStack {
-                Button { } label: {
+                Button { dismiss() } label: {
                     ZStack {
                         Circle()
                             .fill(Color(.systemGray6))
@@ -138,8 +153,7 @@ struct ClinicMapView: View {
             region: $region,
             locations: annotationItems,
             currentLocation: currentLocation,
-            destination: destination,
-            routePolyline: routePolyline
+            destination: destination
         )
         .frame(height: 240)
         .clipShape(Rectangle())
@@ -261,200 +275,64 @@ struct ClinicMapView: View {
                         .stroke(Color(.systemGray5), lineWidth: 1)
                 )
 
-                // ── Find Route button ─────────────────────────────────
-                Button { findRoute() } label: {
-                    Text(isFindingRoute ? "Finding Route..." : "Find Route")
+                // ── Indoor Guide button ───────────────────────────────
+                Button { buildIndoorGuide() } label: {
+                    Text(isBuildingGuide ? "Building Guide..." : "Show Indoor Guide")
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: AppSize.buttonPrimary)
                         .background(
-                            (destination != nil && currentLocation != nil && !isFindingRoute) ? Color.clinicPrimary : Color(.systemGray3),
+                            (destination != nil && currentLocation != nil && !isBuildingGuide) ? Color.clinicPrimary : Color(.systemGray3),
                             in: Capsule()
                         )
                 }
                 .buttonStyle(.plain)
-                .disabled(destination == nil || currentLocation == nil || isFindingRoute)
+                .disabled(destination == nil || currentLocation == nil || isBuildingGuide)
                 .animation(.easeInOut(duration: 0.2), value: destination != nil || currentLocation != nil)
 
-                if let routeSummary {
-                    Text(routeSummary)
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                }
             }
             .padding(AppSpacing.lg)
             .padding(.bottom, AppSpacing.xxxl)
         }
     }
 
-    private func findRoute() {
+    private func buildIndoorGuide() {
         guard let currentLocation, let destination else {
-            routeErrorMessage = "Please select both current location and destination."
-            showRouteError = true
             return
         }
 
-        isFindingRoute = true
-        routeSummary = nil
-        routePolyline = nil
+        isBuildingGuide = true
+        guideSummary = ""
+        guidanceSteps = []
 
-        requestRoadRoute(
-            from: currentLocation.coordinate,
-            to: destination.coordinate
-        ) { route in
-            DispatchQueue.main.async {
-                isFindingRoute = false
+        let straightDistance = CLLocation(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude)
+            .distance(from: CLLocation(latitude: destination.coordinate.latitude, longitude: destination.coordinate.longitude))
 
-                if let route {
-                    routeSummary = "\(formattedDistance(route.distance)) • \(formattedTime(route.expectedTravelTime))"
-                    routePolyline = route.polyline
+        let indoorDistance = max(35, straightDistance * 1.45)
+        let indoorSeconds = indoorDistance / 1.1
 
-                    let paddedRect = route.polyline.boundingMapRect.insetBy(
-                        dx: -route.polyline.boundingMapRect.size.width * 0.4,
-                        dy: -route.polyline.boundingMapRect.size.height * 0.4
-                    )
-                    region = MKCoordinateRegion(paddedRect)
-                    return
-                }
-                routeSummary = nil
-                routePolyline = nil
-                routeErrorMessage = "Road route is not available for these exact points. Try another nearby start or destination."
-                showRouteError = true
-            }
+        var steps: [String] = []
+        steps.append("Start from \(currentLocation.name). Face corridor signage and follow arrows for \(destination.wing).")
+
+        if currentLocation.floor != destination.floor {
+            steps.append("Go to the nearest lift or stairs and move to Floor \(destination.floor).")
+        } else {
+            steps.append("Stay on Floor \(destination.floor) and continue along the main corridor.")
         }
-    }
-
-    private func requestRoadRoute(
-        from source: CLLocationCoordinate2D,
-        to destination: CLLocationCoordinate2D,
-        completion: @escaping (MKRoute?) -> Void
-    ) {
-        requestRoute(
-            from: source,
-            to: destination,
-            transportTypes: [.walking, .automobile, .any]
-        ) { route in
-            if let route {
-                completion(route)
-                return
-            }
-
-            let sourceCandidates = nearbyCandidates(for: source)
-            let destinationCandidates = nearbyCandidates(for: destination)
-
-            let attempts: [(CLLocationCoordinate2D, CLLocationCoordinate2D)] = sourceCandidates.flatMap { s in
-                destinationCandidates.map { d in (s, d) }
-            }
-
-            let maxAttempts = 450
-            let limitedAttempts = Array(attempts.prefix(maxAttempts))
-
-            attemptRoutePairs(
-                limitedAttempts,
-                index: 0,
-                completion: completion
-            )
-        }
-    }
-
-    private func attemptRoutePairs(
-        _ attempts: [(CLLocationCoordinate2D, CLLocationCoordinate2D)],
-        index: Int,
-        completion: @escaping (MKRoute?) -> Void
-    ) {
-        guard index < attempts.count else {
-            completion(nil)
-            return
+        if currentLocation.wing != destination.wing {
+            steps.append("At the junction near the central lobby, follow signs to \(destination.wing).")
         }
 
-        let pair = attempts[index]
-        requestRoute(
-            from: pair.0,
-            to: pair.1,
-            transportTypes: [.walking, .automobile, .any]
-        ) { route in
-            if let route {
-                completion(route)
-            } else {
-                attemptRoutePairs(attempts, index: index + 1, completion: completion)
-            }
-        }
-    }
+        steps.append("Look for \(destination.landmark) and proceed to \(destination.name).")
+        steps.append("If unsure, check wall signage for floor and room numbers; ask the nearest counter staff for \(destination.name).")
 
-    private func nearbyCandidates(for coordinate: CLLocationCoordinate2D) -> [CLLocationCoordinate2D] {
-        let radiiMeters: [Double] = [0, 50, 120, 220, 350, 500, 750]
-        let bearings: [Double] = Array(stride(from: 0.0, to: 360.0, by: 30.0))
+        guideSummary = "~\(formattedDistance(indoorDistance)) walk • ~\(formattedTime(indoorSeconds))"
+        guidanceSteps = steps
+        isBuildingGuide = false
 
-        var result: [CLLocationCoordinate2D] = []
-        for radius in radiiMeters {
-            if radius == 0 {
-                result.append(coordinate)
-                continue
-            }
-            for bearing in bearings {
-                result.append(offsetCoordinate(coordinate, meters: radius, bearingDegrees: bearing))
-            }
-        }
-        return result
-    }
-
-    private func offsetCoordinate(
-        _ coordinate: CLLocationCoordinate2D,
-        meters: Double,
-        bearingDegrees: Double
-    ) -> CLLocationCoordinate2D {
-        let earthRadius = 6_378_137.0
-        let bearing = bearingDegrees * .pi / 180
-
-        let lat1 = coordinate.latitude * .pi / 180
-        let lon1 = coordinate.longitude * .pi / 180
-        let angularDistance = meters / earthRadius
-
-        let lat2 = asin(
-            sin(lat1) * cos(angularDistance) +
-            cos(lat1) * sin(angularDistance) * cos(bearing)
-        )
-        let lon2 = lon1 + atan2(
-            sin(bearing) * sin(angularDistance) * cos(lat1),
-            cos(angularDistance) - sin(lat1) * sin(lat2)
-        )
-
-        return CLLocationCoordinate2D(
-            latitude: lat2 * 180 / .pi,
-            longitude: lon2 * 180 / .pi
-        )
-    }
-
-    private func requestRoute(
-        from source: CLLocationCoordinate2D,
-        to destination: CLLocationCoordinate2D,
-        transportTypes: [MKDirectionsTransportType],
-        completion: @escaping (MKRoute?) -> Void
-    ) {
-        guard let transportType = transportTypes.first else {
-            completion(nil)
-            return
-        }
-
-        let request = MKDirections.Request()
-        request.source = MKMapItem(placemark: MKPlacemark(coordinate: source))
-        request.destination = MKMapItem(placemark: MKPlacemark(coordinate: destination))
-        request.transportType = transportType
-
-        MKDirections(request: request).calculate { response, _ in
-            if let route = response?.routes.first {
-                completion(route)
-            } else {
-                requestRoute(
-                    from: source,
-                    to: destination,
-                    transportTypes: Array(transportTypes.dropFirst()),
-                    completion: completion
-                )
-            }
-        }
+        region.center = destination.coordinate
+        showGuidanceScreen = true
     }
 
     private func formattedDistance(_ meters: CLLocationDistance) -> String {
@@ -467,6 +345,118 @@ struct ClinicMapView: View {
     private func formattedTime(_ seconds: TimeInterval) -> String {
         let minutes = max(1, Int((seconds / 60).rounded()))
         return "\(minutes) min"
+    }
+}
+
+struct IndoorGuidanceView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    let locations: [ClinicLocation]
+    let currentLocation: ClinicLocation
+    let destination: ClinicLocation
+    let summary: String
+    let steps: [String]
+
+    @State private var region: MKCoordinateRegion
+
+    init(
+        initialRegion: MKCoordinateRegion,
+        locations: [ClinicLocation],
+        currentLocation: ClinicLocation,
+        destination: ClinicLocation,
+        summary: String,
+        steps: [String]
+    ) {
+        self.locations = locations
+        self.currentLocation = currentLocation
+        self.destination = destination
+        self.summary = summary
+        self.steps = steps
+        _region = State(initialValue: initialRegion)
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            navBar
+
+            ClinicRouteMapView(
+                region: $region,
+                locations: locations,
+                currentLocation: currentLocation,
+                destination: destination
+            )
+            .frame(height: 260)
+
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: AppSpacing.md) {
+                    Text(summary)
+                        .font(.system(size: 13, weight: .medium))
+                        .foregroundStyle(.secondary)
+
+                    VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                        Text("Indoor Guidance")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(.primary)
+
+                        ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
+                            HStack(alignment: .top, spacing: AppSpacing.sm) {
+                                Text("\(index + 1)")
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundStyle(.white)
+                                    .frame(width: 22, height: 22)
+                                    .background(Color.clinicPrimary, in: Circle())
+
+                                Text(step)
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(.primary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
+                    .padding(AppSpacing.md)
+                    .background(Color.clinicSurface, in: RoundedRectangle(cornerRadius: AppRadius.lg))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppRadius.lg)
+                            .stroke(Color(.systemGray5), lineWidth: 1)
+                    )
+                }
+                .padding(AppSpacing.lg)
+                .padding(.bottom, AppSpacing.xxxl)
+            }
+        }
+        .background(Color.clinicSurface.ignoresSafeArea())
+        .navigationBarHidden(true)
+    }
+
+    private var navBar: some View {
+        ZStack {
+            Text("Indoor Guidance")
+                .font(Font.navTitleSize)
+                .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity)
+
+            HStack {
+                Button { dismiss() } label: {
+                    ZStack {
+                        Circle()
+                            .fill(Color(.systemGray6))
+                            .frame(width: 34, height: 34)
+                        Image(systemName: "chevron.left")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundStyle(.primary)
+                    }
+                    .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                Spacer()
+            }
+            .padding(.horizontal, AppSpacing.xs)
+        }
+        .frame(height: AppSize.minTapTarget)
+        .padding(.horizontal, AppSpacing.md)
+        .padding(.top, AppSpacing.xs)
+        .background(Color.clinicSurface)
     }
 }
 
@@ -487,7 +477,6 @@ private struct ClinicRouteMapView: UIViewRepresentable {
     let locations: [ClinicLocation]
     let currentLocation: ClinicLocation?
     let destination: ClinicLocation?
-    let routePolyline: MKPolyline?
 
     func makeCoordinator() -> Coordinator {
         Coordinator(region: $region)
@@ -509,13 +498,8 @@ private struct ClinicRouteMapView: UIViewRepresentable {
         mapView.setRegion(region, animated: true)
 
         mapView.removeAnnotations(mapView.annotations)
-        mapView.removeOverlays(mapView.overlays)
 
         mapView.addAnnotations(locations.map(ClinicPointAnnotation.init))
-
-        if let routePolyline {
-            mapView.addOverlay(routePolyline)
-        }
     }
 
     final class Coordinator: NSObject, MKMapViewDelegate {
@@ -529,17 +513,6 @@ private struct ClinicRouteMapView: UIViewRepresentable {
 
         func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
             region = mapView.region
-        }
-
-        func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
-            guard let polyline = overlay as? MKPolyline else {
-                return MKOverlayRenderer(overlay: overlay)
-            }
-
-            let renderer = MKPolylineRenderer(polyline: polyline)
-            renderer.strokeColor = UIColor(Color.clinicPrimary)
-            renderer.lineWidth = 4
-            return renderer
         }
 
         func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
