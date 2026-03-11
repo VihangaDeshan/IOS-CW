@@ -15,7 +15,7 @@ struct SettingsView: View {
 
     private let options: [SettingsOption] = [
         SettingsOption(title: "My Account", subtitle: "Manage your profile", destination: AnyView(AccountView())),
-        SettingsOption(title: "Payments", subtitle: "View you payments", destination: AnyView(Text("Payments"))),
+        SettingsOption(title: "Payments", subtitle: "View your payment history", destination: AnyView(PastPaymentsView())),
         SettingsOption(title: "Accessibility", subtitle: "Customize your experience", destination: AnyView(AccessibilityView())),
         SettingsOption(title: "Help & Support", subtitle: "Get assistance", destination: AnyView(HelpSupportView())),
         SettingsOption(title: "Terms & conditions", subtitle: "Legal information", destination: AnyView(Text("Terms & conditions"))),
