@@ -79,5 +79,6 @@ struct SuccessView_Previews: PreviewProvider {
 
 // notification used when a booking/payment completes
 extension Notification.Name {
-    static let bookingSuccess = Notification.Name("bookingSuccess")
+    static let bookingSuccess  = Notification.Name("bookingSuccess")
+    static let switchToHomeTab = Notification.Name("switchToHomeTab")
 }
