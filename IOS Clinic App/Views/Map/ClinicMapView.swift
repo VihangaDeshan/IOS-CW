@@ -185,13 +185,6 @@ struct ClinicMapView: View {
 
     @State private var currentLocation: ClinicLocation? = nil
     @State private var destination:     ClinicLocation? = nil
-    @State private var showCurrentPicker = false
-    @State private var destSearchText    = ""
-
-    private var filteredLocations: [ClinicLocation] {
-        let q = destSearchText.trimmingCharacters(in: .whitespaces).lowercased()
-        return q.isEmpty ? locations : locations.filter { $0.name.lowercased().contains(q) }
-    }
 
     var body: some View {
         ZStack {
@@ -218,11 +211,6 @@ struct ClinicMapView: View {
             }
         }
         .navigationBarHidden(true)
-        .sheet(isPresented: $showCurrentPicker) {
-            LocationPickerSheet(title: "Current Location", locations: locations, selected: $currentLocation)
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
-        }
     }
 
     // MARK: - Select Destination View
@@ -247,31 +235,33 @@ struct ClinicMapView: View {
                         Text("Current Location")
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(.secondary)
-                        if let loc = currentLocation {
+                        Menu {
+                            Button { withAnimation { currentLocation = nil } } label: {
+                                Label("None", systemImage: "xmark")
+                            }
+                            Divider()
+                            ForEach(locations) { loc in
+                                Button { withAnimation { currentLocation = loc } } label: {
+                                    Label(loc.name, systemImage: loc.icon)
+                                }
+                            }
+                        } label: {
                             HStack {
-                                Text(loc.name)
-                                    .font(.system(size: 15, weight: .medium))
-                                    .foregroundStyle(.primary)
+                                Image(systemName: "location.circle")
+                                    .foregroundStyle(currentLocation != nil ? Color.clinicPrimary : Color(.systemGray3))
+                                Text(currentLocation?.name ?? "Select Location")
+                                    .font(.system(size: 15))
+                                    .foregroundStyle(currentLocation != nil ? .primary : Color(.tertiaryLabel))
                                 Spacer()
-                                Button { withAnimation { currentLocation = nil } } label: {
-                                    Image(systemName: "xmark.circle.fill").foregroundStyle(Color(.systemGray3))
-                                }.buttonStyle(.plain)
+                                Image(systemName: "chevron.up.chevron.down")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(Color(.systemGray3))
                             }
                             .padding(.horizontal, AppSpacing.md)
                             .frame(height: 44)
                             .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: AppRadius.lg))
-                        } else {
-                            Button { showCurrentPicker = true } label: {
-                                HStack {
-                                    Image(systemName: "location.circle").foregroundStyle(Color(.systemGray3))
-                                    Text("Select Location").font(.system(size: 15)).foregroundStyle(Color(.tertiaryLabel))
-                                    Spacer()
-                                    Image(systemName: "chevron.down").font(.system(size: 12)).foregroundStyle(Color(.systemGray3))
-                                }
-                                .padding(.horizontal, AppSpacing.md).frame(height: 44)
-                                .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: AppRadius.lg))
-                            }.buttonStyle(.plain)
                         }
+                        .buttonStyle(.plain)
                     }
 
                     // ── Destination ───────────────────────────────────
@@ -279,61 +269,65 @@ struct ClinicMapView: View {
                         Text("Destination")
                             .font(.system(size: 13, weight: .medium))
                             .foregroundStyle(.secondary)
-
-                        VStack(spacing: 0) {
-                            HStack(spacing: AppSpacing.sm) {
-                                Image(systemName: "magnifyingglass").font(.system(size: 15)).foregroundStyle(Color.clinicPrimary)
-                                TextField("Search Here", text: $destSearchText).font(.system(size: 15))
-                                Spacer()
-                                Image(systemName: "chevron.right").font(.system(size: 12)).foregroundStyle(Color(.systemGray3))
+                        Menu {
+                            Button { withAnimation { destination = nil } } label: {
+                                Label("None", systemImage: "xmark")
                             }
-                            .padding(.horizontal, AppSpacing.md).frame(height: 44)
                             Divider()
-                            ForEach(filteredLocations) { loc in
+                            ForEach(locations) { loc in
                                 Button {
                                     withAnimation(.easeInOut(duration: 0.18)) {
-                                        destination = loc; destSearchText = ""; region.center = loc.coordinate
+                                        destination = loc
+                                        region.center = loc.coordinate
                                     }
                                 } label: {
-                                    HStack {
-                                        Text(loc.name).font(.system(size: 15))
-                                            .foregroundStyle(destination == loc ? Color.clinicPrimary : .primary)
-                                        Spacer()
-                                        if destination == loc {
-                                            Image(systemName: "checkmark").font(.system(size: 13, weight: .semibold)).foregroundStyle(Color.clinicPrimary)
-                                        }
-                                    }
-                                    .padding(.horizontal, AppSpacing.md).frame(height: 44)
+                                    Label(loc.name, systemImage: loc.icon)
                                 }
-                                .buttonStyle(.plain)
-                                if loc.id != filteredLocations.last?.id { Divider().padding(.horizontal, AppSpacing.md) }
                             }
+                        } label: {
+                            HStack {
+                                Image(systemName: "mappin.circle")
+                                    .foregroundStyle(destination != nil ? Color.clinicPrimary : Color(.systemGray3))
+                                Text(destination?.name ?? "Select Destination")
+                                    .font(.system(size: 15))
+                                    .foregroundStyle(destination != nil ? .primary : Color(.tertiaryLabel))
+                                Spacer()
+                                Image(systemName: "chevron.up.chevron.down")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(Color(.systemGray3))
+                            }
+                            .padding(.horizontal, AppSpacing.md)
+                            .frame(height: 44)
+                            .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: AppRadius.lg))
                         }
-                        .background(Color.clinicSurface)
-                        .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg))
-                        .overlay(RoundedRectangle(cornerRadius: AppRadius.lg).stroke(Color(.systemGray5), lineWidth: 1))
+                        .buttonStyle(.plain)
                     }
 
                     // ── Find Route ────────────────────────────────────
-                    let canRoute = currentLocation != nil && destination != nil
-                    Button {
-                        guard let origin = currentLocation, let dest = destination, origin != dest else { return }
-                        routeSegments = RouteService.segments(from: origin, to: dest, allLocations: locations)
-                        withAnimation { stepIndex = 1 }
-                    } label: {
-                        Text("Find Route")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundStyle(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: AppSize.buttonPrimary)
-                            .background(canRoute ? Color.clinicPrimary : Color(.systemGray3), in: Capsule())
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(!canRoute)
                 }
                 .padding(AppSpacing.lg)
-                .padding(.bottom, AppSpacing.xxxl)
             }
+
+            // ── Find Route button pinned at bottom ────────────────────
+            let canRoute = currentLocation != nil && destination != nil
+            Button {
+                guard let origin = currentLocation, let dest = destination, origin != dest else { return }
+                routeSegments = RouteService.segments(from: origin, to: dest, allLocations: locations)
+                withAnimation { stepIndex = 1 }
+            } label: {
+                Text("Find Route")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: AppSize.buttonPrimary)
+                    .background(canRoute ? Color.clinicPrimary : Color(.systemGray3), in: Capsule())
+            }
+            .buttonStyle(.plain)
+            .disabled(!canRoute)
+            .padding(.horizontal, AppSpacing.lg)
+            .padding(.bottom, AppSpacing.xl)
+            .padding(.top, AppSpacing.sm)
+            .background(Color.clinicSurface)
         }
     }
 

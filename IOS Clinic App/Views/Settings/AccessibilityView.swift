@@ -7,7 +7,9 @@ struct AccessibilityView: View {
     @State private var voiceGuidance: Bool = false
     @State private var largerTargets: Bool = false
     @State private var reduceMotion: Bool = false
-    @State private var languageEnglish: Bool = true
+    @State private var selectedLanguage: String = "English"
+
+    private let languages = ["English", "Sinhala", "Tamil", "French", "Arabic"]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -21,19 +23,17 @@ struct AccessibilityView: View {
                         Text("Adjust text size for readability")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-                        Slider(value: $textSize, in: 0...1)
-                            .padding(.vertical, 4)
-                            .accentColor(.clinicPrimary)
-                            .overlay(
-                                HStack {
-                                    Text("A")
-                                        .font(.caption)
-                                    Spacer()
-                                    Text("A")
-                                        .font(.title3)
-                                }
-                                .padding(.horizontal, 8)
-                            )
+                        HStack(spacing: 8) {
+                            Text("A")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Slider(value: $textSize, in: 0...1)
+                                .accentColor(.clinicPrimary)
+                            Text("A")
+                                .font(.title3)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.top, 4)
                     }
                 }
                 card {
@@ -49,12 +49,39 @@ struct AccessibilityView: View {
                     settingRow(title: "Reduce Motion", subtitle: "Minimize animations", isOn: $reduceMotion)
                 }
                 card {
-                    settingRow(title: "Language", subtitle: languageEnglish ? "English" : "", isOn: $languageEnglish)
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Language")
+                                .font(.headline)
+                            Text("Select your preferred language")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Menu {
+                            ForEach(languages, id: \.self) { lang in
+                                Button(lang) { selectedLanguage = lang }
+                            }
+                        } label: {
+                            HStack(spacing: 4) {
+                                Text(selectedLanguage)
+                                    .font(.subheadline)
+                                    .foregroundColor(.clinicPrimary)
+                                Image(systemName: "chevron.up.chevron.down")
+                                    .font(.system(size: 11, weight: .semibold))
+                                    .foregroundColor(.clinicPrimary)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.clinicPrimary.opacity(0.08))
+                            .cornerRadius(8)
+                        }
+                    }
                 }
             }
             Spacer()
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(Color(.systemBackground).ignoresSafeArea())
         .navigationBarHidden(true)
     }
 
@@ -84,8 +111,20 @@ struct AccessibilityView: View {
     private func card<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         content()
             .padding()
-            .background(Color(.systemBackground))
+            .background(.ultraThinMaterial)
             .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [Color.white.opacity(0.6), Color.white.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            )
+            .shadow(color: Color.clinicPrimary.opacity(0.06), radius: 8, x: 0, y: 4)
             .padding(.horizontal)
     }
 

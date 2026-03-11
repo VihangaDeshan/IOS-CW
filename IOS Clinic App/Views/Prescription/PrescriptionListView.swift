@@ -99,7 +99,6 @@ extension PrescriptionRecord {
 struct PrescriptionListView: View {
 
     @Environment(\.dismiss) private var dismiss
-    @Namespace private var modeNS
 
     @State private var pageMode: PageMode            = .prescriptions
     @State private var rxFilterIndex: Int            = 0   // PrescriptionFilter index
@@ -218,46 +217,25 @@ struct PrescriptionListView: View {
         .background(Color.clinicSurface)
     }
 
-    // MARK: - Mode Switcher (matchedGeometryEffect pill — iOS HIG)
+    // MARK: - Mode Switcher (iOS standard segmented control)
 
     private var modeSwitcher: some View {
-        HStack(spacing: 0) {
+        Picker("", selection: $pageMode) {
             ForEach(PageMode.allCases, id: \.self) { mode in
-                Button {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                        pageMode  = mode
-                        searchText = ""
-                    }
-                } label: {
-                    HStack(spacing: 5) {
-                        Image(systemName: mode == .prescriptions ? "doc.text" : "pills")
-                            .font(.system(size: 12, weight: .semibold))
-                        Text(mode.rawValue)
-                            .font(.system(size: 13, weight: .semibold))
-                    }
-                    .foregroundStyle(pageMode == mode ? Color.clinicPrimary : Color(.secondaryLabel))
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 36)
-                    .background {
-                        if pageMode == mode {
-                            RoundedRectangle(cornerRadius: AppRadius.md)
-                                .fill(Color(.systemBackground))
-                                .shadow(color: .black.opacity(0.08), radius: 2, x: 0, y: 1)
-                                .matchedGeometryEffect(id: "modePill", in: modeNS)
-                        }
-                    }
-                }
-                .buttonStyle(.plain)
+                Text(mode.rawValue).tag(mode)
             }
         }
-        .padding(4)
-        .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: AppRadius.md + 4))
+        .pickerStyle(.segmented)
+        .scaleEffect(y: 1.2)
         .padding(.horizontal, AppSpacing.lg)
         .padding(.top, AppSpacing.sm)
         .padding(.bottom, AppSpacing.xs)
+        .onChange(of: pageMode) { _ in
+            searchText = ""
+        }
     }
 
-    // MARK: - Filter Tabs (iOS segmented for Rx; custom pills for Pharmacy)
+    // MARK: - Filter Tabs (iOS standard segmented control)
 
     @ViewBuilder
     private var filterTabs: some View {
@@ -268,40 +246,19 @@ struct PrescriptionListView: View {
                 }
             }
             .pickerStyle(.segmented)
+            .scaleEffect(y: 1.2)
             .padding(.horizontal, AppSpacing.lg)
             .padding(.vertical, AppSpacing.sm)
             .transition(.opacity)
         } else {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: AppSpacing.xs) {
-                    ForEach(PharmacyFilter.allCases.indices, id: \.self) { i in
-                        let filter = PharmacyFilter.allCases[i]
-                        Button {
-                            withAnimation(.easeInOut(duration: 0.2)) { phFilterIndex = i }
-                        } label: {
-                            Text(filter.rawValue)
-                                .font(.system(size: 13, weight: phFilterIndex == i ? .semibold : .regular))
-                                .foregroundStyle(phFilterIndex == i ? Color.clinicPrimary : Color(.secondaryLabel))
-                                .padding(.horizontal, AppSpacing.md)
-                                .padding(.vertical, 7)
-                                .background(
-                                    phFilterIndex == i
-                                        ? Color.clinicPrimary.opacity(0.10)
-                                        : Color(.systemGray6),
-                                    in: Capsule()
-                                )
-                                .overlay(
-                                    Capsule().strokeBorder(
-                                        phFilterIndex == i ? Color.clinicPrimary.opacity(0.3) : Color.clear,
-                                        lineWidth: 1
-                                    )
-                                )
-                        }
-                        .buttonStyle(.plain)
-                    }
+            Picker("", selection: $phFilterIndex) {
+                ForEach(PharmacyFilter.allCases.indices, id: \.self) { i in
+                    Text(PharmacyFilter.allCases[i].rawValue).tag(i)
                 }
-                .padding(.horizontal, AppSpacing.lg)
             }
+            .pickerStyle(.segmented)
+            .scaleEffect(y: 1.2)
+            .padding(.horizontal, AppSpacing.lg)
             .padding(.vertical, AppSpacing.sm)
             .transition(.opacity)
         }
