@@ -55,7 +55,7 @@ struct SpecializationView: View {
 
             Spacer(minLength: 0)
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(Color(.systemBackground).ignoresSafeArea())
         .navigationBarHidden(true)
     }
 
@@ -135,9 +135,20 @@ struct SpecializationRow: View {
                 .foregroundColor(.secondary)
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(.ultraThinMaterial)
         .cornerRadius(12)
-        .shadow(color: Color.black.opacity(0.03), radius: 1, x: 0, y: 1)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.6), Color.white.opacity(0.1)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: Color.clinicPrimary.opacity(0.06), radius: 8, x: 0, y: 4)
     }
 }
 
@@ -227,9 +238,20 @@ private struct DoctorRow: View {
                 .foregroundColor(.clinicPrimary)
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(.ultraThinMaterial)
         .cornerRadius(16)
-        .shadow(color: Color.black.opacity(0.03), radius: 1, x: 0, y: 1)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.6), Color.white.opacity(0.1)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: Color.clinicPrimary.opacity(0.06), radius: 8, x: 0, y: 4)
     }
 }
 
@@ -250,7 +272,7 @@ struct DoctorsForSpecializationView: View {
             DoctorsListView(searchText: $searchText, specialization: specialization)
             Spacer(minLength: 0)
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(Color(.systemBackground).ignoresSafeArea())
         .navigationBarHidden(true)
     }
 
@@ -318,7 +340,7 @@ struct DoctorProfileView: View {
             Spacer()
             bookButton
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(Color(.systemBackground).ignoresSafeArea())
         .navigationBarHidden(true)
     }
 
@@ -403,8 +425,20 @@ struct DoctorProfileView: View {
                 .foregroundStyle(.primary)
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(.ultraThinMaterial)
         .cornerRadius(16)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.6), Color.white.opacity(0.1)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: Color.clinicPrimary.opacity(0.06), radius: 8, x: 0, y: 4)
         .padding(.horizontal)
         .padding(.top, 16)
     }
@@ -537,7 +571,7 @@ struct AppointmentView: View {
             Spacer()
             confirmButton
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(Color(.systemBackground).ignoresSafeArea())
         .navigationBarHidden(true)
     }
 
@@ -590,8 +624,20 @@ struct AppointmentView: View {
             }
         }
         .padding()
-        .background(Color(.systemBackground))
+        .background(.ultraThinMaterial)
         .cornerRadius(16)
+        .overlay(
+            RoundedRectangle(cornerRadius: 16)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.6), Color.white.opacity(0.1)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
+        )
+        .shadow(color: Color.clinicPrimary.opacity(0.06), radius: 8, x: 0, y: 4)
         .padding(.horizontal)
         .padding(.top, 16)
     }
@@ -627,18 +673,29 @@ struct AppointmentView: View {
                         Button {
                             selectedMemberIndex = idx
                         } label: {
-                            VStack {
-                                Image(memberImages[idx % memberImages.count])
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(width: 64, height: 64)
-                                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                            VStack(spacing: 6) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color(.systemGray5))
+                                        .frame(width: 64, height: 64)
+
+                                    Image(memberImages[idx % memberImages.count])
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 64, height: 64)
+                                        .clipShape(Circle())
+
+                                    if selectedMemberIndex == idx {
+                                        Circle()
+                                            .strokeBorder(Color.clinicPrimary, lineWidth: 3)
+                                            .frame(width: 64, height: 64)
+                                    }
+                                }
+
                                 Text(name)
-                                    .font(.caption)
+                                    .font(.system(size: 12, weight: selectedMemberIndex == idx ? .semibold : .regular))
+                                    .foregroundStyle(selectedMemberIndex == idx ? Color.clinicPrimary : .secondary)
                             }
-                            .padding(8)
-                            .background(selectedMemberIndex == idx ? Color.clinicPrimary.opacity(0.2) : Color(.systemGray6))
-                            .cornerRadius(16)
                         }
                         .buttonStyle(.plain)
                     }

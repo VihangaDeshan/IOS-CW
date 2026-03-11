@@ -24,7 +24,7 @@ struct QueueStatusView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            Color.clinicSurface.ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             VStack(spacing: 0) {
 
@@ -130,12 +130,20 @@ struct QueueStatusView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, AppSpacing.xl)
-        .background(Color.clinicSurface)
+        .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg))
         .overlay(
             RoundedRectangle(cornerRadius: AppRadius.lg)
-                .stroke(Color(.systemGray5), lineWidth: 1)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.6), Color.white.opacity(0.1)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
         )
+        .shadow(color: Color.clinicPrimary.opacity(0.06), radius: 8, x: 0, y: 4)
     }
 
     // MARK: - Room Card
@@ -151,12 +159,20 @@ struct QueueStatusView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, AppSpacing.lg)
-        .background(Color.clinicSurface)
+        .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg))
         .overlay(
             RoundedRectangle(cornerRadius: AppRadius.lg)
-                .stroke(Color(.systemGray5), lineWidth: 1)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.6), Color.white.opacity(0.1)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
         )
+        .shadow(color: Color.clinicPrimary.opacity(0.06), radius: 8, x: 0, y: 4)
     }
 
     // MARK: - Stats Card
@@ -168,12 +184,20 @@ struct QueueStatusView: View {
                 .padding(.horizontal, AppSpacing.md)
             statRow(label: "Current Queue", value: currentQueue, isFirst: false)
         }
-        .background(Color.clinicSurface)
+        .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg))
         .overlay(
             RoundedRectangle(cornerRadius: AppRadius.lg)
-                .stroke(Color(.systemGray5), lineWidth: 1)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [Color.white.opacity(0.6), Color.white.opacity(0.1)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1
+                )
         )
+        .shadow(color: Color.clinicPrimary.opacity(0.06), radius: 8, x: 0, y: 4)
     }
 
     private func statRow(label: String, value: String, isFirst: Bool) -> some View {

@@ -83,18 +83,29 @@ struct LabReportsView: View {
                     Button {
                         selectedMemberIndex = idx
                     } label: {
-                        VStack {
-                            Image(memberImages[idx % memberImages.count])
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 72, height: 72)
-                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                        VStack(spacing: 6) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color(.systemGray5))
+                                    .frame(width: 64, height: 64)
+
+                                Image(memberImages[idx % memberImages.count])
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 64, height: 64)
+                                    .clipShape(Circle())
+
+                                if selectedMemberIndex == idx {
+                                    Circle()
+                                        .strokeBorder(Color.clinicPrimary, lineWidth: 3)
+                                        .frame(width: 64, height: 64)
+                                }
+                            }
+
                             Text(members[idx])
-                                .font(.caption)
+                                .font(.system(size: 12, weight: selectedMemberIndex == idx ? .semibold : .regular))
+                                .foregroundStyle(selectedMemberIndex == idx ? Color.clinicPrimary : .secondary)
                         }
-                        .padding(8)
-                        .background(selectedMemberIndex == idx ? Color.clinicPrimary.opacity(0.2) : Color(.systemGray6))
-                        .cornerRadius(16)
                     }
                     .buttonStyle(.plain)
                 }
@@ -120,6 +131,18 @@ struct LabReportsView: View {
                 }
                 .padding()
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [Color.white.opacity(0.6), Color.white.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1
+                        )
+                )
+                .shadow(color: Color.clinicPrimary.opacity(0.06), radius: 8, x: 0, y: 4)
             }
         }
         .padding(.horizontal)

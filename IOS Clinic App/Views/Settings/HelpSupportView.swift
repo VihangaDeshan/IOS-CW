@@ -17,7 +17,10 @@ struct HelpSupportView: View {
     ]
 
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack {
+            Color(.systemBackground).ignoresSafeArea()
+
+            VStack(spacing: 0) {
             header
             Spacer().frame(height: 24)
             VStack(spacing: 12) {
@@ -64,8 +67,8 @@ struct HelpSupportView: View {
                 }
             }
             Spacer()
+            }
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationBarHidden(true)
     }
 
@@ -95,8 +98,20 @@ struct HelpSupportView: View {
     private func card<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         content()
             .padding()
-            .background(Color(.systemBackground))
+            .background(.ultraThinMaterial)
             .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [Color.white.opacity(0.6), Color.white.opacity(0.1)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            )
+            .shadow(color: Color.clinicPrimary.opacity(0.06), radius: 8, x: 0, y: 4)
             .padding(.horizontal)
     }
 }

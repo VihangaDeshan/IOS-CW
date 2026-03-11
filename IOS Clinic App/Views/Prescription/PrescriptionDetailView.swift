@@ -13,6 +13,7 @@ struct PrescriptionDetailView: View {
 
     @Environment(\.dismiss) private var dismiss
     @State private var showConfirmation = false
+    @State private var sentOrder: PharmacyOrder? = nil
 
     var body: some View {
         ZStack(alignment: .top) {

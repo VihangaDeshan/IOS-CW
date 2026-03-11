@@ -2,18 +2,33 @@
 //  PrescriptionListView.swift
 //  IOS Clinic App
 //
-//  Prescription list — filterable by Appointment / Patient / Doctor
-//  Tapping a card navigates to PrescriptionDetailView.
+//  Prescription list — mode switcher (Prescriptions / Pharmacy Status)
+//  Prescription filters: Appointment · Patient · Doctor
+//  Pharmacy filters:     All · Processing · Ready · Completed
 //
 
 import SwiftUI
 
-// MARK: - Models
+// MARK: - Page Mode
+
+private enum PageMode: String, CaseIterable {
+    case prescriptions = "Prescriptions"
+    case pharmacy      = "Pharmacy Status"
+}
+
+// MARK: - Filters
 
 enum PrescriptionFilter: String, CaseIterable {
     case appointment = "Appointment"
     case patient     = "Patient"
     case doctor      = "Doctor"
+}
+
+enum PharmacyFilter: String, CaseIterable {
+    case all        = "All"
+    case processing = "Processing"
+    case ready      = "Ready"
+    case completed  = "Completed"
 }
 
 struct PrescriptionRecord: Identifiable {
@@ -85,26 +100,67 @@ struct PrescriptionListView: View {
 
     @Environment(\.dismiss) private var dismiss
 
-    @State private var selectedFilterIndex: Int = 0
-    @State private var searchText = ""
-    @State private var selectedRecord: PrescriptionRecord? = nil
-    @State private var navigateToDetail = false
+    @State private var pageMode: PageMode            = .prescriptions
+    @State private var rxFilterIndex: Int            = 0   // PrescriptionFilter index
+    @State private var phFilterIndex: Int            = 0   // PharmacyFilter index
+    @State private var searchText                    = ""
 
-    private var selectedFilter: PrescriptionFilter {
-        PrescriptionFilter.allCases[selectedFilterIndex]
+    @State private var selectedRecord: PrescriptionRecord? = nil
+    @State private var navigateToDetail              = false
+    @State private var selectedOrder: PharmacyOrder? = nil
+    @State private var navigateToPharmacy            = false
+
+    private var rxFilter: PrescriptionFilter { PrescriptionFilter.allCases[rxFilterIndex] }
+    private var phFilter: PharmacyFilter     { PharmacyFilter.allCases[phFilterIndex] }
+
+    private var searchPlaceholder: String {
+        if pageMode == .pharmacy { return "Search by patient name or ID" }
+        switch rxFilter {
+        case .appointment: return "Search by diagnosis or date"
+        case .patient:     return "Search by patient name or ID"
+        case .doctor:      return "Search by doctor or specialization"
+        }
     }
 
-    private var filtered: [PrescriptionRecord] {
+    // ── Prescription filtering ────────────────────────────────────────
+    private var filteredPrescriptions: [PrescriptionRecord] {
         let q = searchText.trimmingCharacters(in: .whitespaces).lowercased()
         return PrescriptionRecord.samples.filter { rec in
-            guard q.isEmpty else {
-                switch selectedFilter {
-                case .appointment: return rec.diagnosis.lowercased().contains(q) || rec.date.lowercased().contains(q)
-                case .patient:     return rec.patientName.lowercased().contains(q) || rec.patientID.lowercased().contains(q)
-                case .doctor:      return rec.doctorName.lowercased().contains(q) || rec.specialization.lowercased().contains(q)
+            // apply search only when text is non-empty
+            if !q.isEmpty {
+                switch rxFilter {
+                case .appointment:
+                    return rec.diagnosis.lowercased().contains(q)
+                        || rec.date.lowercased().contains(q)
+                case .patient:
+                    return rec.patientName.lowercased().contains(q)
+                        || rec.patientID.lowercased().contains(q)
+                case .doctor:
+                    return rec.doctorName.lowercased().contains(q)
+                        || rec.specialization.lowercased().contains(q)
                 }
             }
             return true
+        }
+    }
+
+    // ── Pharmacy filtering ────────────────────────────────────────────
+    private var filteredOrders: [PharmacyOrder] {
+        let q = searchText.trimmingCharacters(in: .whitespaces).lowercased()
+
+        // 1. Apply status filter
+        let statusFiltered: [PharmacyOrder]
+        switch phFilter {
+        case .all:        statusFiltered = PharmacyOrder.samples
+        case .processing: statusFiltered = PharmacyOrder.samples.filter { $0.status == .preparing   }
+        case .ready:      statusFiltered = PharmacyOrder.samples.filter { $0.status == .readyPickup }
+        case .completed:  statusFiltered = PharmacyOrder.samples.filter { $0.status == .finished    }
+        }
+
+        // 2. Apply search text on top
+        guard !q.isEmpty else { return statusFiltered }
+        return statusFiltered.filter {
+            $0.patientName.lowercased().contains(q) || $0.patientID.lowercased().contains(q)
         }
     }
 
@@ -114,16 +170,18 @@ struct PrescriptionListView: View {
 
             VStack(spacing: 0) {
                 navBar
-                    filterTabs
+                modeSwitcher
+                filterTabs
                 searchBar
-                prescriptionList
+                contentList
             }
         }
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $navigateToDetail) {
-            if let record = selectedRecord {
-                PrescriptionDetailView(record: record)
-            }
+            if let record = selectedRecord { PrescriptionDetailView(record: record) }
+        }
+        .navigationDestination(isPresented: $navigateToPharmacy) {
+            if let order = selectedOrder { PharmacyStatusDetailView(order: order) }
         }
     }
 
@@ -131,7 +189,7 @@ struct PrescriptionListView: View {
 
     private var navBar: some View {
         ZStack {
-            Text("Prescription")
+            Text(pageMode == .prescriptions ? "Prescription" : "Pharmacy Status")
                 .font(Font.navTitleSize)
                 .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity)
@@ -159,19 +217,51 @@ struct PrescriptionListView: View {
         .background(Color.clinicSurface)
     }
 
-    // MARK: - Filter Tabs
+    // MARK: - Mode Switcher (iOS standard segmented control)
 
+    private var modeSwitcher: some View {
+        Picker("", selection: $pageMode) {
+            ForEach(PageMode.allCases, id: \.self) { mode in
+                Text(mode.rawValue).tag(mode)
+            }
+        }
+        .pickerStyle(.segmented)
+        .scaleEffect(y: 1.2)
+        .padding(.horizontal, AppSpacing.lg)
+        .padding(.top, AppSpacing.sm)
+        .padding(.bottom, AppSpacing.xs)
+        .onChange(of: pageMode) { _ in
+            searchText = ""
+        }
+    }
+
+    // MARK: - Filter Tabs (iOS standard segmented control)
+
+    @ViewBuilder
     private var filterTabs: some View {
-            Picker(selection: $selectedFilterIndex, label: EmptyView()) {
-                ForEach(0..<PrescriptionFilter.allCases.count, id: \.self) { index in
-                    Text(PrescriptionFilter.allCases[index].rawValue).tag(index)
+        if pageMode == .prescriptions {
+            Picker("", selection: $rxFilterIndex) {
+                ForEach(PrescriptionFilter.allCases.indices, id: \.self) { i in
+                    Text(PrescriptionFilter.allCases[i].rawValue).tag(i)
                 }
             }
             .pickerStyle(.segmented)
             .scaleEffect(y: 1.2)
             .padding(.horizontal, AppSpacing.lg)
             .padding(.vertical, AppSpacing.sm)
-            .background(Color.clinicSurface)
+            .transition(.opacity)
+        } else {
+            Picker("", selection: $phFilterIndex) {
+                ForEach(PharmacyFilter.allCases.indices, id: \.self) { i in
+                    Text(PharmacyFilter.allCases[i].rawValue).tag(i)
+                }
+            }
+            .pickerStyle(.segmented)
+            .scaleEffect(y: 1.2)
+            .padding(.horizontal, AppSpacing.lg)
+            .padding(.vertical, AppSpacing.sm)
+            .transition(.opacity)
+        }
     }
 
     // MARK: - Search Bar
@@ -179,93 +269,252 @@ struct PrescriptionListView: View {
     private var searchBar: some View {
         HStack(spacing: AppSpacing.sm) {
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(Color(.tertiaryLabel))
+                .foregroundStyle(searchText.isEmpty ? Color(.tertiaryLabel) : Color.clinicPrimary)
                 .font(.system(size: 15))
-            TextField("Search", text: $searchText)
+            TextField(searchPlaceholder, text: $searchText)
                 .font(.system(size: 15))
+            if !searchText.isEmpty {
+                Button { searchText = "" } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(Color(.tertiaryLabel))
+                        .font(.system(size: 15))
+                }
+                .buttonStyle(.plain)
+            }
         }
         .padding(.horizontal, AppSpacing.md)
         .frame(height: 44)
         .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: AppRadius.lg))
         .padding(.horizontal, AppSpacing.lg)
         .padding(.bottom, AppSpacing.sm)
+        .animation(.easeInOut(duration: 0.15), value: searchText.isEmpty)
     }
 
-    // MARK: - List
+    // MARK: - Content List
 
-    private var prescriptionList: some View {
+    private var contentList: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 0) {
-
-                // Date section header
-                Text("Mar 1, 2025")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, AppSpacing.lg)
-                    .padding(.vertical, AppSpacing.sm)
-
-                Text("All Prescriptions")
-                    .font(.system(size: 17, weight: .semibold))
-                    .padding(.horizontal, AppSpacing.lg)
-                    .padding(.bottom, AppSpacing.sm)
-
-                VStack(spacing: 0) {
-                    ForEach(filtered) { record in
-                        PrescriptionCard(record: record) {
-                            selectedRecord = record
-                            navigateToDetail = true
-                        }
-
-                        if record.id != filtered.last?.id {
-                            Divider()
-                                .padding(.horizontal, AppSpacing.lg)
-                        }
-                    }
+                if pageMode == .prescriptions {
+                    sectionHeader(
+                        date:  "Mar 1, 2025",
+                        title: "All Prescriptions (\(filteredPrescriptions.count))"
+                    )
+                    prescriptionCards
+                } else {
+                    sectionHeader(
+                        date:  "Mar 1, 2025",
+                        title: "\(phFilter.rawValue) Orders (\(filteredOrders.count))"
+                    )
+                    pharmacyCards
                 }
-                .background(Color(.systemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg))
-                .overlay(
-                    RoundedRectangle(cornerRadius: AppRadius.lg)
-                        .stroke(Color(.systemGray5), lineWidth: 1)
-                )
-                .padding(.horizontal, AppSpacing.lg)
             }
             .padding(.bottom, AppSpacing.xxxl)
         }
+        // Crossfade list content when mode changes — standard iOS transition
+        .id(pageMode)
+        .transition(.opacity)
+        .animation(.easeInOut(duration: 0.2), value: pageMode)
+    }
+
+    private func sectionHeader(date: String, title: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(date)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(.secondary)
+            Text(title)
+                .font(.system(size: 17, weight: .semibold))
+                .foregroundStyle(.primary)
+        }
+        .padding(.horizontal, AppSpacing.lg)
+        .padding(.top, AppSpacing.sm)
+        .padding(.bottom, AppSpacing.sm)
+    }
+
+    // ── Prescription cards ────────────────────────────────────────────
+
+    private var prescriptionCards: some View {
+        Group {
+            if filteredPrescriptions.isEmpty {
+                emptyState(icon: "doc.text.magnifyingglass", label: "No prescriptions match your search")
+            } else {
+                cardContainer {
+                    ForEach(filteredPrescriptions) { record in
+                        PrescriptionCard(record: record, searchQuery: searchText, filter: rxFilter) {
+                            selectedRecord    = record
+                            navigateToDetail  = true
+                        }
+                        if record.id != filteredPrescriptions.last?.id {
+                            Divider().padding(.horizontal, AppSpacing.lg)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // ── Pharmacy order cards ──────────────────────────────────────────
+
+    private var pharmacyCards: some View {
+        Group {
+            if filteredOrders.isEmpty {
+                emptyState(icon: "pills.circle", label: "No orders match your filter")
+            } else {
+                cardContainer {
+                    ForEach(filteredOrders) { order in
+                        PharmacyOrderCard(order: order, searchQuery: searchText) {
+                            selectedOrder     = order
+                            navigateToPharmacy = true
+                        }
+                        if order.id != filteredOrders.last?.id {
+                            Divider().padding(.horizontal, AppSpacing.lg)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func cardContainer<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        VStack(spacing: 0) { content() }
+            .background(Color(.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg))
+            .overlay(RoundedRectangle(cornerRadius: AppRadius.lg).stroke(Color(.systemGray5), lineWidth: 1))
+            .padding(.horizontal, AppSpacing.lg)
+    }
+
+    private func emptyState(icon: String, label: String) -> some View {
+        VStack(spacing: AppSpacing.sm) {
+            Image(systemName: icon)
+                .font(.system(size: 34, weight: .light))
+                .foregroundStyle(Color(.systemGray3))
+            Text(label)
+                .font(.system(size: 15))
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, AppSpacing.xxxl)
     }
 }
 
 // MARK: - Prescription Card
 
 private struct PrescriptionCard: View {
-    let record: PrescriptionRecord
-    let onTap:  () -> Void
+    let record:      PrescriptionRecord
+    let searchQuery: String
+    let filter:      PrescriptionFilter
+    let onTap:       () -> Void
 
     var body: some View {
         Button(action: onTap) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(record.patientName)
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(.primary)
-                    Text("ID: \(record.patientID)")
-                        .font(.system(size: 13))
-                        .foregroundStyle(.secondary)
-                    Text(record.date)
-                        .font(.system(size: 13))
-                        .foregroundStyle(.secondary)
-                    Text(record.doctorName)
-                        .font(.system(size: 13))
-                        .foregroundStyle(.secondary)
-                    Text(record.specialization)
-                        .font(.system(size: 13))
-                        .foregroundStyle(.secondary)
+            HStack(alignment: .top, spacing: AppSpacing.md) {
+                // Diagnosis icon
+                ZStack {
+                    RoundedRectangle(cornerRadius: AppRadius.sm)
+                        .fill(Color.clinicPrimary.opacity(0.1))
+                        .frame(width: 42, height: 42)
+                    Image(systemName: "doc.text")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundStyle(Color.clinicPrimary)
                 }
+
+                VStack(alignment: .leading, spacing: 3) {
+                    // Primary row — depends on active filter
+                    switch filter {
+                    case .appointment:
+                        Text(record.diagnosis)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(.primary)
+                        Text(record.date)
+                            .font(.system(size: 13))
+                            .foregroundStyle(.secondary)
+                    case .patient:
+                        Text(record.patientName)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(.primary)
+                        Text("ID: \(record.patientID)")
+                            .font(.system(size: 13))
+                            .foregroundStyle(.secondary)
+                    case .doctor:
+                        Text(record.doctorName)
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(.primary)
+                        Text(record.specialization)
+                            .font(.system(size: 13))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    // Secondary row always shows patient
+                    HStack(spacing: 4) {
+                        Image(systemName: "person")
+                            .font(.system(size: 11))
+                        Text(record.patientName)
+                            .font(.system(size: 12))
+                    }
+                    .foregroundStyle(Color(.tertiaryLabel))
+                    .padding(.top, 1)
+                }
+
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(Color(.systemGray3))
                     .padding(.top, 4)
+            }
+            .padding(.horizontal, AppSpacing.lg)
+            .padding(.vertical, AppSpacing.md)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Pharmacy Order Card
+
+private struct PharmacyOrderCard: View {
+    let order:       PharmacyOrder
+    let searchQuery: String
+    let onTap:       () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(alignment: .center, spacing: AppSpacing.md) {
+                // Status icon
+                ZStack {
+                    RoundedRectangle(cornerRadius: AppRadius.sm)
+                        .fill(order.status.color.opacity(0.12))
+                        .frame(width: 42, height: 42)
+                    Image(systemName: "pills")
+                        .font(.system(size: 18, weight: .medium))
+                        .foregroundStyle(order.status.color)
+                }
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(order.patientName)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.primary)
+                    Text("Order \(order.id)")
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
+                    Text("Counter: \(order.counter)")
+                        .font(.system(size: 13))
+                        .foregroundStyle(.secondary)
+                }
+
+                Spacer()
+
+                // Status badge
+                Text(order.status.rawValue)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(order.status.color)
+                    .padding(.horizontal, 9)
+                    .padding(.vertical, 4)
+                    .background(order.status.color.opacity(0.12), in: Capsule())
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color(.systemGray3))
             }
             .padding(.horizontal, AppSpacing.lg)
             .padding(.vertical, AppSpacing.md)

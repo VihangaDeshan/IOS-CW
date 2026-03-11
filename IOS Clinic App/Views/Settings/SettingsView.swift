@@ -23,38 +23,55 @@ struct SettingsView: View {
     ]
 
     var body: some View {
-        VStack(spacing: 0) {
-            header
-            Spacer().frame(height: 24)
-            VStack(spacing: 12) {
-                ForEach(options) { opt in
-                    NavigationLink(destination: opt.destination) {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(opt.title)
-                                    .font(.headline)
-                                    .foregroundStyle(.primary)
-                                if let subtitle = opt.subtitle {
-                                    Text(subtitle)
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
+        ZStack {
+            // Gradient backdrop that makes the glass effect visible
+            
+           
+
+            VStack(spacing: 0) {
+                header
+                Spacer().frame(height: 24)
+                VStack(spacing: 12) {
+                    ForEach(options) { opt in
+                        NavigationLink(destination: opt.destination) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(opt.title)
+                                        .font(.headline)
+                                        .foregroundStyle(.primary)
+                                    if let subtitle = opt.subtitle {
+                                        Text(subtitle)
+                                            .font(.subheadline)
+                                            .foregroundStyle(.secondary)
+                                    }
                                 }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(.secondary)
                             }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .foregroundColor(.secondary)
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .strokeBorder(
+                                        LinearGradient(
+                                            colors: [Color.white.opacity(0.6), Color.white.opacity(0.1)],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        ),
+                                        lineWidth: 1
+                                    )
+                            )
+                            .shadow(color: Color.clinicPrimary.opacity(0.06), radius: 8, x: 0, y: 4)
                         }
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(12)
+                        .buttonStyle(.plain)
+                        .padding(.horizontal)
                     }
-                    .buttonStyle(.plain)
-                    .padding(.horizontal)
                 }
+                Spacer()
             }
-            Spacer()
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
         .navigationBarHidden(true)
     }
 
