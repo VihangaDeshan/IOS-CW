@@ -18,8 +18,8 @@ struct SettingsView: View {
         SettingsOption(title: "Payments", subtitle: "View your payment history", destination: AnyView(PastPaymentsView())),
         SettingsOption(title: "Accessibility", subtitle: "Customize your experience", destination: AnyView(AccessibilityView())),
         SettingsOption(title: "Help & Support", subtitle: "Get assistance", destination: AnyView(HelpSupportView())),
-        SettingsOption(title: "Terms & conditions", subtitle: "Legal information", destination: AnyView(Text("Terms & conditions"))),
-        SettingsOption(title: "About", subtitle: "Version 1.0.0", destination: AnyView(Text("About")))
+        SettingsOption(title: "Terms & conditions", subtitle: "Legal information", destination: AnyView(TermsAndConditionsView())),
+        SettingsOption(title: "About", subtitle: "Version 1.0.0", destination: AnyView(AboutView()))
     ]
 
     var body: some View {
