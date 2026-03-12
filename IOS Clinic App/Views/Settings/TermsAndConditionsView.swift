@@ -26,7 +26,7 @@ struct TermsAndConditionsView: View {
         TermsSection(
             icon:  "hand.raised.fill",
             title: "1. Acceptance of Terms",
-            body:  "By downloading, installing, or using ClinicFlow ("the App"), you confirm that you have read, understood, and agree to be bound by these Terms and Conditions. If you do not agree, please discontinue use of the App immediately. These terms apply to all visitors, users, and others who access or use the App."
+            body:  "By downloading, installing, or using ClinicFlow , you confirm that you have read, understood, and agree to be bound by these Terms and Conditions. If you do not agree, please discontinue use of the App immediately. These terms apply to all visitors, users, and others who access or use the App."
         ),
         TermsSection(
             icon:  "iphone",
