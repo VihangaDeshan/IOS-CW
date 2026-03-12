@@ -118,6 +118,7 @@ struct AppointmentsView: View {
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $showReschedule) {
             SpecializationView(isReschedule: true)
+                .environment(\.onRescheduleComplete, { showReschedule = false })
         }
         .animation(.easeInOut(duration: 0.22), value: selectedFilter)
     }

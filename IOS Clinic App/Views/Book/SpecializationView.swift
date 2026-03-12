@@ -792,6 +792,19 @@ struct AppointmentView: View {
     }
 }
 
+// MARK: - Environment Key (reschedule completion callback)
+
+private struct OnRescheduleCompleteKey: EnvironmentKey {
+    static let defaultValue: (() -> Void)? = nil
+}
+
+extension EnvironmentValues {
+    var onRescheduleComplete: (() -> Void)? {
+        get { self[OnRescheduleCompleteKey.self] }
+        set { self[OnRescheduleCompleteKey.self] = newValue }
+    }
+}
+
 // Preview – embed inside the full tab shell for visual sanity
 struct SpecializationView_Previews: PreviewProvider {
     static var previews: some View {

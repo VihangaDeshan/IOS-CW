@@ -11,6 +11,7 @@ import SwiftUI
 struct RescheduleConfirmView: View {
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.onRescheduleComplete) private var onRescheduleComplete
 
     let doctor:     Doctor
     let dateString: String
@@ -20,13 +21,10 @@ struct RescheduleConfirmView: View {
     @State private var appeared = false
 
     var body: some View {
-        ZStack(alignment: .top) {
-            Color(.systemBackground).ignoresSafeArea()
+        VStack(spacing: 0) {
+            navBar
 
-            VStack(spacing: 0) {
-                navBar
-
-                Spacer()
+            Spacer()
 
                 // ── Success graphic ───────────────────────────────────
                 ZStack {
@@ -103,7 +101,13 @@ struct RescheduleConfirmView: View {
                 Spacer()
 
                 // ── Done button ───────────────────────────────────────
-                Button { dismiss() } label: {
+                Button {
+                    if let onComplete = onRescheduleComplete {
+                        onComplete()
+                    } else {
+                        dismiss()
+                    }
+                } label: {
                     Text("Done")
                         .font(Font.btnTitleSize)
                         .foregroundStyle(.white)
@@ -116,8 +120,9 @@ struct RescheduleConfirmView: View {
                 .padding(.bottom, AppSpacing.xl)
                 .opacity(appeared ? 1 : 0)
                 .animation(.easeOut(duration: 0.35).delay(0.65), value: appeared)
-            }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground).ignoresSafeArea())
         .navigationBarHidden(true)
         .onAppear { appeared = true }
     }
@@ -132,6 +137,7 @@ struct RescheduleConfirmView: View {
                 .frame(maxWidth: .infinity)
         }
         .frame(height: AppSize.minTapTarget)
+        .padding(.horizontal, AppSpacing.md)
         .padding(.top, AppSpacing.xs)
         .background(Color.clinicSurface)
     }
