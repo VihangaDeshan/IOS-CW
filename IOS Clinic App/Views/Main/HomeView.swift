@@ -81,7 +81,12 @@ struct HomeView: View {
                 VisitProgressView()
             }
             .navigationDestination(isPresented: $showAppointments) {
-                AppointmentsView()
+                AppointmentsView(onReturnHome: {
+                    showAppointments = false
+                    showVisitProgress = false
+                    showAlerts = false
+                    showSearchResults = false
+                })
             }
             .navigationDestination(isPresented: $showAlerts) {
                 AlertsView()

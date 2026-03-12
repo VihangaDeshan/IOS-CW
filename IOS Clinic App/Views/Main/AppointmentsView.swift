@@ -47,6 +47,7 @@ struct AppointmentsView: View {
 
     @Environment(\.dismiss) private var dismiss
     var searchQuery: String = ""
+    var onReturnHome: (() -> Void)? = nil
     @State private var selectedFilter: AppointmentStatus = .all
     @State private var showReschedule = false
 
@@ -121,6 +122,7 @@ struct AppointmentsView: View {
                 .environment(\.onRescheduleComplete, {
                     showReschedule = false
                     DispatchQueue.main.async {
+                        onReturnHome?()
                         NotificationCenter.default.post(name: .switchToHomeTab, object: nil)
                     }
                 })
