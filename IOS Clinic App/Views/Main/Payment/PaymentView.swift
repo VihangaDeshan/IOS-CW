@@ -28,7 +28,7 @@ struct PaymentView: View {
             paymentMethodSection
             proceedButton
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(Color.white.ignoresSafeArea())
         .navigationBarHidden(true)
     }
 
@@ -52,7 +52,7 @@ struct PaymentView: View {
         .frame(height: AppSize.minTapTarget)
         .padding(.horizontal, AppSpacing.md)
         .padding(.top, AppSpacing.xs)
-        .background(Color.clinicSurface)
+        .background(Color.white)
     }
 
     private var billSection: some View {
@@ -77,10 +77,11 @@ struct PaymentView: View {
                         .foregroundStyle(.primary)
                 }
                 .padding()
-                .background(Color(.systemBackground))
-                .cornerRadius(12)
+                .background(.ultraThinMaterial)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 2)
                 .padding(.horizontal)
-                .padding(.vertical, 2)
+                .padding(.vertical, 4)
             }
         }
     }
@@ -95,6 +96,7 @@ struct PaymentView: View {
                 PaymentMethodRow(method: .creditCard(number: "....4256"), selected: $selectedPayment)
             }
             .padding(.horizontal)
+            .padding(.bottom, 4)
         }
     }
 
@@ -163,18 +165,33 @@ struct PaymentMethodRow: View {
                 }
             }
             .padding()
-            .background(backgroundColor)
-            .cornerRadius(12)
+            .background(glassBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .black.opacity(0.07), radius: 8, x: 0, y: 3)
         }
         .buttonStyle(.plain)
     }
 
-    private var backgroundColor: Color {
+    @ViewBuilder
+    private var glassBackground: some View {
         switch method {
         case .applePay:
-            return selected == method ? Color.black : Color.black.opacity(0.1)
+            RoundedRectangle(cornerRadius: 12)
+                .fill(selected == method ? Color.black : Color.black.opacity(0.75))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                }
         case .creditCard(_):
-            return selected == method ? Color(.systemGray6) : Color(.systemBackground)
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.ultraThinMaterial)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(
+                            selected == method ? Color.clinicPrimary.opacity(0.5) : Color.clear,
+                            lineWidth: 1.5
+                        )
+                }
         }
     }
 }

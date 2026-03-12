@@ -29,15 +29,22 @@ enum AppRoute: Hashable {
 @Observable
 final class AppRouter {
 
-    private let authKey = "isAuthorized"
+    private let authKey  = "isAuthorized"
+    private let guestKey = "isGuest"
+
     var isAuthorized: Bool {
         didSet { UserDefaults.standard.set(isAuthorized, forKey: authKey) }
+    }
+
+    var isGuest: Bool {
+        didSet { UserDefaults.standard.set(isGuest, forKey: guestKey) }
     }
 
     var currentRoute: AppRoute = .onboarding
 
     init() {
         self.isAuthorized = UserDefaults.standard.bool(forKey: authKey)
+        self.isGuest      = UserDefaults.standard.bool(forKey: guestKey)
     }
 
     // Animate every route change through the standard easing curve.
@@ -46,9 +53,9 @@ final class AppRouter {
             currentRoute = route
         }
     }
-    
+
     func logout() {
         isAuthorized = false
-        // Clear any paths if you use a NavigationPath
+        isGuest      = false
     }
 }

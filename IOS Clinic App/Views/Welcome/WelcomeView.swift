@@ -53,6 +53,7 @@ struct WelcomeView: View {
 
                     // Continue as Guest — outline
                     Button {
+                        router.isGuest = true
                         router.navigate(to: .checkIn)
                     } label: {
                         Text("Continue as Guest")

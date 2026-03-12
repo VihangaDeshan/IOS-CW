@@ -17,6 +17,8 @@ struct HomeView: View {
     @State private var showVisitProgress  = false
     @State private var showAppointments   = false
     @State private var showAlerts         = false
+    @State private var showSearchResults  = false
+    @State private var searchQuery        = ""
     @FocusState private var isSearchFocused: Bool
 
     var body: some View {
@@ -83,6 +85,9 @@ struct HomeView: View {
             }
             .navigationDestination(isPresented: $showAlerts) {
                 AlertsView()
+            }
+            .navigationDestination(isPresented: $showSearchResults) {
+                SpecializationView(initialQuery: searchQuery, initialSegment: 1)
             }
         }
     }
@@ -188,12 +193,17 @@ struct HomeView: View {
             // Conditional Navigatable Icon
             if isSearchFocused {
                 Button {
-                    // Action for the arrow (e.g., submit search)
+                    guard !searchText.trimmingCharacters(in: .whitespaces).isEmpty else {
+                        isSearchFocused = false
+                        return
+                    }
+                    searchQuery = searchText
                     isSearchFocused = false
+                    showSearchResults = true
                 } label: {
                     Image(systemName: "arrow.right.circle.fill")
                         .font(.system(size: 22))
-                        .foregroundStyle(Color.clinicPrimary) // Replace with your color
+                        .foregroundStyle(Color.clinicPrimary)
                         .transition(.move(edge: .trailing).combined(with: .opacity))
                 }
             }

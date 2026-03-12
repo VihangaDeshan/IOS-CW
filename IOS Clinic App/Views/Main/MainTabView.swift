@@ -13,46 +13,76 @@ import Foundation
 
 struct MainTabView: View {
 
+    @Environment(AppRouter.self) private var router
     @State private var selectedTab = 0
 
     var body: some View {
         TabView(selection: $selectedTab) {
 
-            HomeView()
-                .tabItem {
-                    Label("Home",    systemImage: selectedTab == 0 ? "house.fill"          : "house")
+            // Home — guest sees stripped-down GuestHomeView
+            Group {
+                if router.isGuest {
+                    GuestHomeView()
+                } else {
+                    HomeView()
                 }
-                .tag(0)
+            }
+            .tabItem {
+                Label("Home", systemImage: selectedTab == 0 ? "house.fill" : "house")
+            }
+            .tag(0)
 
-            BookView(selectedTab: $selectedTab)
-                .tabItem {
-                    Label("Book",    systemImage: selectedTab == 1 ? "calendar.badge.plus"  : "calendar")
+            // Book — guests blocked
+            Group {
+                if router.isGuest {
+                    NavigationStack { LoginRequiredView() }
+                } else {
+                    BookView(selectedTab: $selectedTab)
                 }
-                .tag(1)
+            }
+            .tabItem {
+                Label("Book", systemImage: selectedTab == 1 ? "calendar.badge.plus" : "calendar")
+            }
+            .tag(1)
 
+            // Map — always available
             MapView()
                 .tabItem {
-                    Label("Map",     systemImage: "map")
+                    Label("Map", systemImage: "map")
                 }
                 .tag(2)
 
-            AccountView()
-                .tabItem {
-                    Label("User",    systemImage: selectedTab == 3 ? "person.fill"          : "person")
+            // Account — guests blocked
+            Group {
+                if router.isGuest {
+                    NavigationStack { LoginRequiredView() }
+                } else {
+                    AccountView()
                 }
-                .tag(3)
-
-            NavigationStack {
-                SettingsView()
             }
             .tabItem {
-                Label("Setting", systemImage: selectedTab == 4 ? "gearshape.fill"       : "gearshape")
+                Label("User", systemImage: selectedTab == 3 ? "person.fill" : "person")
+            }
+            .tag(3)
+
+            // Settings — guests blocked
+            Group {
+                if router.isGuest {
+                    NavigationStack { LoginRequiredView() }
+                } else {
+                    NavigationStack { SettingsView() }
+                }
+            }
+            .tabItem {
+                Label("Setting", systemImage: selectedTab == 4 ? "gearshape.fill" : "gearshape")
             }
             .tag(4)
         }
         .tint(Color.clinicPrimary)
         .onReceive(NotificationCenter.default.publisher(for: .bookingSuccess)) { _ in
-            // switch to home tab when booking succeeds
+            selectedTab = 0
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .switchToHomeTab)) { _ in
             selectedTab = 0
         }
     }
