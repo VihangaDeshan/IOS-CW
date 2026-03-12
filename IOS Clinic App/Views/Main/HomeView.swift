@@ -81,13 +81,25 @@ struct HomeView: View {
                 VisitProgressView()
             }
             .navigationDestination(isPresented: $showAppointments) {
-                AppointmentsView()
+                AppointmentsView(onReturnHome: {
+                    showAppointments = false
+                    showVisitProgress = false
+                    showAlerts = false
+                    showSearchResults = false
+                })
             }
             .navigationDestination(isPresented: $showAlerts) {
                 AlertsView()
             }
             .navigationDestination(isPresented: $showSearchResults) {
                 SpecializationView(initialQuery: searchQuery, initialSegment: 1)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .switchToHomeTab)) { _ in
+                showVisitProgress = false
+                showAppointments = false
+                showAlerts = false
+                showSearchResults = false
+                isSearchFocused = false
             }
         }
     }

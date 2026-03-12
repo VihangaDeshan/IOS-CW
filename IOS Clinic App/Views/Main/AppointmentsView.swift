@@ -47,7 +47,9 @@ struct AppointmentsView: View {
 
     @Environment(\.dismiss) private var dismiss
     var searchQuery: String = ""
+    var onReturnHome: (() -> Void)? = nil
     @State private var selectedFilter: AppointmentStatus = .all
+    @State private var showReschedule = false
 
     private let appointments: [Appointment] = [
         Appointment(number: "234", patientTag: "Myself",    date: "2026.01.05", time: "12.30pm", room: "Room 3B", doctor: "Dr. Nimal Balahewa", status: .completed),
@@ -101,9 +103,12 @@ struct AppointmentsView: View {
                             emptyState
                         } else {
                             ForEach(filtered) { appointment in
-                                AppointmentCard(appointment: appointment)
-                                    .padding(.horizontal, AppSpacing.lg)
-                                    .padding(.bottom, AppSpacing.md)
+                                AppointmentCard(
+                                    appointment: appointment,
+                                    onReschedule: { showReschedule = true }
+                                )
+                                .padding(.horizontal, AppSpacing.lg)
+                                .padding(.bottom, AppSpacing.md)
                             }
                         }
                     }
@@ -112,6 +117,16 @@ struct AppointmentsView: View {
             }
         }
         .navigationBarHidden(true)
+        .navigationDestination(isPresented: $showReschedule) {
+            SpecializationView(isReschedule: true)
+                .environment(\.onRescheduleComplete, {
+                    showReschedule = false
+                    DispatchQueue.main.async {
+                        onReturnHome?()
+                        NotificationCenter.default.post(name: .switchToHomeTab, object: nil)
+                    }
+                })
+        }
         .animation(.easeInOut(duration: 0.22), value: selectedFilter)
     }
 
@@ -218,6 +233,7 @@ private struct FilterPill: View {
 private struct AppointmentCard: View {
 
     let appointment: Appointment
+    let onReschedule: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
@@ -240,11 +256,14 @@ private struct AppointmentCard: View {
                 // Action icons for upcoming appointments
                 if appointment.status == .upcoming {
                     HStack(spacing: AppSpacing.sm) {
-                        Image(systemName: "calendar.badge.plus")
-                            .font(.system(size: 18))
-                            .foregroundStyle(Color.clinicPrimary)
-                            .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
-                            .contentShape(Rectangle())
+                        Button { onReschedule() } label: {
+                            Image(systemName: "calendar.badge.plus")
+                                .font(.system(size: 18))
+                                .foregroundStyle(Color.clinicPrimary)
+                                .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
 
                         Image(systemName: "xmark.circle")
                             .font(.system(size: 18))

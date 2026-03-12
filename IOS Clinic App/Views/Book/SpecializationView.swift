@@ -12,10 +12,12 @@ struct SpecializationView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var searchText: String
     @State private var selectedSegment: Int
+    @State private var isReschedule: Bool
 
-    init(initialQuery: String = "", initialSegment: Int = 0) {
+    init(initialQuery: String = "", initialSegment: Int = 0, isReschedule: Bool = false) {
         _searchText = State(initialValue: initialQuery)
         _selectedSegment = State(initialValue: initialSegment)
+        _isReschedule = State(initialValue: isReschedule)
     }
 
     // header title adjusts based on selected segment
@@ -109,7 +111,7 @@ struct SpecializationView: View {
                 LazyVStack(spacing: 12) {
                     ForEach(filteredSpecializations) { spec in
                         NavigationLink {
-                            DoctorsForSpecializationView(specialization: spec)
+                            DoctorsForSpecializationView(specialization: spec, isReschedule: isReschedule)
                         } label: {
                             SpecializationRow(specialization: spec)
                                 .padding(.horizontal)
@@ -120,7 +122,7 @@ struct SpecializationView: View {
                 .padding(.top, 8)
             }
         } else {
-            DoctorsListView(searchText: $searchText, specialization: nil)
+            DoctorsListView(searchText: $searchText, specialization: nil, isReschedule: isReschedule)
         }
     }
 }
@@ -170,6 +172,7 @@ struct Doctor: Identifiable {
 struct DoctorsListView: View {
     @Binding var searchText: String
     let specialization: Specialization?
+    var isReschedule: Bool = false
 
     private let allDoctors: [Doctor] = [
         Doctor(name: "Dr. Rasika Perera", specialization: "Dentists", rating: 4.8, reviews: 86, imageName: "dr_rasika"),
@@ -196,7 +199,7 @@ struct DoctorsListView: View {
             LazyVStack(spacing: 12) {
                 ForEach(filteredDoctors) { doc in
                     NavigationLink {
-                        DoctorProfileView(doctor: doc)
+                        DoctorProfileView(doctor: doc, isReschedule: isReschedule)
                     } label: {
                         DoctorRow(doctor: doc)
                             .padding(.horizontal)
@@ -268,13 +271,14 @@ private struct DoctorRow: View {
 struct DoctorsForSpecializationView: View {
     @Environment(\.dismiss) private var dismiss
     let specialization: Specialization
+    var isReschedule: Bool = false
     @State private var searchText: String = ""
 
     var body: some View {
         VStack(spacing: 0) {
             header
             searchBar
-            DoctorsListView(searchText: $searchText, specialization: specialization)
+            DoctorsListView(searchText: $searchText, specialization: specialization, isReschedule: isReschedule)
             Spacer(minLength: 0)
         }
         .background(Color(.systemBackground).ignoresSafeArea())
@@ -325,6 +329,7 @@ struct DoctorsForSpecializationView: View {
 struct DoctorProfileView: View {
     @Environment(\.dismiss) private var dismiss
     let doctor: Doctor
+    var isReschedule: Bool = false
     @State private var searchText: String = ""
     @State private var selectedDateIndex: Int? = nil
     @State private var selectedTime: String? = nil
@@ -508,12 +513,12 @@ struct DoctorProfileView: View {
         NavigationLink(isActive: $navigateToAppointment) {
             // pass date/time and doctor info
             let dateString = selectedDateIndex.map { dates[$0] } ?? ""
-            AppointmentView(doctor: doctor, dateString: dateString, timeString: selectedTime ?? "")
+            AppointmentView(doctor: doctor, dateString: dateString, timeString: selectedTime ?? "", isReschedule: isReschedule)
         } label: {
             Button {
                 navigateToAppointment = true
             } label: {
-                Text("Book Appointment")
+                Text(isReschedule ? "Continue" : "Book Appointment")
                     .font(Font.btnTitleSize)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -553,12 +558,15 @@ struct DoctorProfileView: View {
 
 struct AppointmentView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.onRescheduleComplete) private var onRescheduleComplete
     let doctor: Doctor
     let dateString: String
     let timeString: String
+    var isReschedule: Bool = false
     @State private var selectedMemberIndex: Int = 0
     @State private var nic: String = ""
     @State private var navigateToPayment = false
+    @State private var navigateToRescheduleConfirm = false
     @State private var billItems: [BillItem] = []
 
     // sample members
@@ -582,7 +590,7 @@ struct AppointmentView: View {
 
     private var header: some View {
         ZStack {
-            Text("Appointment")
+            Text(isReschedule ? "Reschedule" : "Appointment")
                 .font(Font.navTitleSize)
                 .foregroundStyle(.primary)
                 .frame(maxWidth: .infinity)
@@ -738,23 +746,47 @@ struct AppointmentView: View {
 
     private var confirmButton: some View {
         ZStack {
-            // hidden navigation link to push to payment
-            NavigationLink(isActive: $navigateToPayment) {
-                let total = billItems.reduce(0) { $0 + $1.amount }
-                PaymentView(total: total, billItems: billItems)
-            } label: { EmptyView() }
-            .hidden()
+            // hidden navigation link — destination depends on mode
+            if isReschedule {
+                NavigationLink(isActive: $navigateToRescheduleConfirm) {
+                    RescheduleConfirmView(
+                        doctor:     doctor,
+                        dateString: dateString,
+                        timeString: timeString,
+                        member:     members[selectedMemberIndex]
+                    )
+                    .environment(\.onRescheduleComplete, {
+                        navigateToRescheduleConfirm = false
+                        if let onComplete = onRescheduleComplete {
+                            onComplete()
+                        } else {
+                            dismiss()
+                        }
+                    })
+                } label: { EmptyView() }
+                .hidden()
+            } else {
+                NavigationLink(isActive: $navigateToPayment) {
+                    let total = billItems.reduce(0) { $0 + $1.amount }
+                    PaymentView(total: total, billItems: billItems)
+                } label: { EmptyView() }
+                .hidden()
+            }
 
             Button {
-                // when user taps confirm, prepare items and navigate
-                billItems = [
-                    BillItem(title: "Consultation Fee", subtitle: doctor.name, amount: 3000),
-                    BillItem(title: "Hospital Fee", subtitle: "Asiri Hospital", amount: 2000),
-                    BillItem(title: "Service Charge", subtitle: "10%", amount: 500)
-                ]
-                navigateToPayment = true
+                if isReschedule {
+                    navigateToRescheduleConfirm = true
+                } else {
+                    // when user taps confirm, prepare items and navigate
+                    billItems = [
+                        BillItem(title: "Consultation Fee", subtitle: doctor.name, amount: 3000),
+                        BillItem(title: "Hospital Fee", subtitle: "Asiri Hospital", amount: 2000),
+                        BillItem(title: "Service Charge", subtitle: "10%", amount: 500)
+                    ]
+                    navigateToPayment = true
+                }
             } label: {
-                Text("Confirm")
+                Text(isReschedule ? "Confirm Reschedule" : "Confirm")
                     .font(Font.btnTitleSize)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -766,6 +798,19 @@ struct AppointmentView: View {
         }
         .padding(.horizontal)
         .padding(.bottom, 16)
+    }
+}
+
+// MARK: - Environment Key (reschedule completion callback)
+
+struct OnRescheduleCompleteKey: EnvironmentKey {
+    static let defaultValue: (() -> Void)? = nil
+}
+
+extension EnvironmentValues {
+    var onRescheduleComplete: (() -> Void)? {
+        get { self[OnRescheduleCompleteKey.self] }
+        set { self[OnRescheduleCompleteKey.self] = newValue }
     }
 }
 
