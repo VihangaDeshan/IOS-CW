@@ -558,6 +558,7 @@ struct DoctorProfileView: View {
 
 struct AppointmentView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.onRescheduleComplete) private var onRescheduleComplete
     let doctor: Doctor
     let dateString: String
     let timeString: String
@@ -754,6 +755,14 @@ struct AppointmentView: View {
                         timeString: timeString,
                         member:     members[selectedMemberIndex]
                     )
+                    .environment(\.onRescheduleComplete, {
+                        navigateToRescheduleConfirm = false
+                        if let onComplete = onRescheduleComplete {
+                            onComplete()
+                        } else {
+                            dismiss()
+                        }
+                    })
                 } label: { EmptyView() }
                 .hidden()
             } else {
