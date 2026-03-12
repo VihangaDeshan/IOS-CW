@@ -794,7 +794,7 @@ struct AppointmentView: View {
 
 // MARK: - Environment Key (reschedule completion callback)
 
-private struct OnRescheduleCompleteKey: EnvironmentKey {
+struct OnRescheduleCompleteKey: EnvironmentKey {
     static let defaultValue: (() -> Void)? = nil
 }
 
