@@ -18,59 +18,69 @@ struct HelpSupportView: View {
 
     var body: some View {
         ZStack {
-            Color(.systemBackground).ignoresSafeArea()
+            Color.white.ignoresSafeArea()
 
             VStack(spacing: 0) {
-            header
-            Spacer().frame(height: 24)
-            VStack(spacing: 12) {
-                card {
-                    VStack(spacing: 8) {
-                        Image(systemName: "phone.fill")
-                            .font(.system(size: 28))
-                            .foregroundColor(.clinicPrimary)
-                        Text("Call Us")
-                            .font(.headline)
-                        Text("+94 740 458 767")
-                            .font(.subheadline)
-                            .underline()
-                            .foregroundStyle(.blue)
-                    }
-                }
-                card {
-                    VStack(spacing: 8) {
-                        Image(systemName: "envelope.fill")
-                            .font(.system(size: 28))
-                            .foregroundColor(.clinicPrimary)
-                        Text("Email Support")
-                            .font(.headline)
-                        Text("support@clinicflow.com")
-                            .font(.subheadline)
-                            .underline()
-                            .foregroundStyle(.blue)
-                    }
-                }
-                card {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Frequently Asked Questions")
-                            .font(.headline)
-                        ForEach(faqs) { item in
-                            FAQRow(item: item, isExpanded: expandedIDs.contains(item.id)) {
-                                if expandedIDs.contains(item.id) {
-                                    expandedIDs.remove(item.id)
-                                } else {
-                                    expandedIDs.insert(item.id)
+                header
+
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 24) {
+
+                        // ── Contact section ───────────────────────
+                        VStack(alignment: .leading, spacing: 12) {
+                            sectionLabel("Get in Touch")
+
+                            HStack(spacing: 12) {
+                                contactCard(
+                                    icon: "phone.fill",
+                                    iconColor: Color(red: 0.11, green: 0.49, blue: 0.98),
+                                    title: "Call Us",
+                                    detail: "+94 740 458 767"
+                                )
+                                contactCard(
+                                    icon: "envelope.fill",
+                                    iconColor: Color(red: 0.55, green: 0.35, blue: 0.96),
+                                    title: "Email",
+                                    detail: "support@\nclinicflow.com"
+                                )
+                            }
+                            .padding(.horizontal)
+                        }
+
+                        // ── FAQ section ───────────────────────────
+                        VStack(alignment: .leading, spacing: 12) {
+                            sectionLabel("Frequently Asked Questions")
+
+                            card {
+                                VStack(alignment: .leading, spacing: 0) {
+                                    ForEach(Array(faqs.enumerated()), id: \.element.id) { index, item in
+                                        FAQRow(item: item, isExpanded: expandedIDs.contains(item.id)) {
+                                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                                if expandedIDs.contains(item.id) {
+                                                    expandedIDs.remove(item.id)
+                                                } else {
+                                                    expandedIDs.insert(item.id)
+                                                }
+                                            }
+                                        }
+                                        if index < faqs.count - 1 {
+                                            Divider().padding(.leading, 4)
+                                        }
+                                    }
                                 }
                             }
                         }
+
+                        Spacer(minLength: AppSpacing.xxxl)
                     }
+                    .padding(.top, 24)
                 }
-            }
-            Spacer()
             }
         }
         .navigationBarHidden(true)
     }
+
+    // MARK: - Sub-views
 
     private var header: some View {
         ZStack {
@@ -92,29 +102,55 @@ struct HelpSupportView: View {
         .frame(height: AppSize.minTapTarget)
         .padding(.horizontal, AppSpacing.md)
         .padding(.top, AppSpacing.xs)
-        .background(Color.clinicSurface)
+        .background(Color.white)
+    }
+
+    private func sectionLabel(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: 13, weight: .semibold))
+            .foregroundStyle(.secondary)
+            .textCase(.uppercase)
+            .tracking(0.5)
+            .padding(.horizontal)
+    }
+
+    private func contactCard(icon: String, iconColor: Color, title: String, detail: String) -> some View {
+        VStack(spacing: 12) {
+            ZStack {
+                Circle()
+                    .fill(iconColor.opacity(0.12))
+                    .frame(width: 52, height: 52)
+                Image(systemName: icon)
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundStyle(iconColor)
+            }
+            Text(title)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(.primary)
+            Text(detail)
+                .font(.system(size: 12))
+                .foregroundStyle(Color.clinicPrimary)
+                .multilineTextAlignment(.center)
+                .underline()
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 20)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg))
+        .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 3)
     }
 
     private func card<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         content()
             .padding()
             .background(.ultraThinMaterial)
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .strokeBorder(
-                        LinearGradient(
-                            colors: [Color.white.opacity(0.6), Color.white.opacity(0.1)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        ),
-                        lineWidth: 1
-                    )
-            )
-            .shadow(color: Color.clinicPrimary.opacity(0.06), radius: 8, x: 0, y: 4)
+            .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg))
+            .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 3)
             .padding(.horizontal)
     }
 }
+
+// MARK: - FAQ Row
 
 private struct FAQRow: View {
     let item: FAQItem
@@ -122,25 +158,35 @@ private struct FAQRow: View {
     let toggle: () -> Void
 
     var body: some View {
-        VStack(spacing: 4) {
+        VStack(alignment: .leading, spacing: 0) {
             Button(action: toggle) {
-                HStack {
+                HStack(spacing: 12) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.clinicPrimary.opacity(0.10))
+                            .frame(width: 28, height: 28)
+                        Image(systemName: isExpanded ? "minus" : "plus")
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(Color.clinicPrimary)
+                    }
                     Text(item.question)
-                        .font(.subheadline)
+                        .font(.system(size: 14, weight: .medium))
                         .foregroundStyle(.primary)
+                        .multilineTextAlignment(.leading)
                     Spacer()
-                    Image(systemName: isExpanded ? "minus" : "plus")
-                        .foregroundColor(Color.clinicPrimary)
                 }
+                .padding(.vertical, 12)
             }
             .buttonStyle(.plain)
+
             if isExpanded {
                 Text(item.answer)
-                    .font(.caption)
+                    .font(.system(size: 13))
                     .foregroundStyle(.secondary)
-                    .padding(.top, 2)
+                    .padding(.leading, 40)
+                    .padding(.bottom, 12)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
             }
-            Divider()
         }
     }
 }
