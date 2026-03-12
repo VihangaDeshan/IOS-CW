@@ -46,6 +46,7 @@ struct Appointment: Identifiable {
 struct AppointmentsView: View {
 
     @Environment(\.dismiss) private var dismiss
+    var searchQuery: String = ""
     @State private var selectedFilter: AppointmentStatus = .all
 
     private let appointments: [Appointment] = [
@@ -56,8 +57,9 @@ struct AppointmentsView: View {
     ]
 
     private var filtered: [Appointment] {
-        guard selectedFilter != .all else { return appointments }
-        return appointments.filter { $0.status == selectedFilter }
+        let byStatus = selectedFilter == .all ? appointments : appointments.filter { $0.status == selectedFilter }
+        guard !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty else { return byStatus }
+        return byStatus.filter { $0.doctor.localizedCaseInsensitiveContains(searchQuery) }
     }
 
     var body: some View {
@@ -81,12 +83,19 @@ struct AppointmentsView: View {
                     VStack(alignment: .leading, spacing: 0) {
 
                         // Section title
-                        Text(selectedFilter.rawValue)
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(.primary)
-                            .padding(.horizontal, AppSpacing.lg)
-                            .padding(.top, AppSpacing.lg)
-                            .padding(.bottom, AppSpacing.sm)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(selectedFilter.rawValue)
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(.primary)
+                            if !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
+                                Text("Results for \"\(searchQuery)\"")
+                                    .font(.system(size: 13))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.lg)
+                        .padding(.bottom, AppSpacing.sm)
 
                         if filtered.isEmpty {
                             emptyState

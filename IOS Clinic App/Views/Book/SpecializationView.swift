@@ -10,8 +10,13 @@ struct Specialization: Identifiable, Hashable {
 
 struct SpecializationView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var searchText: String = ""
-    @State private var selectedSegment = 0 // 0 = specializations, 1 = doctors
+    @State private var searchText: String
+    @State private var selectedSegment: Int
+
+    init(initialQuery: String = "", initialSegment: Int = 0) {
+        _searchText = State(initialValue: initialQuery)
+        _selectedSegment = State(initialValue: initialSegment)
+    }
 
     // header title adjusts based on selected segment
     private var headerTitle: String {
