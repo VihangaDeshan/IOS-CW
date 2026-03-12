@@ -122,7 +122,6 @@ struct AppointmentsView: View {
                     showReschedule = false
                     DispatchQueue.main.async {
                         NotificationCenter.default.post(name: .switchToHomeTab, object: nil)
-                        dismiss()
                     }
                 })
         }
