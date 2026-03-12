@@ -118,7 +118,13 @@ struct AppointmentsView: View {
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $showReschedule) {
             SpecializationView(isReschedule: true)
-                .environment(\.onRescheduleComplete, { showReschedule = false })
+                .environment(\.onRescheduleComplete, {
+                    showReschedule = false
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: .switchToHomeTab, object: nil)
+                        dismiss()
+                    }
+                })
         }
         .animation(.easeInOut(duration: 0.22), value: selectedFilter)
     }
