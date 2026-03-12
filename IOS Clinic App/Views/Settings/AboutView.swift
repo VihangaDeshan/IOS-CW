@@ -83,13 +83,11 @@ struct AboutView: View {
         VStack(spacing: AppSpacing.md) {
             // App Icon
             ZStack {
-                RoundedRectangle(cornerRadius: AppRadius.xl)
-                    .fill(LinearGradient.clinicIcon)
-                    .frame(width: 88, height: 88)
-                    .shadow(color: Color.clinicIconBlue.opacity(0.35), radius: 16, x: 0, y: 8)
-                Image(systemName: "cross.fill")
-                    .font(.system(size: 38, weight: .medium))
-                    .foregroundStyle(.white)
+                
+                Image("ClinicLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 56, height: 56)
             }
 
             VStack(spacing: 4) {

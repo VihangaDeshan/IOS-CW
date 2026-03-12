@@ -23,7 +23,7 @@ struct CheckoutView: View {
             termsToggle
             payButton
         }
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(Color.white.ignoresSafeArea())
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $navigateToSuccess) {
             SuccessView()
@@ -50,7 +50,7 @@ struct CheckoutView: View {
         .frame(height: AppSize.minTapTarget)
         .padding(.horizontal, AppSpacing.md)
         .padding(.top, AppSpacing.xs)
-        .background(Color.clinicSurface)
+        .background(Color.white)
     }
 
     private var cardForm: some View {
@@ -105,8 +105,9 @@ struct CustomTextField: View {
     var body: some View {
         TextField(placeholder, text: $text)
             .padding(12)
-            .background(Color(.systemGray6))
-            .cornerRadius(12)
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 2)
             .keyboardType(.default)
     }
 }
