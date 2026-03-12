@@ -12,6 +12,7 @@ struct RescheduleConfirmView: View {
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.onRescheduleComplete) private var onRescheduleComplete
+    @Environment(AppRouter.self) private var router
 
     let doctor:     Doctor
     let dateString: String
@@ -110,11 +111,8 @@ struct RescheduleConfirmView: View {
 
                 // ── Done button — outside scroll, always visible ───────
                 Button {
-                    if let onComplete = onRescheduleComplete {
-                        onComplete()
-                    } else {
-                        dismiss()
-                    }
+                    onRescheduleComplete?()
+                    router.resetToHomeDashboard()
                 } label: {
                     Text("Done")
                         .font(Font.btnTitleSize)

@@ -56,6 +56,7 @@ struct ContentView: View {
 
             case .main:
                 MainTabView()
+                    .id(router.mainResetToken)
                     .transition(.scale(scale: 0.96).combined(with: .opacity))
             }
         }

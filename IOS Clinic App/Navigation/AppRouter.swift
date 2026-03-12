@@ -41,6 +41,7 @@ final class AppRouter {
     }
 
     var currentRoute: AppRoute = .onboarding
+    var mainResetToken = UUID()
 
     init() {
         self.isAuthorized = UserDefaults.standard.bool(forKey: authKey)
@@ -51,6 +52,13 @@ final class AppRouter {
     func navigate(to route: AppRoute) {
         withAnimation(.easeInOut(duration: 0.38)) {
             currentRoute = route
+        }
+    }
+
+    func resetToHomeDashboard() {
+        withAnimation(.easeInOut(duration: 0.38)) {
+            currentRoute = .main
+            mainResetToken = UUID()
         }
     }
 
