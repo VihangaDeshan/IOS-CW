@@ -21,86 +21,94 @@ struct RescheduleConfirmView: View {
     @State private var appeared = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            navBar
+        ZStack(alignment: .top) {
+            Color(.systemBackground).ignoresSafeArea()
 
-            Spacer()
+            VStack(spacing: 0) {
+                navBar
 
-                // ── Success graphic ───────────────────────────────────
-                ZStack {
-                    Circle()
-                        .fill(Color.clinicPrimary.opacity(0.08))
-                        .frame(width: 130, height: 130)
-                    Circle()
-                        .fill(Color.clinicPrimary.opacity(0.14))
-                        .frame(width: 100, height: 100)
-                    Image(systemName: "checkmark.circle.fill")
-                        .font(.system(size: 56, weight: .medium))
-                        .foregroundStyle(Color.clinicPrimary)
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        Spacer().frame(height: AppSpacing.xl)
+
+                        // ── Success graphic ───────────────────────────────────
+                        ZStack {
+                            Circle()
+                                .fill(Color.clinicPrimary.opacity(0.08))
+                                .frame(width: 130, height: 130)
+                            Circle()
+                                .fill(Color.clinicPrimary.opacity(0.14))
+                                .frame(width: 100, height: 100)
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 56, weight: .medium))
+                                .foregroundStyle(Color.clinicPrimary)
+                        }
+                        .scaleEffect(appeared ? 1 : 0.4)
+                        .opacity(appeared ? 1 : 0)
+                        .animation(.spring(response: 0.5, dampingFraction: 0.6).delay(0.1), value: appeared)
+
+                        // ── Headline ──────────────────────────────────────────
+                        VStack(spacing: AppSpacing.xs) {
+                            Text("Appointment Rescheduled!")
+                                .font(.system(size: 22, weight: .bold))
+                                .foregroundStyle(.primary)
+                                .multilineTextAlignment(.center)
+
+                            Text("Your appointment has been successfully rescheduled. No additional payment is required.")
+                                .font(.system(size: 14))
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, AppSpacing.xl)
+                        }
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 12)
+                        .animation(.easeOut(duration: 0.4).delay(0.3), value: appeared)
+                        .padding(.top, AppSpacing.lg)
+
+                        // ── Details card ──────────────────────────────────────
+                        VStack(spacing: 0) {
+                            detailRow(icon: "person.fill",   color: .blue,              label: "Doctor",    value: doctor.name)
+                            Divider().padding(.horizontal, AppSpacing.md)
+                            detailRow(icon: "stethoscope",   color: .teal,              label: "Specialty", value: doctor.specialization)
+                            Divider().padding(.horizontal, AppSpacing.md)
+                            detailRow(icon: "calendar",      color: Color.clinicPrimary, label: "New Date",  value: dateString)
+                            Divider().padding(.horizontal, AppSpacing.md)
+                            detailRow(icon: "clock.fill",    color: .orange,            label: "Time",      value: timeString.isEmpty ? "TBC" : timeString)
+                            Divider().padding(.horizontal, AppSpacing.md)
+                            detailRow(icon: "person.2.fill", color: .purple,            label: "Patient",   value: member)
+                        }
+                        .background(Color(.systemBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg))
+                        .overlay(RoundedRectangle(cornerRadius: AppRadius.lg).stroke(Color(.systemGray5), lineWidth: 1))
+                        .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 3)
+                        .padding(.horizontal, AppSpacing.lg)
+                        .padding(.top, AppSpacing.xl)
+                        .opacity(appeared ? 1 : 0)
+                        .offset(y: appeared ? 0 : 16)
+                        .animation(.easeOut(duration: 0.4).delay(0.45), value: appeared)
+
+                        // ── No payment notice ─────────────────────────────────
+                        HStack(spacing: AppSpacing.xs) {
+                            Image(systemName: "checkmark.seal.fill")
+                                .font(.system(size: 13))
+                                .foregroundStyle(.green)
+                            Text("No payment required for rescheduling")
+                                .font(.system(size: 13, weight: .medium))
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.horizontal, AppSpacing.md)
+                        .padding(.vertical, AppSpacing.sm)
+                        .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: AppRadius.pill))
+                        .padding(.top, AppSpacing.lg)
+                        .opacity(appeared ? 1 : 0)
+                        .animation(.easeOut(duration: 0.4).delay(0.55), value: appeared)
+
+                        Spacer().frame(height: AppSpacing.xxxl)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
-                .scaleEffect(appeared ? 1 : 0.4)
-                .opacity(appeared ? 1 : 0)
-                .animation(.spring(response: 0.5, dampingFraction: 0.6).delay(0.1), value: appeared)
 
-                // ── Headline ──────────────────────────────────────────
-                VStack(spacing: AppSpacing.xs) {
-                    Text("Appointment Rescheduled!")
-                        .font(.system(size: 22, weight: .bold))
-                        .foregroundStyle(.primary)
-                        .multilineTextAlignment(.center)
-
-                    Text("Your appointment has been successfully rescheduled. No additional payment is required.")
-                        .font(.system(size: 14))
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, AppSpacing.xl)
-                }
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 12)
-                .animation(.easeOut(duration: 0.4).delay(0.3), value: appeared)
-                .padding(.top, AppSpacing.lg)
-
-                // ── Details card ──────────────────────────────────────
-                VStack(spacing: 0) {
-                    detailRow(icon: "person.fill",      color: .blue,             label: "Doctor",   value: doctor.name)
-                    Divider().padding(.horizontal, AppSpacing.md)
-                    detailRow(icon: "stethoscope",       color: .teal,             label: "Specialty", value: doctor.specialization)
-                    Divider().padding(.horizontal, AppSpacing.md)
-                    detailRow(icon: "calendar",           color: Color.clinicPrimary, label: "New Date",  value: dateString)
-                    Divider().padding(.horizontal, AppSpacing.md)
-                    detailRow(icon: "clock.fill",         color: .orange,           label: "Time",     value: timeString.isEmpty ? "TBC" : timeString)
-                    Divider().padding(.horizontal, AppSpacing.md)
-                    detailRow(icon: "person.2.fill",      color: .purple,           label: "Patient",  value: member)
-                }
-                .background(Color(.systemBackground))
-                .clipShape(RoundedRectangle(cornerRadius: AppRadius.lg))
-                .overlay(RoundedRectangle(cornerRadius: AppRadius.lg).stroke(Color(.systemGray5), lineWidth: 1))
-                .shadow(color: .black.opacity(0.05), radius: 8, x: 0, y: 3)
-                .padding(.horizontal, AppSpacing.lg)
-                .padding(.top, AppSpacing.xl)
-                .opacity(appeared ? 1 : 0)
-                .offset(y: appeared ? 0 : 16)
-                .animation(.easeOut(duration: 0.4).delay(0.45), value: appeared)
-
-                // ── No payment notice ─────────────────────────────────
-                HStack(spacing: AppSpacing.xs) {
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.system(size: 13))
-                        .foregroundStyle(.green)
-                    Text("No payment required for rescheduling")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(.secondary)
-                }
-                .padding(.horizontal, AppSpacing.md)
-                .padding(.vertical, AppSpacing.sm)
-                .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: AppRadius.pill))
-                .padding(.top, AppSpacing.lg)
-                .opacity(appeared ? 1 : 0)
-                .animation(.easeOut(duration: 0.4).delay(0.55), value: appeared)
-
-                Spacer()
-
-                // ── Done button ───────────────────────────────────────
+                // ── Done button — outside scroll, always visible ───────
                 Button {
                     if let onComplete = onRescheduleComplete {
                         onComplete()
@@ -117,12 +125,12 @@ struct RescheduleConfirmView: View {
                 }
                 .buttonStyle(.plain)
                 .padding(.horizontal, AppSpacing.lg)
+                .padding(.top, AppSpacing.sm)
                 .padding(.bottom, AppSpacing.xl)
                 .opacity(appeared ? 1 : 0)
                 .animation(.easeOut(duration: 0.35).delay(0.65), value: appeared)
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground).ignoresSafeArea())
         .navigationBarHidden(true)
         .onAppear { appeared = true }
     }
