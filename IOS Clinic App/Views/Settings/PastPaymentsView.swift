@@ -109,7 +109,7 @@ struct PastPaymentsView: View {
             HStack {
                 Button { dismiss() } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.app(size: 18, weight: .semibold))
                         .foregroundColor(.primary)
                         .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }
@@ -168,15 +168,15 @@ struct PastPaymentsView: View {
     private func summaryTile(icon: String, label: String, value: String) -> some View {
         VStack(spacing: 4) {
             Image(systemName: icon)
-                .font(.system(size: 16))
+                .font(.app(size: 16))
                 .foregroundStyle(Color.clinicPrimary)
             Text(value)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.app(size: 13, weight: .semibold))
                 .foregroundStyle(.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
             Text(label)
-                .font(.system(size: 11))
+                .font(.app(size: 11))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
@@ -203,22 +203,22 @@ private struct PaymentHistoryCard: View {
                             .fill(payment.status.color.opacity(0.12))
                             .frame(width: 44, height: 44)
                         Image(systemName: payment.status.icon)
-                            .font(.system(size: 18))
+                            .font(.app(size: 18))
                             .foregroundStyle(payment.status.color)
                     }
 
                     VStack(alignment: .leading, spacing: 3) {
                         Text(payment.doctor)
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.app(size: 15, weight: .semibold))
                             .foregroundStyle(.primary)
                         Text(payment.specialization)
-                            .font(.system(size: 13))
+                            .font(.app(size: 13))
                             .foregroundStyle(.secondary)
                         HStack(spacing: 6) {
                             Image(systemName: "calendar")
-                                .font(.system(size: 11))
+                                .font(.app(size: 11))
                             Text("\(payment.date)  •  \(payment.time)")
-                                .font(.system(size: 12))
+                                .font(.app(size: 12))
                         }
                         .foregroundStyle(Color(.tertiaryLabel))
                     }
@@ -227,16 +227,16 @@ private struct PaymentHistoryCard: View {
 
                     VStack(alignment: .trailing, spacing: 4) {
                         Text("LKR \(String(format: "%.2f", payment.total))")
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.app(size: 15, weight: .bold))
                             .foregroundStyle(Color.clinicPrimary)
                         Text(payment.status.label)
-                            .font(.system(size: 11, weight: .medium))
+                            .font(.app(size: 11, weight: .medium))
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
                             .background(payment.status.color.opacity(0.12), in: Capsule())
                             .foregroundStyle(payment.status.color)
                         Image(systemName: expanded ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 12, weight: .medium))
+                            .font(.app(size: 12, weight: .medium))
                             .foregroundStyle(Color(.tertiaryLabel))
                     }
                 }
@@ -252,16 +252,16 @@ private struct PaymentHistoryCard: View {
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
                     // Bill breakdown
                     Text("Bill Breakdown")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.app(size: 13, weight: .semibold))
                         .foregroundStyle(.secondary)
 
                     ForEach(payment.items, id: \.self) { item in
                         HStack {
                             Image(systemName: "circle.fill")
-                                .font(.system(size: 5))
+                                .font(.app(size: 5))
                                 .foregroundStyle(Color(.tertiaryLabel))
                             Text(item)
-                                .font(.system(size: 14))
+                                .font(.app(size: 14))
                                 .foregroundStyle(.primary)
                             Spacer()
                         }
@@ -272,17 +272,17 @@ private struct PaymentHistoryCard: View {
                     // Payment method
                     HStack {
                         Image(systemName: "creditcard")
-                            .font(.system(size: 13))
+                            .font(.app(size: 13))
                             .foregroundStyle(Color.clinicPrimary)
                         Text("Paid via")
-                            .font(.system(size: 13))
+                            .font(.app(size: 13))
                             .foregroundStyle(.secondary)
                         Text(payment.method)
-                            .font(.system(size: 13, weight: .medium))
+                            .font(.app(size: 13, weight: .medium))
                             .foregroundStyle(.primary)
                         Spacer()
                         Text("LKR \(String(format: "%.2f", payment.total))")
-                            .font(.system(size: 13, weight: .bold))
+                            .font(.app(size: 13, weight: .bold))
                             .foregroundStyle(Color.clinicPrimary)
                     }
                 }

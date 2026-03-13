@@ -75,7 +75,7 @@ struct SpecializationView: View {
             HStack {
                 Button(action: { dismiss() }) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.app(size: 18, weight: .semibold))
                         .foregroundColor(.primary)
                         .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }
@@ -132,7 +132,7 @@ struct SpecializationRow: View {
     var body: some View {
         HStack(spacing: 16) {
             Image(systemName: specialization.icon)
-                .font(.system(size: 20))
+                .font(.app(size: 20))
                 .foregroundColor(.clinicPrimary)
                 .frame(width: 32, height: 32)
             Text(specialization.name)
@@ -230,7 +230,7 @@ private struct DoctorRow: View {
                     .foregroundStyle(.secondary)
                 HStack(spacing: 4) {
                     Image(systemName: "star.fill")
-                        .font(.system(size: 12))
+                        .font(.app(size: 12))
                         .foregroundColor(.clinicPrimary)
                     Text(String(format: "%.1f", doctor.rating))
                         .font(.caption)
@@ -242,7 +242,7 @@ private struct DoctorRow: View {
             }
             Spacer()
             Image(systemName: "calendar.badge.plus")
-                .font(.system(size: 24))
+                .font(.app(size: 24))
                 .foregroundColor(.clinicPrimary)
         }
         .padding()
@@ -294,7 +294,7 @@ struct DoctorsForSpecializationView: View {
             HStack {
                 Button(action: { dismiss() }) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.app(size: 18, weight: .semibold))
                         .foregroundColor(.primary)
                         .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }
@@ -363,7 +363,7 @@ struct DoctorProfileView: View {
             HStack {
                 Button(action: { dismiss() }) {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.app(size: 18, weight: .semibold))
                         .foregroundColor(.primary)
                         .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }
@@ -458,7 +458,7 @@ struct DoctorProfileView: View {
             
             // ── Topic Heading (Now Left Aligned) ────────────────
             Text("Select Date")
-                .font(.system(size: 17, weight: .bold)) // Slightly larger for a "Section Header" feel
+                .font(.app(size: 17, weight: .bold)) // Slightly larger for a "Section Header" feel
                 .foregroundStyle(.primary)
                 .padding(.horizontal, AppSpacing.lg)
 
@@ -479,11 +479,11 @@ struct DoctorProfileView: View {
                             VStack(spacing: 4) {
                                 // Day (e.g., "Mon")
                                 Text(dateParts[0])
-                                    .font(.system(size: 14, weight: .semibold))
+                                    .font(.app(size: 14, weight: .semibold))
                                 
                                 // Date (e.g., "15")
                                 Text(dateParts[1])
-                                    .font(.system(size: 18, weight: .bold))
+                                    .font(.app(size: 18, weight: .bold))
                             }
                             .frame(width: 65, height: 80) // Fixed size for a clean look
                             .background(
@@ -597,7 +597,7 @@ struct AppointmentView: View {
             HStack {
                 Button { dismiss() } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.app(size: 18, weight: .semibold))
                         .foregroundColor(.primary)
                         .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }
@@ -706,7 +706,7 @@ struct AppointmentView: View {
                                 }
 
                                 Text(name)
-                                    .font(.system(size: 12, weight: selectedMemberIndex == idx ? .semibold : .regular))
+                                    .font(.app(size: 12, weight: selectedMemberIndex == idx ? .semibold : .regular))
                                     .foregroundStyle(selectedMemberIndex == idx ? Color.clinicPrimary : .secondary)
                             }
                         }

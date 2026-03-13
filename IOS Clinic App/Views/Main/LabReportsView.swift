@@ -62,7 +62,7 @@ struct LabReportsView: View {
             HStack {
                 Button { dismiss() } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.app(size: 18, weight: .semibold))
                         .foregroundColor(.primary)
                         .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }
@@ -103,7 +103,7 @@ struct LabReportsView: View {
                             }
 
                             Text(members[idx])
-                                .font(.system(size: 12, weight: selectedMemberIndex == idx ? .semibold : .regular))
+                                .font(.app(size: 12, weight: selectedMemberIndex == idx ? .semibold : .regular))
                                 .foregroundStyle(selectedMemberIndex == idx ? Color.clinicPrimary : .secondary)
                         }
                     }

@@ -121,7 +121,7 @@ struct PharmacyStatusDetailView: View {
                             .fill(Color(.systemGray6))
                             .frame(width: 34, height: 34)
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
@@ -142,19 +142,19 @@ struct PharmacyStatusDetailView: View {
     private var patientCard: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(order.patientName)
-                .font(.system(size: 16, weight: .semibold))
+                .font(.app(size: 16, weight: .semibold))
                 .foregroundStyle(.primary)
             Text("ID: \(order.patientID)")
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
             Text(order.date)
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
             Text(order.doctorName)
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
             Text(order.specialization)
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -174,11 +174,11 @@ struct PharmacyStatusDetailView: View {
             // Status row
             HStack {
                 Text("Status")
-                    .font(.system(size: 14))
+                    .font(.app(size: 14))
                     .foregroundStyle(.secondary)
                 Spacer()
                 Text(order.status.rawValue)
-                    .font(.system(size: 14, weight: .bold))
+                    .font(.app(size: 14, weight: .bold))
                     .foregroundStyle(order.status.color)
                     .padding(.horizontal, AppSpacing.sm)
                     .padding(.vertical, 4)
@@ -192,11 +192,11 @@ struct PharmacyStatusDetailView: View {
             // Counter row
             HStack {
                 Text("Counter")
-                    .font(.system(size: 14))
+                    .font(.app(size: 14))
                     .foregroundStyle(.secondary)
                 Spacer()
                 Text(order.counter)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.app(size: 14, weight: .semibold))
                     .foregroundStyle(.primary)
             }
             .padding(.horizontal, AppSpacing.lg)
@@ -215,7 +215,7 @@ struct PharmacyStatusDetailView: View {
     private var proceedButton: some View {
         Button { showPayment = true } label: {
             Text("Proceed to pay")
-                .font(.system(size: 17, weight: .semibold))
+                .font(.app(size: 17, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: AppSize.buttonPrimary)

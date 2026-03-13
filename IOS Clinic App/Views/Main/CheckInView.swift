@@ -89,7 +89,7 @@ struct CheckInView: View {
             HStack {
                 Button { router.navigate(to: .welcome) } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.app(size: 18, weight: .semibold))
                         .foregroundColor(.primary)
                         .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }

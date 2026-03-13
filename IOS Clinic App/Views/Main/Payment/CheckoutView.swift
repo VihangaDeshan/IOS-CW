@@ -16,7 +16,7 @@ struct CheckoutView: View {
             header
             Spacer().frame(height: 24)
             Text("LKR \(String(format: "%.2f", amount))")
-                .font(.system(size: 32, weight: .bold))
+                .font(.app(size: 32, weight: .bold))
                 .foregroundColor(.clinicPrimary)
             Spacer().frame(height: 16)
             cardForm
@@ -40,7 +40,7 @@ struct CheckoutView: View {
             HStack {
                 Button { dismiss() } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.app(size: 18, weight: .semibold))
                         .foregroundColor(.primary)
                         .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }

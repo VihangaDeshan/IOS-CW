@@ -121,7 +121,7 @@ struct TermsAndConditionsView: View {
                             .fill(Color(.systemGray6))
                             .frame(width: 34, height: 34)
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
@@ -142,10 +142,10 @@ struct TermsAndConditionsView: View {
     private var effectiveDateBadge: some View {
         HStack(spacing: AppSpacing.xs) {
             Image(systemName: "calendar")
-                .font(.system(size: 13, weight: .medium))
+                .font(.app(size: 13, weight: .medium))
                 .foregroundStyle(Color.clinicPrimary)
             Text("Effective \(effectiveDate)")
-                .font(.system(size: 13, weight: .medium))
+                .font(.app(size: 13, weight: .medium))
                 .foregroundStyle(Color.clinicPrimary)
         }
         .padding(.horizontal, AppSpacing.md)
@@ -166,17 +166,17 @@ struct TermsAndConditionsView: View {
                         .fill(Color.clinicPrimary.opacity(0.10))
                         .frame(width: 36, height: 36)
                     Image(systemName: section.icon)
-                        .font(.system(size: 15, weight: .medium))
+                        .font(.app(size: 15, weight: .medium))
                         .foregroundStyle(Color.clinicPrimary)
                 }
                 Text(section.title)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.app(size: 15, weight: .semibold))
                     .foregroundStyle(.primary)
             }
 
             // Body text
             Text(section.body)
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
                 .lineSpacing(4)
                 .fixedSize(horizontal: false, vertical: true)
@@ -204,7 +204,7 @@ struct TermsAndConditionsView: View {
 
     private var footerNote: some View {
         Text("By using ClinicFlow, you acknowledge that you have read and understood these Terms and Conditions.")
-            .font(.system(size: 12))
+            .font(.app(size: 12))
             .foregroundStyle(Color(.tertiaryLabel))
             .multilineTextAlignment(.center)
             .padding(.horizontal, AppSpacing.xl)

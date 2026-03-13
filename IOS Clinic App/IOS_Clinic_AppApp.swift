@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct IOS_Clinic_AppApp: App {
+    @AppStorage(AccessibilitySettingsKey.textScale) private var textScale: Double = AccessibilitySettingsKey.defaultTextScale
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .id(textScale)
         }
     }
 }

@@ -33,11 +33,11 @@ struct Onboarding2View: View {
                 // ── Wordmark ────────────────────────────────────────────────
                 VStack(spacing: AppSpacing.sm) {
                     Text("Clinic Flow")
-                        .font(.system(size: 28, weight: .bold))   // Title 1 – SF Pro
+                        .font(.app(size: 28, weight: .bold))   // Title 1 – SF Pro
                         .foregroundStyle(.primary)
 
                     Text("Save your time using this app")
-                        .font(.system(size: 17, weight: .regular)) // Body – SF Pro
+                        .font(.app(size: 17, weight: .regular)) // Body – SF Pro
                         .foregroundStyle(Color.clinicSubtitle)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, AppSpacing.xl)
@@ -56,7 +56,7 @@ struct Onboarding2View: View {
                     }
                 } label: {
                     Text("Get Start")
-                        .font(.system(size: 17, weight: .semibold)) // Body semibold
+                        .font(.app(size: 17, weight: .semibold)) // Body semibold
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
                         .frame(height: AppSize.buttonPrimary)

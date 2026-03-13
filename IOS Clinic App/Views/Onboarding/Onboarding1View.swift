@@ -30,11 +30,11 @@ struct Onboarding1View: View {
                 // Wordmark
                 VStack(spacing: AppSpacing.sm) {
                     Text("Clinic Flow")
-                        .font(.system(size: 28, weight: .bold))   // Title 1 – SF Pro
+                        .font(.app(size: 28, weight: .bold))   // Title 1 – SF Pro
                         .foregroundStyle(.primary)
 
                     Text("Dont miss your turn in the queue")
-                        .font(.system(size: 17, weight: .regular)) // Body – SF Pro
+                        .font(.app(size: 17, weight: .regular)) // Body – SF Pro
                         .foregroundStyle(Color.clinicSubtitle)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, AppSpacing.xl)

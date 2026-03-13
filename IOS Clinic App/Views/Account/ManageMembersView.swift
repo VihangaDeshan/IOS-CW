@@ -83,14 +83,9 @@ struct ManageMembersView: View {
             HStack {
                 Button { dismiss() } label: {
                     ZStack {
-                        Circle()
-                            .fill(Color(.systemGray6))
-                            .frame(width: 34, height: 34)
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundStyle(.primary)
+                       
+                        
                     }
-                    .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -110,7 +105,7 @@ struct ManageMembersView: View {
     private var memberSelectorSection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
             Text("Select Member")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.app(size: 15, weight: .semibold))
                 .foregroundStyle(.primary)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -134,11 +129,11 @@ struct ManageMembersView: View {
                                     .fill(Color(.systemGray6))
                                     .frame(width: 64, height: 64)
                                 Image(systemName: "plus")
-                                    .font(.system(size: 26, weight: .medium))
+                                    .font(.app(size: 26, weight: .medium))
                                     .foregroundStyle(Color.clinicPrimary)
                             }
                             Text("Add")
-                                .font(.system(size: 12, weight: .regular))
+                                .font(.app(size: 12, weight: .regular))
                                 .foregroundStyle(.secondary)
                         }
                     }
@@ -166,7 +161,7 @@ struct ManageMembersView: View {
     private var updateButton: some View {
         Button { } label: {
             Text("Update Member")
-                .font(.system(size: 17, weight: .semibold))
+                .font(.app(size: 17, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: AppSize.buttonPrimary)
@@ -206,7 +201,7 @@ private struct MemberAvatar: View {
                 }
 
                 Text(member.shortLabel)
-                    .font(.system(size: 12, weight: isSelected ? .semibold : .regular))
+                    .font(.app(size: 12, weight: isSelected ? .semibold : .regular))
                     .foregroundStyle(isSelected ? Color.clinicPrimary : .secondary)
             }
         }
@@ -225,12 +220,12 @@ private struct InfoRow: View {
     var body: some View {
         HStack(spacing: AppSpacing.md) {
             Image(systemName: icon)
-                .font(.system(size: 17))
+                .font(.app(size: 17))
                 .foregroundStyle(Color.clinicPrimary)
                 .frame(width: 28)
 
             Text(value)
-                .font(.system(size: 15))
+                .font(.app(size: 15))
                 .foregroundStyle(muted ? Color(.tertiaryLabel) : .primary)
 
             Spacer()

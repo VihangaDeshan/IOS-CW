@@ -88,11 +88,11 @@ struct AppointmentsView: View {
                         // Section title
                         VStack(alignment: .leading, spacing: 2) {
                             Text(selectedFilter.rawValue)
-                                .font(.system(size: 16, weight: .semibold))
+                                .font(.app(size: 16, weight: .semibold))
                                 .foregroundStyle(.primary)
                             if !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
                                 Text("Results for \"\(searchQuery)\"")
-                                    .font(.system(size: 13))
+                                    .font(.app(size: 13))
                                     .foregroundStyle(.secondary)
                             }
                         }
@@ -149,7 +149,7 @@ struct AppointmentsView: View {
                             .fill(Color(.systemGray6))
                             .frame(width: 34, height: 34)
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
@@ -185,11 +185,11 @@ struct AppointmentsView: View {
         VStack(spacing: AppSpacing.md) {
             Spacer().frame(height: AppSpacing.xxxl)
             Image(systemName: "calendar.badge.exclamationmark")
-                .font(.system(size: 48))
+                .font(.app(size: 48))
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(Color(.systemGray3))
             Text("No \(selectedFilter.rawValue) appointments")
-                .font(.system(size: 15))
+                .font(.app(size: 15))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
@@ -209,7 +209,7 @@ private struct AppointmentCard: View {
             // ── Title row ───────────────────────────────────────────
             HStack(alignment: .top) {
                 Text("#\(appointment.number) Appointment")
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.app(size: 16, weight: .bold))
                     .foregroundStyle(.primary)
 
                 Spacer()
@@ -217,7 +217,7 @@ private struct AppointmentCard: View {
                 // Patient tag (only "Myself" in All tab mostly)
                 if !appointment.patientTag.isEmpty {
                     Text(appointment.patientTag)
-                        .font(.system(size: 13))
+                        .font(.app(size: 13))
                         .foregroundStyle(.secondary)
                 }
 
@@ -226,7 +226,7 @@ private struct AppointmentCard: View {
                     HStack(spacing: AppSpacing.sm) {
                         Button { onReschedule() } label: {
                             Image(systemName: "calendar.badge.plus")
-                                .font(.system(size: 18))
+                                .font(.app(size: 18))
                                 .foregroundStyle(Color.clinicPrimary)
                                 .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                                 .contentShape(Rectangle())
@@ -234,7 +234,7 @@ private struct AppointmentCard: View {
                         .buttonStyle(.plain)
 
                         Image(systemName: "xmark.circle")
-                            .font(.system(size: 18))
+                            .font(.app(size: 18))
                             .foregroundStyle(Color(red: 0.92, green: 0.24, blue: 0.24))
                             .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                             .contentShape(Rectangle())
@@ -245,26 +245,26 @@ private struct AppointmentCard: View {
             // ── Info rows ───────────────────────────────────────────
             HStack {
                 Text("Date \(appointment.date)")
-                    .font(.system(size: 13))
+                    .font(.app(size: 13))
                     .foregroundStyle(.secondary)
                 Spacer()
                 Text("Time \(appointment.time)")
-                    .font(.system(size: 13))
+                    .font(.app(size: 13))
                     .foregroundStyle(.secondary)
             }
 
             Text(appointment.room)
-                .font(.system(size: 13))
+                .font(.app(size: 13))
                 .foregroundStyle(.secondary)
 
             // ── Doctor + Status row ─────────────────────────────────
             HStack {
                 Text(appointment.doctor)
-                    .font(.system(size: 13))
+                    .font(.app(size: 13))
                     .foregroundStyle(.secondary)
                 Spacer()
                 Text(appointment.status.rawValue)
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.app(size: 13, weight: .semibold))
                     .foregroundStyle(appointment.status.color)
             }
         }

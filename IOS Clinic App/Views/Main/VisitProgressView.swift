@@ -116,7 +116,7 @@ struct VisitProgressView: View {
                             .fill(Color(.systemGray6))
                             .frame(width: 34, height: 34)
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
@@ -139,11 +139,11 @@ struct VisitProgressView: View {
     private var queueCard: some View {
         VStack(spacing: AppSpacing.sm) {
             Text("Your Queue Number")
-                .font(.system(size: 14, weight: .regular))
+                .font(.app(size: 14, weight: .regular))
                 .foregroundStyle(.secondary)
 
             Text("A-042")
-                .font(.system(size: 40, weight: .bold))
+                .font(.app(size: 40, weight: .bold))
                 .foregroundStyle(.primary)
         }
         .frame(maxWidth: .infinity)
@@ -233,7 +233,7 @@ private struct StepRowView: View {
 
         case .completed:
             Image(systemName: "checkmark.circle.fill")
-                .font(.system(size: 28, weight: .medium))
+                .font(.app(size: 28, weight: .medium))
                 .foregroundStyle(Color.clinicPrimary)
                 .frame(width: 30, height: 30)
 
@@ -243,7 +243,7 @@ private struct StepRowView: View {
                     .strokeBorder(Color.clinicPrimary, lineWidth: 2.5)
                     .frame(width: 28, height: 28)
                 Image(systemName: "arrow.2.circlepath")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.app(size: 13, weight: .semibold))
                     .foregroundStyle(Color.clinicPrimary)
             }
             .frame(width: 30, height: 30)
@@ -254,7 +254,7 @@ private struct StepRowView: View {
                     .fill(Color(.systemGray3))
                     .frame(width: 28, height: 28)
                 Text("\(stepNumber)")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.app(size: 13, weight: .semibold))
                     .foregroundStyle(.white)
             }
             .frame(width: 30, height: 30)
@@ -271,12 +271,12 @@ private struct StepRowView: View {
 
             // Title
             Text(step.title)
-                .font(.system(size: 16, weight: .semibold))
+                .font(.app(size: 16, weight: .semibold))
                 .foregroundStyle(isPending ? Color(.systemGray) : .primary)
 
             // Subtitle
             Text(step.subtitle)
-                .font(.system(size: 13))
+                .font(.app(size: 13))
                 .foregroundStyle(isPending ? Color(.systemGray3) : .secondary)
 
             // Next action box — only for in-progress step
@@ -284,16 +284,16 @@ private struct StepRowView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text("Next Action:")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(.app(size: 13, weight: .medium))
                             .foregroundStyle(.primary)
                         Spacer()
                         // Chevron hint — signals this card is tappable
                         Image(systemName: "chevron.right")
-                            .font(.system(size: 11, weight: .semibold))
+                            .font(.app(size: 11, weight: .semibold))
                             .foregroundStyle(Color(.tertiaryLabel))
                     }
                     Text(action)
-                        .font(.system(size: 13))
+                        .font(.app(size: 13))
                         .foregroundStyle(.primary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
