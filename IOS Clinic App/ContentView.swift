@@ -84,7 +84,7 @@ struct ComingSoonView: View {
                 Spacer()
 
                 Image(systemName: icon)
-                    .font(.system(size: 72))
+                    .font(.app(size: 72))
                     .symbolRenderingMode(.hierarchical)
                     .foregroundStyle(Color.clinicPrimary)
 

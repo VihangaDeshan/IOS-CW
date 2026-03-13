@@ -183,6 +183,9 @@ struct PrescriptionListView: View {
         .navigationDestination(isPresented: $navigateToPharmacy) {
             if let order = selectedOrder { PharmacyStatusDetailView(order: order) }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .pharmacyPaymentSuccess)) { _ in
+            navigateToPharmacy = false
+        }
     }
 
     // MARK: - Nav Bar
@@ -201,7 +204,7 @@ struct PrescriptionListView: View {
                             .fill(Color(.systemGray6))
                             .frame(width: 34, height: 34)
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
@@ -270,14 +273,14 @@ struct PrescriptionListView: View {
         HStack(spacing: AppSpacing.sm) {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(searchText.isEmpty ? Color(.tertiaryLabel) : Color.clinicPrimary)
-                .font(.system(size: 15))
+                .font(.app(size: 15))
             TextField(searchPlaceholder, text: $searchText)
-                .font(.system(size: 15))
+                .font(.app(size: 15))
             if !searchText.isEmpty {
                 Button { searchText = "" } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(Color(.tertiaryLabel))
-                        .font(.system(size: 15))
+                        .font(.app(size: 15))
                 }
                 .buttonStyle(.plain)
             }
@@ -320,10 +323,10 @@ struct PrescriptionListView: View {
     private func sectionHeader(date: String, title: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(date)
-                .font(.system(size: 13, weight: .medium))
+                .font(.app(size: 13, weight: .medium))
                 .foregroundStyle(.secondary)
             Text(title)
-                .font(.system(size: 17, weight: .semibold))
+                .font(.app(size: 17, weight: .semibold))
                 .foregroundStyle(.primary)
         }
         .padding(.horizontal, AppSpacing.lg)
@@ -386,10 +389,10 @@ struct PrescriptionListView: View {
     private func emptyState(icon: String, label: String) -> some View {
         VStack(spacing: AppSpacing.sm) {
             Image(systemName: icon)
-                .font(.system(size: 34, weight: .light))
+                .font(.app(size: 34, weight: .light))
                 .foregroundStyle(Color(.systemGray3))
             Text(label)
-                .font(.system(size: 15))
+                .font(.app(size: 15))
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
         }
@@ -415,7 +418,7 @@ private struct PrescriptionCard: View {
                         .fill(Color.clinicPrimary.opacity(0.1))
                         .frame(width: 42, height: 42)
                     Image(systemName: "doc.text")
-                        .font(.system(size: 18, weight: .medium))
+                        .font(.app(size: 18, weight: .medium))
                         .foregroundStyle(Color.clinicPrimary)
                 }
 
@@ -424,33 +427,33 @@ private struct PrescriptionCard: View {
                     switch filter {
                     case .appointment:
                         Text(record.diagnosis)
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.app(size: 15, weight: .semibold))
                             .foregroundStyle(.primary)
                         Text(record.date)
-                            .font(.system(size: 13))
+                            .font(.app(size: 13))
                             .foregroundStyle(.secondary)
                     case .patient:
                         Text(record.patientName)
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.app(size: 15, weight: .semibold))
                             .foregroundStyle(.primary)
                         Text("ID: \(record.patientID)")
-                            .font(.system(size: 13))
+                            .font(.app(size: 13))
                             .foregroundStyle(.secondary)
                     case .doctor:
                         Text(record.doctorName)
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.app(size: 15, weight: .semibold))
                             .foregroundStyle(.primary)
                         Text(record.specialization)
-                            .font(.system(size: 13))
+                            .font(.app(size: 13))
                             .foregroundStyle(.secondary)
                     }
 
                     // Secondary row always shows patient
                     HStack(spacing: 4) {
                         Image(systemName: "person")
-                            .font(.system(size: 11))
+                            .font(.app(size: 11))
                         Text(record.patientName)
-                            .font(.system(size: 12))
+                            .font(.app(size: 12))
                     }
                     .foregroundStyle(Color(.tertiaryLabel))
                     .padding(.top, 1)
@@ -458,7 +461,7 @@ private struct PrescriptionCard: View {
 
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.app(size: 12, weight: .semibold))
                     .foregroundStyle(Color(.systemGray3))
                     .padding(.top, 4)
             }
@@ -486,19 +489,19 @@ private struct PharmacyOrderCard: View {
                         .fill(order.status.color.opacity(0.12))
                         .frame(width: 42, height: 42)
                     Image(systemName: "pills")
-                        .font(.system(size: 18, weight: .medium))
+                        .font(.app(size: 18, weight: .medium))
                         .foregroundStyle(order.status.color)
                 }
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(order.patientName)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.app(size: 15, weight: .semibold))
                         .foregroundStyle(.primary)
                     Text("Order \(order.id)")
-                        .font(.system(size: 13))
+                        .font(.app(size: 13))
                         .foregroundStyle(.secondary)
                     Text("Counter: \(order.counter)")
-                        .font(.system(size: 13))
+                        .font(.app(size: 13))
                         .foregroundStyle(.secondary)
                 }
 
@@ -506,14 +509,14 @@ private struct PharmacyOrderCard: View {
 
                 // Status badge
                 Text(order.status.rawValue)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.app(size: 11, weight: .semibold))
                     .foregroundStyle(order.status.color)
                     .padding(.horizontal, 9)
                     .padding(.vertical, 4)
                     .background(order.status.color.opacity(0.12), in: Capsule())
 
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.app(size: 12, weight: .semibold))
                     .foregroundStyle(Color(.systemGray3))
             }
             .padding(.horizontal, AppSpacing.lg)

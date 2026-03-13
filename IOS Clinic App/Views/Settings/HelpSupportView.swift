@@ -91,7 +91,7 @@ struct HelpSupportView: View {
             HStack {
                 Button { dismiss() } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.app(size: 18, weight: .semibold))
                         .foregroundColor(.primary)
                         .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }
@@ -107,7 +107,7 @@ struct HelpSupportView: View {
 
     private func sectionLabel(_ text: String) -> some View {
         Text(text)
-            .font(.system(size: 13, weight: .semibold))
+            .font(.app(size: 13, weight: .semibold))
             .foregroundStyle(.secondary)
             .textCase(.uppercase)
             .tracking(0.5)
@@ -121,14 +121,14 @@ struct HelpSupportView: View {
                     .fill(iconColor.opacity(0.12))
                     .frame(width: 52, height: 52)
                 Image(systemName: icon)
-                    .font(.system(size: 22, weight: .medium))
+                    .font(.app(size: 22, weight: .medium))
                     .foregroundStyle(iconColor)
             }
             Text(title)
-                .font(.system(size: 14, weight: .semibold))
+                .font(.app(size: 14, weight: .semibold))
                 .foregroundStyle(.primary)
             Text(detail)
-                .font(.system(size: 12))
+                .font(.app(size: 12))
                 .foregroundStyle(Color.clinicPrimary)
                 .multilineTextAlignment(.center)
                 .underline()
@@ -166,11 +166,11 @@ private struct FAQRow: View {
                             .fill(Color.clinicPrimary.opacity(0.10))
                             .frame(width: 28, height: 28)
                         Image(systemName: isExpanded ? "minus" : "plus")
-                            .font(.system(size: 12, weight: .bold))
+                            .font(.app(size: 12, weight: .bold))
                             .foregroundStyle(Color.clinicPrimary)
                     }
                     Text(item.question)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.app(size: 14, weight: .medium))
                         .foregroundStyle(.primary)
                         .multilineTextAlignment(.leading)
                     Spacer()
@@ -181,7 +181,7 @@ private struct FAQRow: View {
 
             if isExpanded {
                 Text(item.answer)
-                    .font(.system(size: 13))
+                    .font(.app(size: 13))
                     .foregroundStyle(.secondary)
                     .padding(.leading, 40)
                     .padding(.bottom, 12)

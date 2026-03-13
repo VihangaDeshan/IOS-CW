@@ -29,10 +29,7 @@ struct AboutView: View {
 
                         infoCard
 
-                        linksCard
-
-                        contactCard
-
+                       
                         copyrightNote
                             .padding(.bottom, AppSpacing.xxxl)
                     }
@@ -61,7 +58,7 @@ struct AboutView: View {
                             .fill(Color(.systemGray6))
                             .frame(width: 34, height: 34)
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
@@ -92,19 +89,19 @@ struct AboutView: View {
 
             VStack(spacing: 4) {
                 Text("ClinicFlow")
-                    .font(.system(size: 24, weight: .bold))
+                    .font(.app(size: 24, weight: .bold))
                     .foregroundStyle(.primary)
 
                 HStack(spacing: AppSpacing.xs) {
                     Text("Version \(appVersion)")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.app(size: 13, weight: .medium))
                         .foregroundStyle(Color.clinicPrimary)
                         .padding(.horizontal, AppSpacing.sm)
                         .padding(.vertical, 4)
                         .background(Color.clinicPrimary.opacity(0.10), in: Capsule())
 
                     Text("Build \(buildNumber)")
-                        .font(.system(size: 13))
+                        .font(.app(size: 13))
                         .foregroundStyle(Color(.secondaryLabel))
                         .padding(.horizontal, AppSpacing.sm)
                         .padding(.vertical, 4)
@@ -138,7 +135,7 @@ struct AboutView: View {
             VStack(alignment: .leading, spacing: AppSpacing.sm) {
                 rowIcon("info.circle.fill", label: "About ClinicFlow")
                 Text("ClinicFlow is your all-in-one clinic companion — designed to make healthcare more accessible, organised, and transparent. Book appointments, track your queue status, view prescriptions, check lab results, and manage your family's health records from the palm of your hand.")
-                    .font(.system(size: 14))
+                    .font(.app(size: 14))
                     .foregroundStyle(.secondary)
                     .lineSpacing(4)
                     .fixedSize(horizontal: false, vertical: true)
@@ -166,51 +163,16 @@ struct AboutView: View {
         }
     }
 
-    // MARK: - Links Card
-
-    private var linksCard: some View {
-        cardContainer {
-            VStack(spacing: 0) {
-                Button {
-                    showTerms = true
-                } label: {
-                    linkRow(icon: "doc.text.fill", color: Color.clinicPrimary, label: "Terms & Conditions")
-                }
-                .buttonStyle(.plain)
-
-                Divider().padding(.horizontal, AppSpacing.xs)
-
-                linkRow(icon: "lock.shield.fill",   color: .indigo,   label: "Privacy Policy")
-                Divider().padding(.horizontal, AppSpacing.xs)
-                linkRow(icon: "questionmark.circle.fill", color: .teal, label: "Help & Support")
-            }
-        }
-    }
-
-    // MARK: - Contact Card
-
-    private var contactCard: some View {
-        cardContainer {
-            VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                rowIcon("phone.fill", label: "Contact Us")
-                VStack(spacing: AppSpacing.xs) {
-                    contactItem(icon: "envelope",   text: "support@clinicflow.com")
-                    contactItem(icon: "phone",       text: "+94 740 458 767")
-                    contactItem(icon: "location",    text: "No. 42, Hospital Road, Colombo 10")
-                }
-            }
-        }
-    }
-
+    
     // MARK: - Copyright
 
     private var copyrightNote: some View {
         VStack(spacing: 4) {
             Text("Made with ♥ for better healthcare")
-                .font(.system(size: 13, weight: .medium))
+                .font(.app(size: 13, weight: .medium))
                 .foregroundStyle(Color.clinicPrimary)
             Text("© 2026 ClinicFlow. All rights reserved.")
-                .font(.system(size: 12))
+                .font(.app(size: 12))
                 .foregroundStyle(Color(.tertiaryLabel))
         }
         .multilineTextAlignment(.center)
@@ -243,10 +205,10 @@ struct AboutView: View {
     private func rowIcon(_ systemName: String, label: String) -> some View {
         HStack(spacing: AppSpacing.sm) {
             Image(systemName: systemName)
-                .font(.system(size: 15, weight: .medium))
+                .font(.app(size: 15, weight: .medium))
                 .foregroundStyle(Color.clinicPrimary)
             Text(label)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.app(size: 15, weight: .semibold))
                 .foregroundStyle(.primary)
         }
     }
@@ -258,15 +220,15 @@ struct AboutView: View {
                     .fill(color.opacity(0.12))
                     .frame(width: 30, height: 30)
                 Image(systemName: icon)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.app(size: 13, weight: .medium))
                     .foregroundStyle(color)
             }
             Text(label)
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
             Spacer()
             Text(value)
-                .font(.system(size: 14, weight: .medium))
+                .font(.app(size: 14, weight: .medium))
                 .foregroundStyle(.primary)
         }
         .padding(.vertical, AppSpacing.sm)
@@ -279,15 +241,15 @@ struct AboutView: View {
                     .fill(color.opacity(0.12))
                     .frame(width: 30, height: 30)
                 Image(systemName: icon)
-                    .font(.system(size: 13, weight: .medium))
+                    .font(.app(size: 13, weight: .medium))
                     .foregroundStyle(color)
             }
             Text(label)
-                .font(.system(size: 14, weight: .medium))
+                .font(.app(size: 14, weight: .medium))
                 .foregroundStyle(.primary)
             Spacer()
             Image(systemName: "chevron.right")
-                .font(.system(size: 12, weight: .semibold))
+                .font(.app(size: 12, weight: .semibold))
                 .foregroundStyle(Color(.systemGray3))
         }
         .padding(.vertical, AppSpacing.sm)
@@ -296,11 +258,11 @@ struct AboutView: View {
     private func contactItem(icon: String, text: String) -> some View {
         HStack(spacing: AppSpacing.sm) {
             Image(systemName: icon)
-                .font(.system(size: 13))
+                .font(.app(size: 13))
                 .foregroundStyle(Color.clinicPrimary)
                 .frame(width: 18)
             Text(text)
-                .font(.system(size: 13))
+                .font(.app(size: 13))
                 .foregroundStyle(.secondary)
         }
     }

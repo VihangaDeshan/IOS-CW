@@ -77,7 +77,7 @@ struct QueueStatusView: View {
                             .fill(Color(.systemGray6))
                             .frame(width: 34, height: 34)
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
@@ -101,11 +101,11 @@ struct QueueStatusView: View {
         VStack(spacing: AppSpacing.md) {
 
             Text("Your Number")
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
 
             Text(queueNumber)
-                .font(.system(size: 42, weight: .bold))
+                .font(.app(size: 42, weight: .bold))
                 .foregroundStyle(.primary)
 
             // Progress bar
@@ -125,7 +125,7 @@ struct QueueStatusView: View {
             .padding(.horizontal, AppSpacing.lg)
 
             Text("\(aheadCount) people ahead of you")
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
@@ -151,10 +151,10 @@ struct QueueStatusView: View {
     private var roomCard: some View {
         VStack(spacing: 4) {
             Text(room)
-                .font(.system(size: 24, weight: .bold))
+                .font(.app(size: 24, weight: .bold))
                 .foregroundStyle(.primary)
             Text(doctor)
-                .font(.system(size: 15))
+                .font(.app(size: 15))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
@@ -203,11 +203,11 @@ struct QueueStatusView: View {
     private func statRow(label: String, value: String, isFirst: Bool) -> some View {
         HStack {
             Text(label)
-                .font(.system(size: 15))
+                .font(.app(size: 15))
                 .foregroundStyle(.primary)
             Spacer()
             Text(value)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.app(size: 15, weight: .semibold))
                 .foregroundStyle(.primary)
         }
         .padding(.horizontal, AppSpacing.lg)
@@ -219,12 +219,12 @@ struct QueueStatusView: View {
     private var notificationHint: some View {
         HStack(alignment: .top, spacing: AppSpacing.sm) {
             Image(systemName: "bell.fill")
-                .font(.system(size: 16))
+                .font(.app(size: 16))
                 .foregroundStyle(Color(.systemGray3))
                 .padding(.top, 1)
 
             Text("You will receive a notification when its almost your turn")
-                .font(.system(size: 13))
+                .font(.app(size: 13))
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
@@ -236,7 +236,7 @@ struct QueueStatusView: View {
     private var mapButton: some View {
         Button { showMap = true } label: {
             Text("View Clinic Map")
-                .font(.system(size: 17, weight: .semibold))
+                .font(.app(size: 17, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: AppSize.buttonPrimary)

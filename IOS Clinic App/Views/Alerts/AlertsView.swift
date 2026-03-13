@@ -75,7 +75,7 @@ struct AlertsView: View {
                             .fill(Color(.systemGray6))
                             .frame(width: 34, height: 34)
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
@@ -93,7 +93,7 @@ struct AlertsView: View {
                         }
                     } label: {
                         Text("Mark all read")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.app(size: 14, weight: .medium))
                             .foregroundStyle(Color.clinicPrimary)
                     }
                     .buttonStyle(.plain)
@@ -151,19 +151,19 @@ private struct AlertRow: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(alignment: .firstTextBaseline) {
                         Text(item.title)
-                            .font(.system(size: 15, weight: item.isUnread ? .bold : .semibold))
+                            .font(.app(size: 15, weight: item.isUnread ? .bold : .semibold))
                             .foregroundStyle(.primary)
                             .lineLimit(1)
 
                         Spacer()
 
                         Text(item.time)
-                            .font(.system(size: 13))
+                            .font(.app(size: 13))
                             .foregroundStyle(.secondary)
                     }
 
                     Text(item.body)
-                        .font(.system(size: 13))
+                        .font(.app(size: 13))
                         .foregroundStyle(.secondary)
                         .lineLimit(2)
                         .multilineTextAlignment(.leading)
@@ -171,7 +171,7 @@ private struct AlertRow: View {
 
                 // Chevron
                 Image(systemName: "chevron.right")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.app(size: 12, weight: .semibold))
                     .foregroundStyle(Color(.systemGray3))
                     .padding(.top, 4)
             }

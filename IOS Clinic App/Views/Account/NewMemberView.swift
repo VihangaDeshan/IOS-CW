@@ -68,7 +68,7 @@ struct NewMemberView: View {
                             .fill(Color(.systemGray6))
                             .frame(width: 34, height: 34)
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
@@ -95,12 +95,12 @@ struct NewMemberView: View {
                     .frame(width: 88, height: 88)
 
                 Image(systemName: "pencil.circle")
-                    .font(.system(size: 36, weight: .light))
+                    .font(.app(size: 36, weight: .light))
                     .foregroundStyle(Color.clinicPrimary)
             }
 
             Text("Name")
-                .font(.system(size: 13))
+                .font(.app(size: 13))
                 .foregroundStyle(.secondary)
         }
     }
@@ -133,7 +133,7 @@ struct NewMemberView: View {
             dismiss()
         } label: {
             Text("Add Member")
-                .font(.system(size: 17, weight: .semibold))
+                .font(.app(size: 17, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: AppSize.buttonPrimary)
@@ -161,12 +161,12 @@ private struct FormField: View {
     var body: some View {
         HStack(spacing: AppSpacing.md) {
             Image(systemName: icon)
-                .font(.system(size: 17))
+                .font(.app(size: 17))
                 .foregroundStyle(isFocused ? Color.clinicPrimary : Color(.systemGray2))
                 .frame(width: 28)
 
             TextField(placeholder, text: $text)
-                .font(.system(size: 15))
+                .font(.app(size: 15))
                 .keyboardType(keyboard)
                 .focused($isFocused)
         }

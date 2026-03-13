@@ -12,6 +12,7 @@ struct PaymentView: View {
     @Environment(\.dismiss) private var dismiss
     let total: Double
     let billItems: [BillItem]
+    var isPharmacy: Bool = false
     @State private var selectedPayment: PaymentMethod = .applePay
     @State private var navigateToCheckout = false
 
@@ -20,7 +21,7 @@ struct PaymentView: View {
             header
             Spacer().frame(height: 24)
             Text("LKR \(String(format: "%.2f", total))")
-                .font(.system(size: 32, weight: .bold))
+                .font(.app(size: 32, weight: .bold))
                 .foregroundColor(.clinicPrimary)
             Spacer().frame(height: 16)
             billSection
@@ -41,7 +42,7 @@ struct PaymentView: View {
             HStack {
                 Button { dismiss() } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.app(size: 18, weight: .semibold))
                         .foregroundColor(.primary)
                         .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }
@@ -102,7 +103,7 @@ struct PaymentView: View {
 
     private var proceedButton: some View {
         NavigationLink(isActive: $navigateToCheckout) {
-            CheckoutView(amount: total)
+            CheckoutView(amount: total, isPharmacy: isPharmacy)
         } label: {
             Text("Proceed to pay")
                 .font(Font.btnTitleSize)

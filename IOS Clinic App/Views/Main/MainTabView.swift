@@ -57,7 +57,7 @@ struct MainTabView: View {
                 if router.isGuest {
                     NavigationStack { LoginRequiredView() }
                 } else {
-                    AccountView()
+                    NavigationStack { ManageMembersView() }
                 }
             }
             .tabItem {
@@ -119,7 +119,7 @@ private struct PlaceholderTabView: View {
             Color(.systemGroupedBackground).ignoresSafeArea()
             VStack(spacing: AppSpacing.md) {
                 Image(systemName: icon)
-                    .font(.system(size: 56))
+                    .font(.app(size: 56))
                     .symbolRenderingMode(.hierarchical)
                     .foregroundStyle(Color.clinicPrimary)
                 Text(title)

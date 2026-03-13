@@ -33,12 +33,12 @@ struct WelcomeView: View {
                 // ── Headline ──────────────────────────────────────────
                 VStack(spacing: AppSpacing.xs) {
                     Text("Welcome to Clinical Flow")
-                        .font(.system(size: 22, weight: .bold))   // Title 2
+                        .font(.app(size: 22, weight: .bold))   // Title 2
                         .foregroundStyle(.primary)
                         .multilineTextAlignment(.center)
 
                     Text("Choose how you'd like to Continue")
-                        .font(.system(size: 15, weight: .regular)) // Subheadline
+                        .font(.app(size: 15, weight: .regular)) // Subheadline
                         .foregroundStyle(Color.clinicSubtitle)
                         .multilineTextAlignment(.center)
                 }
@@ -57,7 +57,7 @@ struct WelcomeView: View {
                         router.navigate(to: .checkIn)
                     } label: {
                         Text("Continue as Guest")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.app(size: 17, weight: .semibold))
                             .foregroundStyle(Color.clinicPrimary)
                             .frame(maxWidth: .infinity)
                             .frame(height: AppSize.buttonPrimary)
@@ -73,7 +73,7 @@ struct WelcomeView: View {
                         router.navigate(to: .login)
                     } label: {
                         Text("Login")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.app(size: 17, weight: .semibold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: AppSize.buttonPrimary)
@@ -90,14 +90,14 @@ struct WelcomeView: View {
                 // ── Create account link ───────────────────────────────
                 HStack(spacing: 4) {
                     Text("New here?")
-                        .font(.system(size: 15, weight: .regular)) // Subheadline
+                        .font(.app(size: 15, weight: .regular)) // Subheadline
                         .foregroundStyle(Color.clinicSubtitle)
 
                     Button {
                         router.navigate(to: .register)
                     } label: {
                         Text("Create an Account")
-                            .font(.system(size: 15, weight: .medium))
+                            .font(.app(size: 15, weight: .medium))
                             .foregroundStyle(Color.clinicPrimary)
                     }
                     .buttonStyle(.plain)

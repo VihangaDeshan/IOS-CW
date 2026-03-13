@@ -8,6 +8,13 @@
 
 import SwiftUI
 
+enum AccessibilitySettingsKey {
+    static let textScale = "accessibilityTextScale"
+    static let defaultTextScale: Double = 1.0
+    static let minTextScale: Double = 0.85
+    static let maxTextScale: Double = 1.35
+}
+
 // MARK: - Colour Palette
 
 extension Color {
@@ -28,8 +35,18 @@ extension Color {
 }
 
 extension Font {
-    static let navTitleSize: Font = .system(size: 34, weight: .semibold)
-    static let btnTitleSize: Font = .system(size: 17, weight: .semibold)
+    private static var currentTextScale: CGFloat {
+        let stored = UserDefaults.standard.object(forKey: AccessibilitySettingsKey.textScale) as? Double
+        let scale = stored ?? AccessibilitySettingsKey.defaultTextScale
+        return CGFloat(min(max(scale, AccessibilitySettingsKey.minTextScale), AccessibilitySettingsKey.maxTextScale))
+    }
+
+    static func app(size: CGFloat, weight: Font.Weight = .regular, design: Font.Design = .default) -> Font {
+        .system(size: size * currentTextScale, weight: weight, design: design)
+    }
+
+    static let navTitleSize: Font = .app(size: 34, weight: .semibold)
+    static let btnTitleSize: Font = .app(size: 17, weight: .semibold)
 }
 
 // MARK: - Icon Gradient

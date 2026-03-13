@@ -85,14 +85,14 @@ struct GuestHomeView: View {
     private var greetingHeader: some View {
         HStack {
             Text("Hello, Guest")
-                .font(.system(size: 26, weight: .bold))
+                .font(.app(size: 26, weight: .bold))
                 .foregroundStyle(.primary)
             Spacer()
             HStack(spacing: 4) {
                 Image(systemName: "person.slash")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.app(size: 12, weight: .medium))
                 Text("Guest")
-                    .font(.system(size: 12, weight: .medium))
+                    .font(.app(size: 12, weight: .medium))
             }
             .foregroundStyle(Color.clinicPrimary)
             .padding(.horizontal, 10)
@@ -106,16 +106,16 @@ struct GuestHomeView: View {
     private var searchBar: some View {
         HStack(spacing: AppSpacing.sm) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 15, weight: .medium))
+                .font(.app(size: 15, weight: .medium))
                 .foregroundStyle(Color(.tertiaryLabel))
             TextField("Find the right doctor for you", text: $searchText)
-                .font(.system(size: 15))
+                .font(.app(size: 15))
                 .foregroundStyle(.primary)
                 .focused($isSearchFocused)
             if isSearchFocused {
                 Button { isSearchFocused = false } label: {
                     Image(systemName: "arrow.right.circle.fill")
-                        .font(.system(size: 22))
+                        .font(.app(size: 22))
                         .foregroundStyle(Color.clinicPrimary)
                         .transition(.move(edge: .trailing).combined(with: .opacity))
                 }
@@ -132,14 +132,14 @@ struct GuestHomeView: View {
     private var guestBanner: some View {
         HStack(spacing: AppSpacing.md) {
             Image(systemName: "info.circle.fill")
-                .font(.system(size: 20))
+                .font(.app(size: 20))
                 .foregroundStyle(Color.clinicPrimary)
             VStack(alignment: .leading, spacing: 2) {
                 Text("You're browsing as a guest")
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.app(size: 14, weight: .semibold))
                     .foregroundStyle(.primary)
                 Text("Sign in to unlock all features")
-                    .font(.system(size: 13))
+                    .font(.app(size: 13))
                     .foregroundStyle(.secondary)
             }
             Spacer()
@@ -148,7 +148,7 @@ struct GuestHomeView: View {
                 router.navigate(to: .login)
             } label: {
                 Text("Sign In")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.app(size: 13, weight: .semibold))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 7)
@@ -176,12 +176,12 @@ struct GuestHomeView: View {
     private func sectionHeader(title: String, action: String?) -> some View {
         HStack {
             Text(title)
-                .font(.system(size: 18, weight: .bold))
+                .font(.app(size: 18, weight: .bold))
                 .foregroundStyle(.primary)
             Spacer()
             if let action {
                 Text(action)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.app(size: 14, weight: .medium))
                     .foregroundStyle(Color.clinicPrimary)
             }
         }
@@ -196,23 +196,23 @@ struct GuestHomeView: View {
                     .fill(Color.clinicPrimary.opacity(0.12))
                     .frame(width: 56, height: 56)
                 Image(systemName: "clock.arrow.2.circlepath")
-                    .font(.system(size: 24))
+                    .font(.app(size: 24))
                     .foregroundStyle(Color.clinicPrimary)
             }
             VStack(alignment: .leading, spacing: 4) {
                 Text("Your Visit")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.app(size: 15, weight: .semibold))
                     .foregroundStyle(.primary)
                 Text("Queue number: A-042")
-                    .font(.system(size: 13))
+                    .font(.app(size: 13))
                     .foregroundStyle(.secondary)
                 HStack(spacing: AppSpacing.lg) {
                     Text("In Progress")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.app(size: 13, weight: .medium))
                         .foregroundStyle(Color.clinicPrimary)
                     Button { showVisitProgress = true } label: {
                         Text("Track")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.app(size: 13, weight: .semibold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, AppSpacing.md)
                             .padding(.vertical, 5)
@@ -299,10 +299,10 @@ struct GuestHomeView: View {
                 // Lock overlay
                 VStack(spacing: AppSpacing.sm) {
                     Image(systemName: "lock.fill")
-                        .font(.system(size: 28))
+                        .font(.app(size: 28))
                         .foregroundStyle(Color.clinicPrimary)
                     Text("Sign in to view suggestions")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.app(size: 13, weight: .medium))
                         .foregroundStyle(.secondary)
                 }
                 .padding(AppSpacing.lg)
@@ -324,12 +324,12 @@ private struct GuestServiceCell: View {
                     .fill(color.opacity(0.12))
                     .frame(width: 52, height: 52)
                 Image(systemName: icon)
-                    .font(.system(size: 22, weight: .medium))
+                    .font(.app(size: 22, weight: .medium))
                     .symbolRenderingMode(.monochrome)
                     .foregroundStyle(color)
             }
             Text(label)
-                .font(.system(size: 12, weight: .medium))
+                .font(.app(size: 12, weight: .medium))
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
         }
@@ -352,16 +352,16 @@ private struct GuestLockedServiceCell: View {
                     .fill(color.opacity(0.08))
                     .frame(width: 52, height: 52)
                 Image(systemName: icon)
-                    .font(.system(size: 22, weight: .medium))
+                    .font(.app(size: 22, weight: .medium))
                     .foregroundStyle(color.opacity(0.35))
                 // Lock badge
                 Image(systemName: "lock.fill")
-                    .font(.system(size: 11, weight: .bold))
+                    .font(.app(size: 11, weight: .bold))
                     .foregroundStyle(Color(.systemGray3))
                     .offset(x: 16, y: 16)
             }
             Text(label)
-                .font(.system(size: 12, weight: .medium))
+                .font(.app(size: 12, weight: .medium))
                 .foregroundStyle(Color(.systemGray3))
                 .multilineTextAlignment(.center)
         }

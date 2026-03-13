@@ -41,7 +41,7 @@ struct RescheduleConfirmView: View {
                                 .fill(Color.clinicPrimary.opacity(0.14))
                                 .frame(width: 100, height: 100)
                             Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 56, weight: .medium))
+                                .font(.app(size: 56, weight: .medium))
                                 .foregroundStyle(Color.clinicPrimary)
                         }
                         .scaleEffect(appeared ? 1 : 0.4)
@@ -51,12 +51,12 @@ struct RescheduleConfirmView: View {
                         // ── Headline ──────────────────────────────────────────
                         VStack(spacing: AppSpacing.xs) {
                             Text("Appointment Rescheduled!")
-                                .font(.system(size: 22, weight: .bold))
+                                .font(.app(size: 22, weight: .bold))
                                 .foregroundStyle(.primary)
                                 .multilineTextAlignment(.center)
 
                             Text("Your appointment has been successfully rescheduled. No additional payment is required.")
-                                .font(.system(size: 14))
+                                .font(.app(size: 14))
                                 .foregroundStyle(.secondary)
                                 .multilineTextAlignment(.center)
                                 .padding(.horizontal, AppSpacing.xl)
@@ -91,10 +91,10 @@ struct RescheduleConfirmView: View {
                         // ── No payment notice ─────────────────────────────────
                         HStack(spacing: AppSpacing.xs) {
                             Image(systemName: "checkmark.seal.fill")
-                                .font(.system(size: 13))
+                                .font(.app(size: 13))
                                 .foregroundStyle(.green)
                             Text("No payment required for rescheduling")
-                                .font(.system(size: 13, weight: .medium))
+                                .font(.app(size: 13, weight: .medium))
                                 .foregroundStyle(.secondary)
                         }
                         .padding(.horizontal, AppSpacing.md)
@@ -157,15 +157,15 @@ struct RescheduleConfirmView: View {
                     .fill(color.opacity(0.12))
                     .frame(width: 34, height: 34)
                 Image(systemName: icon)
-                    .font(.system(size: 14, weight: .medium))
+                    .font(.app(size: 14, weight: .medium))
                     .foregroundStyle(color)
             }
             Text(label)
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
             Spacer()
             Text(value)
-                .font(.system(size: 14, weight: .semibold))
+                .font(.app(size: 14, weight: .semibold))
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.trailing)
         }

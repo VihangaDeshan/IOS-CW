@@ -31,13 +31,13 @@ struct PharmacyConfirmationView: View {
 
                         // ── Icon ──────────────────────────────────────────
                         Image(systemName: "calendar.badge.checkmark")
-                            .font(.system(size: 72, weight: .light))
+                            .font(.app(size: 72, weight: .light))
                             .foregroundStyle(Color.clinicPrimary)
                             .padding(.bottom, AppSpacing.sm)
 
                         // ── Title ─────────────────────────────────────────
                         Text("Prescription Sent")
-                            .font(.system(size: 26, weight: .bold))
+                            .font(.app(size: 26, weight: .bold))
                             .foregroundStyle(.primary)
 
                         // ── Status card ───────────────────────────────────
@@ -45,13 +45,13 @@ struct PharmacyConfirmationView: View {
                             ForEach(statusItems.indices, id: \.self) { i in
                                 HStack(alignment: .top, spacing: AppSpacing.md) {
                                     Image(systemName: "checkmark")
-                                        .font(.system(size: 13, weight: .semibold))
+                                        .font(.app(size: 13, weight: .semibold))
                                         .foregroundStyle(Color.clinicPrimary)
                                         .frame(width: 20, height: 20, alignment: .center)
                                         .padding(.top, 1)
 
                                     Text(statusItems[i])
-                                        .font(.system(size: 14))
+                                        .font(.app(size: 14))
                                         .foregroundStyle(.primary)
                                         .fixedSize(horizontal: false, vertical: true)
 
@@ -99,7 +99,7 @@ struct PharmacyConfirmationView: View {
                             .fill(Color(.systemGray6))
                             .frame(width: 34, height: 34)
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)

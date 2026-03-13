@@ -57,7 +57,7 @@ struct PrescriptionDetailView: View {
                             .fill(Color(.systemGray6))
                             .frame(width: 34, height: 34)
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
@@ -78,19 +78,19 @@ struct PrescriptionDetailView: View {
     private var patientCard: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(record.patientName)
-                .font(.system(size: 16, weight: .semibold))
+                .font(.app(size: 16, weight: .semibold))
                 .foregroundStyle(.primary)
             Text("ID: \(record.patientID)")
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
             Text(record.date)
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
             Text(record.doctorName)
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
             Text(record.specialization)
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -108,10 +108,10 @@ struct PrescriptionDetailView: View {
     private var diagnosisCard: some View {
         VStack(alignment: .leading, spacing: AppSpacing.xs) {
             Text("Diagnosis")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.app(size: 15, weight: .semibold))
                 .foregroundStyle(.primary)
             Text(record.diagnosis)
-                .font(.system(size: 14))
+                .font(.app(size: 14))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -129,7 +129,7 @@ struct PrescriptionDetailView: View {
     private var medicinesCard: some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             Text("Medicines")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.app(size: 15, weight: .semibold))
                 .foregroundStyle(.primary)
 
             VStack(alignment: .leading, spacing: AppSpacing.sm) {
@@ -157,7 +157,7 @@ struct PrescriptionDetailView: View {
     private var sendButton: some View {
         Button { showConfirmation = true } label: {
             Text("Send to Pharmacy")
-                .font(.system(size: 17, weight: .semibold))
+                .font(.app(size: 17, weight: .semibold))
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
                 .frame(height: AppSize.buttonPrimary)
@@ -176,22 +176,22 @@ private struct MedicineRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(med.name)
-                .font(.system(size: 14, weight: .bold))
+                .font(.app(size: 14, weight: .bold))
                 .foregroundStyle(.primary)
 
             if !med.dosage.isEmpty {
                 Text("\(med.dosage) – \(med.frequency)")
-                    .font(.system(size: 13))
+                    .font(.app(size: 13))
                     .foregroundStyle(.secondary)
             }
             if !med.duration.isEmpty {
                 Text("Duration: \(med.duration)")
-                    .font(.system(size: 13))
+                    .font(.app(size: 13))
                     .foregroundStyle(.secondary)
             }
             if let notes = med.notes {
                 Text(notes)
-                    .font(.system(size: 13))
+                    .font(.app(size: 13))
                     .foregroundStyle(.secondary)
             }
         }

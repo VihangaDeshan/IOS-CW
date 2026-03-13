@@ -11,6 +11,7 @@ struct SettingsOption: Identifiable {
 }
 
 struct SettingsView: View {
+    @Environment(AppRouter.self) private var router
     @Environment(\.dismiss) private var dismiss
 
     private let options: [SettingsOption] = [
@@ -68,6 +69,14 @@ struct SettingsView: View {
                         .buttonStyle(.plain)
                         .padding(.horizontal)
                     }
+
+                    PrimaryButton("Logout") {
+                        router.logout()
+                        withAnimation(.easeInOut(duration: 0.38)) {
+                            router.navigate(to: .login)
+                        }
+                    }
+                    .padding(.horizontal)
                 }
                 Spacer()
             }

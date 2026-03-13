@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AccessibilityView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var textSize: Double = 0.5
+    @AppStorage(AccessibilitySettingsKey.textScale) private var textSize: Double = AccessibilitySettingsKey.defaultTextScale
     @State private var highContrast: Bool = false
     @State private var voiceGuidance: Bool = false
     @State private var largerTargets: Bool = false
@@ -27,13 +27,24 @@ struct AccessibilityView: View {
                             Text("A")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            Slider(value: $textSize, in: 0...1)
+                            Slider(
+                                value: $textSize,
+                                in: AccessibilitySettingsKey.minTextScale...AccessibilitySettingsKey.maxTextScale
+                            )
                                 .accentColor(.clinicPrimary)
                             Text("A")
                                 .font(.title3)
                                 .foregroundStyle(.secondary)
                         }
                         .padding(.top, 4)
+
+                        HStack {
+                            Text("Small")
+                            Spacer()
+                            Text("Large")
+                        }
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
                     }
                 }
                 card {
@@ -68,7 +79,7 @@ struct AccessibilityView: View {
                                     .font(.subheadline)
                                     .foregroundColor(.clinicPrimary)
                                 Image(systemName: "chevron.up.chevron.down")
-                                    .font(.system(size: 11, weight: .semibold))
+                                    .font(.app(size: 11, weight: .semibold))
                                     .foregroundColor(.clinicPrimary)
                             }
                             .padding(.horizontal, 12)
@@ -94,7 +105,7 @@ struct AccessibilityView: View {
             HStack {
                 Button { dismiss() } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 18, weight: .semibold))
+                        .font(.app(size: 18, weight: .semibold))
                         .foregroundColor(.primary)
                         .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }

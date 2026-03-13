@@ -19,6 +19,7 @@ struct HomeView: View {
     @State private var showAlerts         = false
     @State private var showSearchResults  = false
     @State private var searchQuery        = ""
+    @State private var showBooking        = false
     @FocusState private var isSearchFocused: Bool
 
     var body: some View {
@@ -33,7 +34,7 @@ struct HomeView: View {
                         .padding(.bottom, AppSpacing.lg)
 
                     // ── Hero banner ───────────────────────────────────────
-                    HeroCarouselView()
+                    HeroCarouselView(onBook: { showBooking = true })
                         .padding(.horizontal, AppSpacing.lg)
                     // ── Search bar ────────────────────────────────────────
                     searchBar
@@ -94,11 +95,15 @@ struct HomeView: View {
             .navigationDestination(isPresented: $showSearchResults) {
                 SpecializationView(initialQuery: searchQuery, initialSegment: 1)
             }
+            .navigationDestination(isPresented: $showBooking) {
+                SpecializationView(initialQuery: "", initialSegment: 0)
+            }
             .onReceive(NotificationCenter.default.publisher(for: .switchToHomeTab)) { _ in
                 showVisitProgress = false
                 showAppointments = false
                 showAlerts = false
                 showSearchResults = false
+                showBooking = false
                 isSearchFocused = false
             }
         }
@@ -110,13 +115,13 @@ struct HomeView: View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Hello, Kasun")
-                    .font(.system(size: 26, weight: .bold))
+                    .font(.app(size: 26, weight: .bold))
                     .foregroundStyle(.primary)
             }
             Spacer()
             Button { showAlerts = true } label: {
                 Image(systemName: "bell")
-                    .font(.system(size: 20, weight: .medium))
+                    .font(.app(size: 20, weight: .medium))
                     .foregroundStyle(.primary)
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
             }
@@ -127,6 +132,7 @@ struct HomeView: View {
     // MARK: - Hero Banner
 
     struct HeroCarouselView: View {
+        var onBook: (() -> Void)? = nil
         @State private var currentIndex = 0
         private let timer = Timer.publish(every: 4, on: .main, in: .common).autoconnect()
         
@@ -163,7 +169,7 @@ struct HomeView: View {
                 HStack {
                     Spacer()
                     Image(systemName: "stethoscope")
-                        .font(.system(size: 72, weight: .light))
+                        .font(.app(size: 72, weight: .light))
                         .symbolRenderingMode(.hierarchical)
                         .foregroundStyle(Color.blue.opacity(0.15))
                         .padding(.trailing, AppSpacing.lg)
@@ -171,13 +177,13 @@ struct HomeView: View {
 
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
                     Text(title)
-                        .font(.system(size: 18, weight: .bold))
+                        .font(.app(size: 18, weight: .bold))
                         .foregroundStyle(Color(red: 0.07, green: 0.25, blue: 0.45))
                         .lineSpacing(2)
 
-                    Button { } label: {
+                    Button { onBook?() } label: {
                         Text("Book")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, AppSpacing.lg)
                             .padding(.vertical, AppSpacing.xs)
@@ -194,11 +200,11 @@ struct HomeView: View {
     private var searchBar: some View {
         HStack(spacing: AppSpacing.sm) {
             Image(systemName: "magnifyingglass")
-                .font(.system(size: 15, weight: .medium))
+                .font(.app(size: 15, weight: .medium))
                 .foregroundStyle(Color(.tertiaryLabel))
 
             TextField("Find the right doctor for you", text: $searchText)
-                .font(.system(size: 15))
+                .font(.app(size: 15))
                 .foregroundStyle(.primary)
                 .focused($isSearchFocused) // Track focus here
 
@@ -214,7 +220,7 @@ struct HomeView: View {
                     showSearchResults = true
                 } label: {
                     Image(systemName: "arrow.right.circle.fill")
-                        .font(.system(size: 22))
+                        .font(.app(size: 22))
                         .foregroundStyle(Color.clinicPrimary)
                         .transition(.move(edge: .trailing).combined(with: .opacity))
                 }
@@ -231,7 +237,7 @@ struct HomeView: View {
     private func sectionHeader(title: String, action: String?) -> some View {
         HStack {
             Text(title)
-                .font(.system(size: 18, weight: .bold))
+                .font(.app(size: 18, weight: .bold))
                 .foregroundStyle(.primary)
             Spacer()
             if let action {
@@ -239,7 +245,7 @@ struct HomeView: View {
                     if action == "See All" { showAppointments = true }
                 } label: {
                     Text(action)
-                        .font(.system(size: 14, weight: .medium))
+                        .font(.app(size: 14, weight: .medium))
                         .foregroundStyle(Color.clinicPrimary)
                 }
                 .buttonStyle(.plain)
@@ -264,22 +270,22 @@ struct HomeView: View {
             // Info
             VStack(alignment: .leading, spacing: 4) {
                 Text("Dr. Jayantha Udupitiya")
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.app(size: 15, weight: .semibold))
                     .foregroundStyle(.primary)
                 Text("Mar 15, 2026")
-                    .font(.system(size: 13))
+                    .font(.app(size: 13))
                     .foregroundStyle(.secondary)
 
                 HStack(spacing: AppSpacing.lg) {
                     Text("9:41 AM")
-                        .font(.system(size: 13, weight: .medium))
+                        .font(.app(size: 13, weight: .medium))
                         .foregroundStyle(Color.clinicPrimary)
 
                     Button {
                         showVisitProgress = true
                     } label: {
                         Text("Check in")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.app(size: 13, weight: .semibold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, AppSpacing.md)
                             .padding(.vertical, 5)
@@ -374,9 +380,9 @@ struct HomeView: View {
                 }
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Dr. Namal Balahewa")
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.app(size: 15, weight: .semibold))
                     Text("Specialist-Lungs")
-                        .font(.system(size: 13))
+                        .font(.app(size: 13))
                         .foregroundStyle(.secondary)
                 }
             }
@@ -412,12 +418,12 @@ private struct ServiceCell: View {
                     .fill(color.opacity(0.12))
                     .frame(width: 52, height: 52)
                 Image(systemName: icon)
-                    .font(.system(size: 22, weight: .medium))
+                    .font(.app(size: 22, weight: .medium))
                     .symbolRenderingMode(.monochrome)
                     .foregroundStyle(color)
             }
             Text(label)
-                .font(.system(size: 12, weight: .medium))
+                .font(.app(size: 12, weight: .medium))
                 .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
         }
@@ -435,7 +441,7 @@ private struct SuggestionLine: View {
     let text: String
     var body: some View {
         Text(text)
-            .font(.system(size: 14))
+            .font(.app(size: 14))
             .foregroundStyle(.primary)
             .fixedSize(horizontal: false, vertical: true)
     }

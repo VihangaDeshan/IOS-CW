@@ -27,7 +27,7 @@ struct LoginRequiredView: View {
                         .frame(width: 90, height: 90)
 
                     Image(systemName: "lock.fill")
-                        .font(.system(size: 34, weight: .medium))
+                        .font(.app(size: 34, weight: .medium))
                         .foregroundStyle(Color.clinicPrimary)
                 }
 
@@ -35,14 +35,14 @@ struct LoginRequiredView: View {
 
                 // ── Title ─────────────────────────────────────────────
                 Text("Login Required")
-                    .font(.system(size: 22, weight: .bold))
+                    .font(.app(size: 22, weight: .bold))
                     .foregroundStyle(.primary)
 
                 Spacer().frame(height: AppSpacing.sm)
 
                 // ── Body text ─────────────────────────────────────────
                 Text("You must be logged in to continue.\nPlease sign in to access this feature securely.")
-                    .font(.system(size: 15))
+                    .font(.app(size: 15))
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, AppSpacing.xxl)
@@ -59,7 +59,7 @@ struct LoginRequiredView: View {
                         router.navigate(to: .login)
                     } label: {
                         Text("Sign In")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.app(size: 17, weight: .semibold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: AppSize.buttonPrimary)
@@ -73,7 +73,7 @@ struct LoginRequiredView: View {
                         NotificationCenter.default.post(name: .switchToHomeTab, object: nil)
                     } label: {
                         Text("Go Back")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.app(size: 17, weight: .semibold))
                             .foregroundStyle(Color.clinicPrimary)
                             .frame(maxWidth: .infinity)
                             .frame(height: AppSize.buttonPrimary)

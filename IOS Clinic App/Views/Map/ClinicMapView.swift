@@ -186,6 +186,19 @@ struct ClinicMapView: View {
     @State private var currentLocation: ClinicLocation? = nil
     @State private var destination:     ClinicLocation? = nil
 
+    private func resetToMapHome() {
+        withAnimation {
+            stepIndex = 0
+            routeSegments = []
+            currentLocation = nil
+            destination = nil
+            region = MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 6.9271, longitude: 79.8612),
+                span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
+            )
+        }
+    }
+
     var body: some View {
         ZStack {
             Color.clinicSurface.ignoresSafeArea()
@@ -198,14 +211,13 @@ struct ClinicMapView: View {
                         segment:        routeSegments[segIdx],
                         segmentNumber:  segIdx + 1,
                         totalSegments:  routeSegments.count,
+                        isLastSegment:  segIdx == routeSegments.count - 1,
                         onBack: { withAnimation { stepIndex -= 1 } },
-                        onNext: segIdx == routeSegments.count - 1
-                            ? nil
-                            : { withAnimation { stepIndex += 1 } }
+                        onNext: { withAnimation { stepIndex += 1 } }
                     )
                 } else {
                     ArrivedView(destination: destination!) {
-                        withAnimation { stepIndex = 0 }
+                        resetToMapHome()
                     }
                 }
             }
@@ -233,7 +245,7 @@ struct ClinicMapView: View {
                     // ── Current Location ──────────────────────────────
                     VStack(alignment: .leading, spacing: AppSpacing.xs) {
                         Text("Current Location")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(.app(size: 13, weight: .medium))
                             .foregroundStyle(.secondary)
                         Menu {
                             Button { withAnimation { currentLocation = nil } } label: {
@@ -250,11 +262,11 @@ struct ClinicMapView: View {
                                 Image(systemName: "location.circle")
                                     .foregroundStyle(currentLocation != nil ? Color.clinicPrimary : Color(.systemGray3))
                                 Text(currentLocation?.name ?? "Select Location")
-                                    .font(.system(size: 15))
+                                    .font(.app(size: 15))
                                     .foregroundStyle(currentLocation != nil ? .primary : Color(.tertiaryLabel))
                                 Spacer()
                                 Image(systemName: "chevron.up.chevron.down")
-                                    .font(.system(size: 12))
+                                    .font(.app(size: 12))
                                     .foregroundColor(Color(.systemGray3))
                             }
                             .padding(.horizontal, AppSpacing.md)
@@ -267,7 +279,7 @@ struct ClinicMapView: View {
                     // ── Destination ───────────────────────────────────
                     VStack(alignment: .leading, spacing: AppSpacing.xs) {
                         Text("Destination")
-                            .font(.system(size: 13, weight: .medium))
+                            .font(.app(size: 13, weight: .medium))
                             .foregroundStyle(.secondary)
                         Menu {
                             Button { withAnimation { destination = nil } } label: {
@@ -289,11 +301,11 @@ struct ClinicMapView: View {
                                 Image(systemName: "mappin.circle")
                                     .foregroundStyle(destination != nil ? Color.clinicPrimary : Color(.systemGray3))
                                 Text(destination?.name ?? "Select Destination")
-                                    .font(.system(size: 15))
+                                    .font(.app(size: 15))
                                     .foregroundStyle(destination != nil ? .primary : Color(.tertiaryLabel))
                                 Spacer()
                                 Image(systemName: "chevron.up.chevron.down")
-                                    .font(.system(size: 12))
+                                    .font(.app(size: 12))
                                     .foregroundColor(Color(.systemGray3))
                             }
                             .padding(.horizontal, AppSpacing.md)
@@ -316,7 +328,7 @@ struct ClinicMapView: View {
                 withAnimation { stepIndex = 1 }
             } label: {
                 Text("Find Route")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.app(size: 17, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: AppSize.buttonPrimary)
@@ -344,7 +356,7 @@ struct ClinicMapView: View {
                     ZStack {
                         Circle().fill(Color(.systemGray6)).frame(width: 34, height: 34)
                         Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .semibold))
+                            .font(.app(size: 14, weight: .semibold))
                             .foregroundStyle(.primary)
                     }
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
@@ -368,8 +380,9 @@ struct WaypointStepView: View {
     let segment:       RouteSegment
     let segmentNumber: Int
     let totalSegments: Int
+    let isLastSegment: Bool
     let onBack:        () -> Void
-    let onNext:        (() -> Void)?   // nil on last segment (arrived)
+    let onNext:        () -> Void
 
     @State private var showDirections = false
 
@@ -395,7 +408,7 @@ struct WaypointStepView: View {
 
                 Button { showDirections = true } label: {
                     Label("Tap for directions", systemImage: "hand.tap")
-                        .font(.system(size: 12))
+                        .font(.app(size: 12))
                         .foregroundStyle(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
@@ -408,10 +421,10 @@ struct WaypointStepView: View {
             // ── "Head to …" instruction row ─────────────────────────
             HStack(spacing: 8) {
                 Image(systemName: "arrow.turn.up.right")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.app(size: 13, weight: .semibold))
                     .foregroundStyle(Color.clinicPrimary)
-                Text("Head to ") .font(.system(size: 14)).foregroundStyle(.primary) +
-                Text(segment.to.name).font(.system(size: 14, weight: .semibold)).foregroundStyle(.primary)
+                Text("Head to ") .font(.app(size: 14)).foregroundStyle(.primary) +
+                Text(segment.to.name).font(.app(size: 14, weight: .semibold)).foregroundStyle(.primary)
                 Spacer()
             }
             .padding(.horizontal, AppSpacing.lg)
@@ -425,8 +438,8 @@ struct WaypointStepView: View {
                 if segmentNumber > 1 {
                     Button { onBack() } label: {
                         HStack(spacing: 6) {
-                            Image(systemName: "chevron.left").font(.system(size: 14, weight: .semibold))
-                            Text("Previous").font(.system(size: 16, weight: .semibold))
+                            Image(systemName: "chevron.left").font(.app(size: 14, weight: .semibold))
+                            Text("Previous").font(.app(size: 16, weight: .semibold))
                         }
                         .foregroundStyle(.white)
                         .padding(.horizontal, 24).padding(.vertical, 13)
@@ -435,11 +448,11 @@ struct WaypointStepView: View {
                     .buttonStyle(.plain)
                 }
                 Spacer()
-                if let onNext {
+                if !isLastSegment {
                     Button { onNext() } label: {
                         HStack(spacing: 6) {
-                            Text("Next").font(.system(size: 16, weight: .semibold))
-                            Image(systemName: "chevron.right").font(.system(size: 14, weight: .semibold))
+                            Text("Next").font(.app(size: 16, weight: .semibold))
+                            Image(systemName: "chevron.right").font(.app(size: 14, weight: .semibold))
                         }
                         .foregroundStyle(.white)
                         .padding(.horizontal, 24).padding(.vertical, 13)
@@ -448,9 +461,9 @@ struct WaypointStepView: View {
                     .buttonStyle(.plain)
                 } else {
                     // Last segment — "Arrived" button
-                    Button { onBack() } label: {
+                    Button { onNext() } label: {
                         Text("Arrived 🎉")
-                            .font(.system(size: 16, weight: .semibold))
+                            .font(.app(size: 16, weight: .semibold))
                             .foregroundStyle(.white)
                             .padding(.horizontal, 24).padding(.vertical, 13)
                             .background(Color.green, in: Capsule())
@@ -485,10 +498,10 @@ struct SegmentDirectionsView: View {
                     // Header
                     VStack(alignment: .leading, spacing: 4) {
                         Text(segment.to.name)
-                            .font(.system(size: 24, weight: .bold))
+                            .font(.app(size: 24, weight: .bold))
                             .foregroundStyle(.primary)
                         Text("From \(segment.from.name)")
-                            .font(.system(size: 14))
+                            .font(.app(size: 14))
                             .foregroundStyle(.secondary)
                     }
 
@@ -497,11 +510,11 @@ struct SegmentDirectionsView: View {
                         ForEach(Array(segment.directions.enumerated()), id: \.offset) { _, step in
                             HStack(alignment: .top, spacing: AppSpacing.md) {
                                 Image(systemName: "arrow.triangle.turn.up.right.circle")
-                                    .font(.system(size: 18))
+                                    .font(.app(size: 18))
                                     .foregroundStyle(Color.clinicPrimary)
                                     .frame(width: 24)
                                 Text(step)
-                                    .font(.system(size: 15))
+                                    .font(.app(size: 15))
                                     .foregroundStyle(.primary)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
@@ -512,7 +525,7 @@ struct SegmentDirectionsView: View {
 
                     Button { onBack() } label: {
                         Text("Back to map")
-                            .font(.system(size: 17, weight: .semibold))
+                            .font(.app(size: 17, weight: .semibold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .frame(height: AppSize.buttonPrimary)
@@ -539,29 +552,29 @@ struct ArrivedView: View {
         VStack(spacing: AppSpacing.xl) {
             Spacer()
             Image(systemName: "checkmark.seal.fill")
-                .font(.system(size: 72))
+                .font(.app(size: 72))
                 .foregroundStyle(Color.clinicPrimary)
             Text("You've arrived!")
-                .font(.system(size: 26, weight: .bold))
+                .font(.app(size: 26, weight: .bold))
                 .foregroundStyle(.primary)
             Text(destination.name)
-                .font(.system(size: 18))
+                .font(.app(size: 18))
                 .foregroundStyle(.secondary)
+            Text("Redirecting to map...")
+                .font(.app(size: 14))
+                .foregroundStyle(.secondary)
+            ProgressView()
+                .tint(Color.clinicPrimary)
             Spacer()
-            Button { onDone() } label: {
-                Text("Done")
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: AppSize.buttonPrimary)
-                    .background(Color.clinicPrimary, in: Capsule())
-                    .padding(.horizontal, AppSpacing.lg)
-            }
-            .buttonStyle(.plain)
-            .padding(.bottom, AppSpacing.xxxl)
         }
         .background(Color.clinicSurface.ignoresSafeArea())
         .navigationBarHidden(true)
+        .task {
+            try? await Task.sleep(for: .seconds(2))
+            await MainActor.run {
+                onDone()
+            }
+        }
     }
 }
 
@@ -634,10 +647,10 @@ struct FloorPlanSchematicView: View {
                         Spacer()
                         HStack(spacing: 4) {
                             Text(to)
-                                .font(.system(size: 15, weight: .bold))
+                                .font(.app(size: 15, weight: .bold))
                                 .foregroundStyle(.primary)
                             Image(systemName: "arrow.right")
-                                .font(.system(size: 12, weight: .bold))
+                                .font(.app(size: 12, weight: .bold))
                                 .foregroundStyle(Color.clinicPrimary)
                         }
                         .padding(.top, h * 0.24)
@@ -646,7 +659,7 @@ struct FloorPlanSchematicView: View {
                     Spacer()
                     HStack {
                         Text(from)
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.app(size: 13, weight: .semibold))
                             .foregroundStyle(.primary)
                             .padding(.leading, w * 0.10)
                             .padding(.bottom, h * 0.12)
@@ -668,7 +681,7 @@ private func mapNavBar(title: String, stepIndicator: String?, onBack: @escaping 
                 .foregroundStyle(.primary)
             if let stepIndicator {
                 Text(stepIndicator)
-                    .font(.system(size: 12))
+                    .font(.app(size: 12))
                     .foregroundStyle(.secondary)
             }
         }
@@ -678,7 +691,7 @@ private func mapNavBar(title: String, stepIndicator: String?, onBack: @escaping 
                 ZStack {
                     Circle().fill(Color(.systemGray6)).frame(width: 34, height: 34)
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.app(size: 14, weight: .semibold))
                         .foregroundStyle(.primary)
                 }
                 .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
@@ -698,10 +711,10 @@ private func mapNavBar(title: String, stepIndicator: String?, onBack: @escaping 
 private func youAreNowBanner(name: String) -> some View {
     VStack(spacing: 2) {
         Text("You are now")
-            .font(.system(size: 13))
+            .font(.app(size: 13))
             .foregroundStyle(.secondary)
         Text(name)
-            .font(.system(size: 17, weight: .semibold))
+            .font(.app(size: 17, weight: .semibold))
             .foregroundStyle(.primary)
     }
     .frame(maxWidth: .infinity)
@@ -817,14 +830,14 @@ struct LocationPickerSheet: View {
             // Handle + title
             VStack(spacing: AppSpacing.sm) {
                 Text(title)
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.app(size: 17, weight: .semibold))
                     .padding(.top, AppSpacing.sm)
 
                 HStack(spacing: AppSpacing.sm) {
                     Image(systemName: "magnifyingglass")
                         .foregroundStyle(Color(.systemGray3))
                     TextField("Search", text: $search)
-                        .font(.system(size: 15))
+                        .font(.app(size: 15))
                 }
                 .padding(.horizontal, AppSpacing.md)
                 .frame(height: 40)
@@ -844,7 +857,7 @@ struct LocationPickerSheet: View {
                             .foregroundStyle(Color.clinicPrimary)
                             .frame(width: 24)
                         Text(loc.name)
-                            .font(.system(size: 15))
+                            .font(.app(size: 15))
                             .foregroundStyle(.primary)
                         Spacer()
                         if selected == loc {

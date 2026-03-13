@@ -26,7 +26,7 @@ struct ClinicTextField: View {
     var body: some View {
         HStack(spacing: AppSpacing.md) {
             Image(systemName: icon)
-                .font(.system(size: AppSize.iconField, weight: .medium))
+                .font(.app(size: AppSize.iconField, weight: .medium))
                 .foregroundStyle(isFocused ? Color.clinicPrimary : Color.secondary)
                 .frame(width: AppSize.iconField)
                 .animation(.easeInOut(duration: 0.2), value: isFocused)
@@ -66,7 +66,7 @@ struct ClinicSecureField: View {
         HStack(spacing: AppSpacing.md) {
             // Leading lock icon
             Image(systemName: icon)
-                .font(.system(size: AppSize.iconField, weight: .medium))
+                .font(.app(size: AppSize.iconField, weight: .medium))
                 .foregroundStyle(isFocused ? Color.clinicPrimary : Color.secondary)
                 .frame(width: AppSize.iconField)
                 .animation(.easeInOut(duration: 0.2), value: isFocused)
@@ -90,7 +90,7 @@ struct ClinicSecureField: View {
                 isRevealed.toggle()
             } label: {
                 Image(systemName: isRevealed ? "eye.slash" : "eye")
-                    .font(.system(size: AppSize.iconField))
+                    .font(.app(size: AppSize.iconField))
                     .foregroundStyle(.secondary)
                     .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                     .contentShape(Rectangle())

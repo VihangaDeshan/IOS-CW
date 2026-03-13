@@ -41,7 +41,7 @@ struct LoginView: View {
                     HStack(spacing: 12) {
                         Image(systemName: "phone.fill")
                             .foregroundStyle(Color.clinicPrimary)
-                            .font(.system(size: 18))
+                            .font(.app(size: 18))
                             .frame(width: 24)
                         
                         Text("+94")
@@ -117,7 +117,7 @@ struct LoginView: View {
                         
                         Button { } label: {
                             Image(systemName: "apple.logo")
-                                .font(.system(size: 26))
+                                .font(.app(size: 26))
                                 .foregroundStyle(.primary)
                                 .frame(width: 50, height: 50)
                                 .background(Circle().fill(Color(.systemBackground)).shadow(radius: 2))
@@ -149,7 +149,7 @@ struct LoginView: View {
                     router.navigate(to: .welcome)
                 } label: {
                     Image(systemName: "chevron.left")
-                        .font(.system(size: 17, weight: .semibold))
+                        .font(.app(size: 17, weight: .semibold))
                         .foregroundStyle(.primary)
                         .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }
@@ -175,7 +175,7 @@ private struct SocialIconButton: View {
             action()
         } label: {
             Text(label)
-                .font(.system(size: 22, weight: .bold))
+                .font(.app(size: 22, weight: .bold))
                 .foregroundStyle(labelColor)
                 .frame(width: 50, height: 50)
                 .background(Circle().fill(Color(.systemBackground)).shadow(radius: 2))
