@@ -76,6 +76,7 @@ struct AppointmentsView: View {
                 // ── Filter pills ──────────────────────────────────────
                 filterBar
                     .padding(.top, AppSpacing.sm)
+                    .padding(.horizontal, AppSpacing.xs)
 
                 Divider()
                     .padding(.top, AppSpacing.sm)
@@ -168,19 +169,14 @@ struct AppointmentsView: View {
     // MARK: - Filter Bar
 
     private var filterBar: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: AppSpacing.xs) {
-                ForEach(AppointmentStatus.allCases, id: \.self) { filter in
-                    FilterPill(
-                        label:      filter.shortLabel,
-                        isSelected: selectedFilter == filter
-                    ) {
-                        selectedFilter = filter
-                    }
-                }
+        Picker("Appointment Filter", selection: $selectedFilter) {
+            ForEach(AppointmentStatus.allCases, id: \.self) { filter in
+                Text(filter.shortLabel)
+                    .tag(filter)
             }
-            .padding(.horizontal, AppSpacing.lg)
         }
+        .pickerStyle(.segmented)
+        .scaleEffect(y: 1.2)
     }
 
     // MARK: - Empty State
@@ -197,34 +193,6 @@ struct AppointmentsView: View {
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
-    }
-}
-
-// MARK: - Filter Pill
-
-private struct FilterPill: View {
-    let label:      String
-    let isSelected: Bool
-    let action:     () -> Void
-
-    var body: some View {
-        Button {
-            action()
-        } label: {
-            Text(label)
-                .font(.system(size: 13, weight: isSelected ? .semibold : .regular))
-                .foregroundStyle(isSelected ? .white : .primary)
-                .padding(.horizontal, AppSpacing.md)
-                .padding(.vertical, 8)
-                .background(
-                    isSelected
-                        ? Color.clinicPrimary
-                        : Color(.systemGray6),
-                    in: Capsule()
-                )
-        }
-        .buttonStyle(.plain)
-        .animation(.easeInOut(duration: 0.18), value: isSelected)
     }
 }
 

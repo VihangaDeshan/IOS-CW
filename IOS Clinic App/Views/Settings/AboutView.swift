@@ -29,10 +29,7 @@ struct AboutView: View {
 
                         infoCard
 
-                        linksCard
-
-                        contactCard
-
+                       
                         copyrightNote
                             .padding(.bottom, AppSpacing.xxxl)
                     }
@@ -166,42 +163,7 @@ struct AboutView: View {
         }
     }
 
-    // MARK: - Links Card
-
-    private var linksCard: some View {
-        cardContainer {
-            VStack(spacing: 0) {
-                Button {
-                    showTerms = true
-                } label: {
-                    linkRow(icon: "doc.text.fill", color: Color.clinicPrimary, label: "Terms & Conditions")
-                }
-                .buttonStyle(.plain)
-
-                Divider().padding(.horizontal, AppSpacing.xs)
-
-                linkRow(icon: "lock.shield.fill",   color: .indigo,   label: "Privacy Policy")
-                Divider().padding(.horizontal, AppSpacing.xs)
-                linkRow(icon: "questionmark.circle.fill", color: .teal, label: "Help & Support")
-            }
-        }
-    }
-
-    // MARK: - Contact Card
-
-    private var contactCard: some View {
-        cardContainer {
-            VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                rowIcon("phone.fill", label: "Contact Us")
-                VStack(spacing: AppSpacing.xs) {
-                    contactItem(icon: "envelope",   text: "support@clinicflow.com")
-                    contactItem(icon: "phone",       text: "+94 740 458 767")
-                    contactItem(icon: "location",    text: "No. 42, Hospital Road, Colombo 10")
-                }
-            }
-        }
-    }
-
+    
     // MARK: - Copyright
 
     private var copyrightNote: some View {
