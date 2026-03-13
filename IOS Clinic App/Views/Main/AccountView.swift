@@ -5,6 +5,7 @@ struct AccountView: View {
     @Environment(AppRouter.self) private var router
     @State private var showManageMembers = false
     @State private var showQR = false
+    @State private var showPayments = false
     
     var body: some View {
         NavigationStack {
@@ -24,6 +25,13 @@ struct AccountView: View {
                             subtitle: "Manage your health members"
                         ) {
                             showManageMembers = true
+                        }
+                        
+                        AccountRow(
+                            title: "Payments", 
+                            subtitle: "View your payment history"
+                        ) {
+                            showPayments = true
                         }
 
                         AccountRow(
@@ -65,6 +73,9 @@ struct AccountView: View {
             .navigationBarHidden(true)
             .navigationDestination(isPresented: $showManageMembers) {
                 ManageMembersView()
+            }
+            .navigationDestination(isPresented: $showPayments) {
+                PastPaymentsView()
             }
             .navigationDestination(isPresented: $showQR) {
                 ProfileQRView()
@@ -138,7 +149,9 @@ private struct AccountRow: View {
                     .foregroundStyle(.secondary)
             }
             .padding()
-            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 2)
         }
         .buttonStyle(.plain)
     }

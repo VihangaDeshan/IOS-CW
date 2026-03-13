@@ -15,7 +15,6 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
 
     private let options: [SettingsOption] = [
-        SettingsOption(title: "Payments", subtitle: "View your payment history", destination: AnyView(PastPaymentsView())),
         SettingsOption(title: "Accessibility", subtitle: "Customize your experience", destination: AnyView(AccessibilityView())),
         SettingsOption(title: "Help & Support", subtitle: "Get assistance", destination: AnyView(HelpSupportView())),
         SettingsOption(title: "Terms & conditions", subtitle: "Legal information", destination: AnyView(TermsAndConditionsView())),
