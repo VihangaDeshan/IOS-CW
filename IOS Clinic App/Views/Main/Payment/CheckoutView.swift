@@ -22,6 +22,7 @@ struct CheckoutView: View {
             cardForm
             Spacer()
             termsToggle
+            Spacer().frame(height: AppSpacing.lg)
             payButton
         }
         .background(Color.white.ignoresSafeArea())
@@ -56,11 +57,19 @@ struct CheckoutView: View {
 
     private var cardForm: some View {
         VStack(spacing: 16) {
-            CustomTextField(placeholder: "Card Number", text: $cardNumber)
-            CustomTextField(placeholder: "Card Holder Name", text: $cardHolder)
+            LabeledInputField(label: "Card Number") {
+                CustomTextField(placeholder: "Enter card number", text: $cardNumber)
+            }
+            LabeledInputField(label: "Card Holder Name") {
+                CustomTextField(placeholder: "Enter card holder name", text: $cardHolder)
+            }
             HStack(spacing: 12) {
-                CustomTextField(placeholder: "MM/YY", text: $expiry)
-                CustomTextField(placeholder: "CVV", text: $cvv)
+                LabeledInputField(label: "Expiry") {
+                    CustomTextField(placeholder: "MM/YY", text: $expiry)
+                }
+                LabeledInputField(label: "CVV") {
+                    CustomTextField(placeholder: "CVV", text: $cvv)
+                }
             }
         }
         .padding(.horizontal)
@@ -79,6 +88,7 @@ struct CheckoutView: View {
             Spacer()
         }
         .padding(.horizontal)
+        .padding(.top, AppSpacing.md)
     }
 
     private var payButton: some View {
@@ -96,6 +106,21 @@ struct CheckoutView: View {
         .padding(.horizontal)
         .padding(.bottom, 16)
         .disabled(!acceptedTerms)
+    }
+}
+
+struct LabeledInputField<Content: View>: View {
+    let label: String
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppSpacing.xs) {
+            Text(label)
+                .font(.app(size: 14, weight: .semibold))
+                .foregroundStyle(.primary)
+
+            content
+        }
     }
 }
 
