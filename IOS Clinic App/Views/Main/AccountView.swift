@@ -4,6 +4,8 @@ struct AccountView: View {
     // 1. Fixed: Added the router environment to fix the 'scope' error
     @Environment(AppRouter.self) private var router
     @State private var showManageMembers = false
+    @State private var showQR = false
+    @State private var showPayments = false
     
     var body: some View {
         NavigationStack {
@@ -19,31 +21,24 @@ struct AccountView: View {
 
                         // Menu options
                         AccountRow(
-                            title: "Edit Profile",
-                            subtitle: "Manage your details"
-                        ) {
-                            // TODO: router.navigate(to: .editProfile)
-                        }
-
-                        AccountRow(
                             title: "Manage Members",
                             subtitle: "Manage your health members"
                         ) {
                             showManageMembers = true
                         }
-
+                        
                         AccountRow(
-                            title: "Manage Login",
-                            subtitle: "Manage your security settings"
+                            title: "Payments", 
+                            subtitle: "View your payment history"
                         ) {
-                            // TODO: router.navigate(to: .loginSettings)
+                            showPayments = true
                         }
 
                         AccountRow(
-                            title: "Your Profile QR",
+                             title: "Your Profile QR",
                             subtitle: "To share your info via QR"
                         ) {
-                            // TODO: show QR code sheet
+                            showQR = true
                         }
                         
                     }
@@ -78,6 +73,12 @@ struct AccountView: View {
             .navigationBarHidden(true)
             .navigationDestination(isPresented: $showManageMembers) {
                 ManageMembersView()
+            }
+            .navigationDestination(isPresented: $showPayments) {
+                PastPaymentsView()
+            }
+            .navigationDestination(isPresented: $showQR) {
+                ProfileQRView()
             }
         }
     }
@@ -148,7 +149,9 @@ private struct AccountRow: View {
                     .foregroundStyle(.secondary)
             }
             .padding()
-            .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 16))
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 2)
         }
         .buttonStyle(.plain)
     }

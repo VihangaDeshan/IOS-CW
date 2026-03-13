@@ -27,6 +27,12 @@ struct ManageMembersView: View {
 
     @State private var selectedIndex = 0
     @State private var showNewMember = false
+    
+    // Editable state
+    @State private var editName: String = ""
+    @State private var editPhone: String = ""
+    @State private var editAge: String = ""
+    @State private var editNotes: String = ""
 
     // Sample members — in production this would come from a store/model
     @State private var members: [FamilyMember] = [
@@ -63,6 +69,12 @@ struct ManageMembersView: View {
                 }
             }
         }
+        .onAppear {
+            updateEditFields()
+        }
+        .onChange(of: selectedIndex) { _ in
+            updateEditFields()
+        }
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $showNewMember) {
             NewMemberView { newMember in
@@ -82,11 +94,10 @@ struct ManageMembersView: View {
 
             HStack {
                 Button { dismiss() } label: {
-                    ZStack {
-                       
-                        
-                    }
-                    .contentShape(Rectangle())
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.primary)
+                        .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }
                 .buttonStyle(.plain)
 
@@ -148,18 +159,132 @@ struct ManageMembersView: View {
 
     private var detailFields: some View {
         VStack(spacing: AppSpacing.sm) {
-            InfoRow(icon: "person.crop.circle", value: selected.name)
-            InfoRow(icon: "phone",              value: selected.phone)
-            InfoRow(icon: "person.2",           value: selected.age)
-            InfoRow(icon: "note.text",          value: selected.notes.isEmpty ? "Notes" : selected.notes,
-                    muted: selected.notes.isEmpty)
+            
+            // Name
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Name")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .padding(.leading, 4)
+                
+                HStack(spacing: AppSpacing.md) {
+                    Image(systemName: "person.crop.circle")
+                        .font(.app(size: 17))
+                        .foregroundStyle(Color.clinicPrimary)
+                        .frame(width: 28)
+                        
+                    TextField("Name", text: $editName)
+                        .font(.app(size: 15))
+                        .textFieldStyle(.plain)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, AppSpacing.md)
+                .frame(height: 50)
+                .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: AppRadius.lg))
+            }
+
+            // Phone
+            VStack(alignment: .leading, spacing: 4) {
+                 Text("Phone")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .padding(.leading, 4)
+                
+                HStack(spacing: AppSpacing.md) {
+                    Image(systemName: "phone")
+                        .font(.app(size: 17))
+                        .foregroundStyle(Color.clinicPrimary)
+                        .frame(width: 28)
+                    
+                    TextField("Phone", text: $editPhone)
+                        .font(.app(size: 15))
+                        .keyboardType(.phonePad)
+                        .textFieldStyle(.plain)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, AppSpacing.md)
+                .frame(height: 50)
+                .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: AppRadius.lg))
+            }
+
+            // Age
+            VStack(alignment: .leading, spacing: 4) {
+                 Text("Age")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .padding(.leading, 4)
+                
+                HStack(spacing: AppSpacing.md) {
+                    Image(systemName: "person.2")
+                        .font(.app(size: 17))
+                        .foregroundStyle(Color.clinicPrimary)
+                        .frame(width: 28)
+                    
+                    TextField("Age", text: $editAge)
+                        .font(.app(size: 15))
+                        .keyboardType(.numberPad)
+                        .textFieldStyle(.plain)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, AppSpacing.md)
+                .frame(height: 50)
+                .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: AppRadius.lg))
+            }
+            
+            // Notes
+            VStack(alignment: .leading, spacing: 4) {
+                 Text("Notes")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+                    .padding(.leading, 4)
+                
+                HStack(spacing: AppSpacing.md) {
+                    Image(systemName: "note.text")
+                        .font(.app(size: 17))
+                        .foregroundStyle(Color.clinicPrimary)
+                        .frame(width: 28)
+                    
+                    TextField("Add notes here...", text: $editNotes)
+                        .font(.app(size: 15))
+                        .textFieldStyle(.plain)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal, AppSpacing.md)
+                .frame(height: 50)
+                .background(Color(.systemGray6), in: RoundedRectangle(cornerRadius: AppRadius.lg))
+            }
         }
     }
 
     // MARK: - Update Button
 
     private var updateButton: some View {
-        Button { } label: {
+        Button {
+             if selectedIndex >= 0 && selectedIndex < members.count {
+                let current = members[selectedIndex]
+                
+                // Create updated member
+                let updated = FamilyMember(
+                    name: editName,
+                    shortLabel: current.shortLabel,
+                    phone: editPhone,
+                    age: editAge,
+                    notes: editNotes,
+                    imageName: current.imageName
+                )
+                
+                // Update array
+                members[selectedIndex] = updated
+                
+                // Ideally dismiss or show success feedback
+                // For now, just print or maybe show an alert (optional)
+            }
+        
+        } label: {
             Text("Update Member")
                 .font(.app(size: 17, weight: .semibold))
                 .foregroundStyle(.white)
@@ -168,6 +293,14 @@ struct ManageMembersView: View {
                 .background(Color.clinicPrimary, in: Capsule())
         }
         .buttonStyle(.plain)
+    }
+    private func updateEditFields() {
+        guard selectedIndex >= 0 && selectedIndex < members.count else { return }
+        let current = members[selectedIndex]
+        editName  = current.name
+        editPhone = current.phone
+        editAge   = current.age
+        editNotes = current.notes
     }
 }
 

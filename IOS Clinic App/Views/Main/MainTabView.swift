@@ -57,7 +57,7 @@ struct MainTabView: View {
                 if router.isGuest {
                     NavigationStack { LoginRequiredView() }
                 } else {
-                    NavigationStack { ManageMembersView() }
+                    NavigationStack { AccountView() }
                 }
             }
             .tabItem {

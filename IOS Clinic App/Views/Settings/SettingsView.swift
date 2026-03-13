@@ -15,8 +15,6 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
 
     private let options: [SettingsOption] = [
-        SettingsOption(title: "My Account", subtitle: "Manage your profile", destination: AnyView(AccountView())),
-        SettingsOption(title: "Payments", subtitle: "View your payment history", destination: AnyView(PastPaymentsView())),
         SettingsOption(title: "Accessibility", subtitle: "Customize your experience", destination: AnyView(AccessibilityView())),
         SettingsOption(title: "Help & Support", subtitle: "Get assistance", destination: AnyView(HelpSupportView())),
         SettingsOption(title: "Terms & conditions", subtitle: "Legal information", destination: AnyView(TermsAndConditionsView())),
@@ -69,14 +67,6 @@ struct SettingsView: View {
                         .buttonStyle(.plain)
                         .padding(.horizontal)
                     }
-
-                    PrimaryButton("Logout") {
-                        router.logout()
-                        withAnimation(.easeInOut(duration: 0.38)) {
-                            router.navigate(to: .login)
-                        }
-                    }
-                    .padding(.horizontal)
                 }
                 Spacer()
             }

@@ -77,13 +77,20 @@ struct PharmacyStatusDetailView: View {
                     VStack(spacing: AppSpacing.md) {
                         patientCard
                         statusCard
-                        if order.status != .finished {
-                            proceedButton
-                        }
                     }
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.top, AppSpacing.lg)
-                    .padding(.bottom, AppSpacing.xxxl)
+                    .padding(.bottom, AppSpacing.md)
+                }
+
+                if order.status != .finished {
+                    VStack {
+                        proceedButton
+                    }
+                    .padding(.horizontal, AppSpacing.lg)
+                    .padding(.top, AppSpacing.md)
+                    .padding(.bottom, AppSpacing.lg)
+                    .background(Color.clinicSurface)
                 }
             }
         }
