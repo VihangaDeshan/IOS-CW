@@ -23,6 +23,7 @@ struct AlertItem: Identifiable {
 struct AlertsView: View {
 
     @Environment(\.dismiss) private var dismiss
+    @State private var expandedAlertIDs: Set<UUID> = []
 
     @State private var alerts: [AlertItem] = [
         AlertItem(title: "Lab reports released",
@@ -111,20 +112,25 @@ struct AlertsView: View {
 
     private var alertList: some View {
         ScrollView(showsIndicators: false) {
-            VStack(spacing: 0) {
+            VStack(spacing: AppSpacing.sm) {
                 ForEach(alerts.indices, id: \.self) { i in
-                    AlertRow(item: alerts[i]) {
+                    AlertRow(
+                        item: alerts[i],
+                        isExpanded: expandedAlertIDs.contains(alerts[i].id)
+                    ) {
                         withAnimation(.easeInOut(duration: 0.2)) {
                             alerts[i].isUnread = false
-                        }
-                    }
 
-                    if i < alerts.count - 1 {
-                        Divider()
-                            .padding(.horizontal, AppSpacing.lg)
+                            if expandedAlertIDs.contains(alerts[i].id) {
+                                expandedAlertIDs.remove(alerts[i].id)
+                            } else {
+                                expandedAlertIDs.insert(alerts[i].id)
+                            }
+                        }
                     }
                 }
             }
+            .padding(.horizontal, AppSpacing.md)
             .padding(.top, AppSpacing.xs)
             .padding(.bottom, AppSpacing.xxxl)
         }
@@ -135,6 +141,7 @@ struct AlertsView: View {
 
 private struct AlertRow: View {
     let item:     AlertItem
+    let isExpanded: Bool
     let onTap:    () -> Void
 
     var body: some View {
@@ -153,7 +160,7 @@ private struct AlertRow: View {
                         Text(item.title)
                             .font(.app(size: 15, weight: item.isUnread ? .bold : .semibold))
                             .foregroundStyle(.primary)
-                            .lineLimit(1)
+                            .lineLimit(isExpanded ? nil : 1)
 
                         Spacer()
 
@@ -165,12 +172,13 @@ private struct AlertRow: View {
                     Text(item.body)
                         .font(.app(size: 13))
                         .foregroundStyle(.secondary)
-                        .lineLimit(2)
+                        .lineLimit(isExpanded ? nil : 2)
                         .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
 
                 // Chevron
-                Image(systemName: "chevron.right")
+                Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
                     .font(.app(size: 12, weight: .semibold))
                     .foregroundStyle(Color(.systemGray3))
                     .padding(.top, 4)
@@ -178,9 +186,12 @@ private struct AlertRow: View {
             .padding(.horizontal, AppSpacing.lg)
             .padding(.vertical, AppSpacing.md)
             .background(
-                item.isUnread
-                    ? Color.clinicPrimary.opacity(0.04)
-                    : Color.clear
+                RoundedRectangle(cornerRadius: AppRadius.md, style: .continuous)
+                    .fill(item.isUnread ? Color.clinicPrimary.opacity(0.06) : Color.clinicSurfaceSecond)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: AppRadius.md, style: .continuous)
+                    .stroke(Color.clinicSeparator.opacity(item.isUnread ? 0.08 : 0.18), lineWidth: 1)
             )
             .contentShape(Rectangle())
         }
