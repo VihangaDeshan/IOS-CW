@@ -183,6 +183,9 @@ struct PrescriptionListView: View {
         .navigationDestination(isPresented: $navigateToPharmacy) {
             if let order = selectedOrder { PharmacyStatusDetailView(order: order) }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .pharmacyPaymentSuccess)) { _ in
+            navigateToPharmacy = false
+        }
     }
 
     // MARK: - Nav Bar

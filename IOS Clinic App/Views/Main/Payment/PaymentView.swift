@@ -12,6 +12,7 @@ struct PaymentView: View {
     @Environment(\.dismiss) private var dismiss
     let total: Double
     let billItems: [BillItem]
+    var isPharmacy: Bool = false
     @State private var selectedPayment: PaymentMethod = .applePay
     @State private var navigateToCheckout = false
 
@@ -102,7 +103,7 @@ struct PaymentView: View {
 
     private var proceedButton: some View {
         NavigationLink(isActive: $navigateToCheckout) {
-            CheckoutView(amount: total)
+            CheckoutView(amount: total, isPharmacy: isPharmacy)
         } label: {
             Text("Proceed to pay")
                 .font(Font.btnTitleSize)

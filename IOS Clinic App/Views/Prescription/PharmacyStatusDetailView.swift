@@ -88,6 +88,10 @@ struct PharmacyStatusDetailView: View {
             }
         }
         .navigationBarHidden(true)
+        .onReceive(NotificationCenter.default.publisher(for: .pharmacyPaymentSuccess)) { _ in
+            showPayment = false
+            dismiss()
+        }
         .navigationDestination(isPresented: $showPayment) {
             PaymentView(
                 total: 2450.00,
@@ -95,7 +99,8 @@ struct PharmacyStatusDetailView: View {
                     BillItem(title: "Amoxicillin 500mg × 21", subtitle: "3 times daily, 7 days", amount: 1200.00),
                     BillItem(title: "Cough Syrup 100ml",       subtitle: "2 times daily, 5 days",  amount:  850.00),
                     BillItem(title: "Consultation fee",        subtitle: nil,                       amount:  400.00),
-                ]
+                ],
+                isPharmacy: true
             )
         }
     }

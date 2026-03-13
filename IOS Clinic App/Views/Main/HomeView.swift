@@ -19,6 +19,7 @@ struct HomeView: View {
     @State private var showAlerts         = false
     @State private var showSearchResults  = false
     @State private var searchQuery        = ""
+    @State private var showBooking        = false
     @FocusState private var isSearchFocused: Bool
 
     var body: some View {
@@ -33,7 +34,7 @@ struct HomeView: View {
                         .padding(.bottom, AppSpacing.lg)
 
                     // ── Hero banner ───────────────────────────────────────
-                    HeroCarouselView()
+                    HeroCarouselView(onBook: { showBooking = true })
                         .padding(.horizontal, AppSpacing.lg)
                     // ── Search bar ────────────────────────────────────────
                     searchBar
@@ -94,11 +95,15 @@ struct HomeView: View {
             .navigationDestination(isPresented: $showSearchResults) {
                 SpecializationView(initialQuery: searchQuery, initialSegment: 1)
             }
+            .navigationDestination(isPresented: $showBooking) {
+                SpecializationView(initialQuery: "", initialSegment: 0)
+            }
             .onReceive(NotificationCenter.default.publisher(for: .switchToHomeTab)) { _ in
                 showVisitProgress = false
                 showAppointments = false
                 showAlerts = false
                 showSearchResults = false
+                showBooking = false
                 isSearchFocused = false
             }
         }
@@ -127,6 +132,7 @@ struct HomeView: View {
     // MARK: - Hero Banner
 
     struct HeroCarouselView: View {
+        var onBook: (() -> Void)? = nil
         @State private var currentIndex = 0
         private let timer = Timer.publish(every: 4, on: .main, in: .common).autoconnect()
         
@@ -175,7 +181,7 @@ struct HomeView: View {
                         .foregroundStyle(Color(red: 0.07, green: 0.25, blue: 0.45))
                         .lineSpacing(2)
 
-                    Button { } label: {
+                    Button { onBook?() } label: {
                         Text("Book")
                             .font(.system(size: 14, weight: .semibold))
                             .foregroundStyle(.white)

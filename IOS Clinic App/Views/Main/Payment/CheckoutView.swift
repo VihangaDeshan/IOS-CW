@@ -3,6 +3,7 @@ import SwiftUI
 struct CheckoutView: View {
     @Environment(\.dismiss) private var dismiss
     let amount: Double
+    var isPharmacy: Bool = false
     @State private var cardNumber: String = ""
     @State private var cardHolder: String = ""
     @State private var expiry: String = ""
@@ -26,7 +27,7 @@ struct CheckoutView: View {
         .background(Color.white.ignoresSafeArea())
         .navigationBarHidden(true)
         .navigationDestination(isPresented: $navigateToSuccess) {
-            SuccessView()
+            SuccessView(isPharmacy: isPharmacy)
         }
     }
 
