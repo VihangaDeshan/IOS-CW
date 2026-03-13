@@ -5,27 +5,29 @@ struct SuccessView: View {
     var isPharmacy: Bool = false
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: AppSpacing.md) {
             Spacer()
-            
+
             Image(systemName: "checkmark.circle.fill")
                 .resizable()
                 .frame(width: 80, height: 80)
-                .foregroundColor(.green)
+                .foregroundColor(.clinicPrimary)
+                .padding(20)
+                .background(glassCard(cornerRadius: AppRadius.xl))
+
             Text(isPharmacy ? "Payment Successful" : "Booking Confirmed")
-                .font(.title)
-                .fontWeight(.semibold)
-            
+                .font(.app(size: 28, weight: .semibold))
+                .foregroundStyle(.primary)
+                .padding(.horizontal, AppSpacing.lg)
+
             if !isPharmacy {
                 HStack(spacing: 12) {
                     Text("Apr 1, 2025")
                         .padding(8)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(8)
+                        .background(glassCard(cornerRadius: AppRadius.sm))
                     Text("9:41 AM")
                         .padding(8)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(8)
+                        .background(glassCard(cornerRadius: AppRadius.sm))
                 }
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -61,20 +63,22 @@ struct SuccessView: View {
                     }
                 }
                 .padding()
-                .background(Color(.systemBackground))
-                .cornerRadius(12)
+                .background(glassCard(cornerRadius: AppRadius.lg))
                 .padding(.horizontal)
             } else {
                  Text("Your pharmacy order has been placed successfully.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
+                    .padding(.vertical, AppSpacing.lg)
                     .padding(.horizontal)
+                    .background(glassCard(cornerRadius: AppRadius.lg))
+                    .padding(.horizontal, AppSpacing.lg)
             }
-            
+
             Spacer()
         }
-        .background(isPharmacy ? Color.white.ignoresSafeArea() : Color(.systemGroupedBackground).ignoresSafeArea())
+        .background(Color.white.ignoresSafeArea())
         .navigationBarHidden(true)
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -85,6 +89,18 @@ struct SuccessView: View {
                 }
             }
         }
+    }
+}
+
+private extension SuccessView {
+    func glassCard(cornerRadius: CGFloat) -> some View {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+            .fill(.ultraThinMaterial)
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .stroke(Color.white.opacity(0.75), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.06), radius: 12, x: 0, y: 6)
     }
 }
 
