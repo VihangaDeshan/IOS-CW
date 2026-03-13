@@ -31,7 +31,7 @@ enum AppointmentStatus: String, CaseIterable {
 }
 
 struct Appointment: Identifiable {
-    let id          = UUID()
+    let id: UUID
     let number:     String   // e.g. "234"
     let patientTag: String   // e.g. "Myself"
     let date:       String
@@ -39,6 +39,26 @@ struct Appointment: Identifiable {
     let room:       String
     let doctor:     String
     let status:     AppointmentStatus
+    
+    init(
+        id: UUID = UUID(),
+        number: String,
+        patientTag: String,
+        date: String,
+        time: String,
+        room: String,
+        doctor: String,
+        status: AppointmentStatus
+    ) {
+        self.id = id
+        self.number = number
+        self.patientTag = patientTag
+        self.date = date
+        self.time = time
+        self.room = room
+        self.doctor = doctor
+        self.status = status
+    }
 }
 
 // MARK: - View
@@ -50,8 +70,12 @@ struct AppointmentsView: View {
     var onReturnHome: (() -> Void)? = nil
     @State private var selectedFilter: AppointmentStatus = .all
     @State private var showReschedule = false
+    
+    // Cancellation Flow State
+    @State private var showProcessingScreen = false
+    @State private var appointmentToCancel: Appointment?
 
-    private let appointments: [Appointment] = [
+    @State private var appointments: [Appointment] = [
         Appointment(number: "234", patientTag: "Myself",    date: "2026.01.05", time: "12.30pm", room: "Room 3B", doctor: "Dr. Nimal Balahewa", status: .completed),
         Appointment(number: "134", patientTag: "",          date: "2026.01.05", time: "12.30pm", room: "Room 3B", doctor: "Dr. Nimal Balahewa", status: .ongoing),
         Appointment(number: "087", patientTag: "",          date: "2026.01.05", time: "12.30pm", room: "Room 3B", doctor: "Dr. Nimal Balahewa", status: .upcoming),
@@ -106,7 +130,10 @@ struct AppointmentsView: View {
                             ForEach(filtered) { appointment in
                                 AppointmentCard(
                                     appointment: appointment,
-                                    onReschedule: { showReschedule = true }
+                                    onReschedule: { showReschedule = true },
+                                    onCancel: {
+                                        appointmentToCancel = appointment
+                                    }
                                 )
                                 .padding(.horizontal, AppSpacing.lg)
                                 .padding(.bottom, AppSpacing.md)
@@ -116,8 +143,41 @@ struct AppointmentsView: View {
                     .padding(.bottom, AppSpacing.xxxl)
                 }
             }
+            
+            if showProcessingScreen {
+                ZStack {
+                    Color.black.opacity(0.3).ignoresSafeArea()
+                    CancellationProcessingView {
+                        showProcessingScreen = false
+                        selectedFilter = .cancelled
+                    }
+                }
+                .transition(.opacity)
+                .zIndex(100)
+            }
         }
         .navigationBarHidden(true)
+        .sheet(item: $appointmentToCancel) { appointment in
+            AppointmentCancellationView(
+                appointment: appointment,
+                onKeepAppointment: {
+                    appointmentToCancel = nil
+                },
+                onConfirmCancellation: {
+                    // Cancel Logic
+                    cancelAppointment(appointment)
+                    appointmentToCancel = nil
+                    
+                    // Show processing after sheet dismiss
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        withAnimation {
+                            showProcessingScreen = true
+                        }
+                    }
+                }
+            )
+            .presentationDetents([.fraction(0.6)])
+        }
         .navigationDestination(isPresented: $showReschedule) {
             SpecializationView(isReschedule: true)
                 .environment(\.onRescheduleComplete, {
@@ -194,6 +254,26 @@ struct AppointmentsView: View {
         }
         .frame(maxWidth: .infinity)
     }
+
+    // MARK: - Logic
+
+    private func cancelAppointment(_ appointment: Appointment) {
+        if let index = appointments.firstIndex(where: { $0.id == appointment.id }) {
+            var updatedAppointment = appointment
+            // Create a new copy with updated status since it's a struct
+            updatedAppointment = Appointment(
+                id: appointment.id,
+                number: appointment.number,
+                patientTag: appointment.patientTag,
+                date: appointment.date,
+                time: appointment.time,
+                room: appointment.room,
+                doctor: appointment.doctor,
+                status: .cancelled
+            )
+            appointments[index] = updatedAppointment
+        }
+    }
 }
 
 // MARK: - Appointment Card
@@ -202,6 +282,7 @@ private struct AppointmentCard: View {
 
     let appointment: Appointment
     let onReschedule: () -> Void
+    var onCancel: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
@@ -233,11 +314,14 @@ private struct AppointmentCard: View {
                         }
                         .buttonStyle(.plain)
 
-                        Image(systemName: "xmark.circle")
-                            .font(.app(size: 18))
-                            .foregroundStyle(Color(red: 0.92, green: 0.24, blue: 0.24))
-                            .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
-                            .contentShape(Rectangle())
+                        Button { onCancel?() } label: {
+                            Image(systemName: "xmark.circle")
+                                .font(.app(size: 18))
+                                .foregroundStyle(Color(red: 0.92, green: 0.24, blue: 0.24))
+                                .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
+                                .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
