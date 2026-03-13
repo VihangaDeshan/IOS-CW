@@ -4,6 +4,7 @@ struct AccountView: View {
     // 1. Fixed: Added the router environment to fix the 'scope' error
     @Environment(AppRouter.self) private var router
     @State private var showManageMembers = false
+    @State private var showQR = false
     
     var body: some View {
         NavigationStack {
@@ -19,13 +20,6 @@ struct AccountView: View {
 
                         // Menu options
                         AccountRow(
-                            title: "Edit Profile",
-                            subtitle: "Manage your details"
-                        ) {
-                            // TODO: router.navigate(to: .editProfile)
-                        }
-
-                        AccountRow(
                             title: "Manage Members",
                             subtitle: "Manage your health members"
                         ) {
@@ -33,17 +27,10 @@ struct AccountView: View {
                         }
 
                         AccountRow(
-                            title: "Manage Login",
-                            subtitle: "Manage your security settings"
-                        ) {
-                            // TODO: router.navigate(to: .loginSettings)
-                        }
-
-                        AccountRow(
-                            title: "Your Profile QR",
+                             title: "Your Profile QR",
                             subtitle: "To share your info via QR"
                         ) {
-                            // TODO: show QR code sheet
+                            showQR = true
                         }
                         
                     }
@@ -78,6 +65,9 @@ struct AccountView: View {
             .navigationBarHidden(true)
             .navigationDestination(isPresented: $showManageMembers) {
                 ManageMembersView()
+            }
+            .navigationDestination(isPresented: $showQR) {
+                ProfileQRView()
             }
         }
     }

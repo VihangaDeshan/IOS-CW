@@ -94,11 +94,10 @@ struct ManageMembersView: View {
 
             HStack {
                 Button { dismiss() } label: {
-                    ZStack {
-                       
-                        
-                    }
-                    .contentShape(Rectangle())
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 18, weight: .semibold))
+                        .foregroundColor(.primary)
+                        .frame(width: AppSize.minTapTarget, height: AppSize.minTapTarget)
                 }
                 .buttonStyle(.plain)
 
